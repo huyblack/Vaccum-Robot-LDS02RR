@@ -3,7 +3,7 @@ set(CMAKE_SYSTEM_NAME Linux)
 set(CMAKE_SYSTEM_PROCESSOR aarch64)
 
 # --- Toolchain path ---
-set(TOOLCHAIN_ROOT /home/huy/ros2_ws/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu)
+set(TOOLCHAIN_ROOT /home/huy/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu)
 set(CMAKE_C_COMPILER ${TOOLCHAIN_ROOT}/bin/aarch64-none-linux-gnu-gcc)
 set(CMAKE_CXX_COMPILER ${TOOLCHAIN_ROOT}/bin/aarch64-none-linux-gnu-g++)
 

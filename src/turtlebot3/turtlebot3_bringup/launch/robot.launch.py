@@ -21,7 +21,7 @@ import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription, ExecuteProcess
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch.substitutions import ThisLaunchFileDir
@@ -71,6 +71,9 @@ def generate_launch_description():
         LDS_LAUNCH_FILE = '/lds02rr.launch.py'
 
     use_sim_time = LaunchConfiguration('use_sim_time', default='false')
+
+    # Lấy đường dẫn đến file pwm.py trong cùng thư mục
+    pwm_script = os.path.join(os.path.dirname(__file__), 'pwm.py')
 
     return LaunchDescription([
         DeclareLaunchArgument(
@@ -128,4 +131,10 @@ def generate_launch_description():
             ],
             # Xóa usb_port argument và thay bằng tham số phù hợp nếu cần
             output='screen'),
+
+        # Thêm việc chạy pwm.py
+        ExecuteProcess(
+            cmd=['python3', pwm_script],
+            output='screen'
+        ),
     ])
