@@ -2,7 +2,7 @@
 
 # Bước 1: Build ROS 2 workspace
 echo "Building ROS 2 workspace..."
-colcon build --merge-install  --cmake-clean-cache --cmake-force-configure   --cmake-args -DRMW_IMPLEMENTATION=rmw_cyclonedds_cpp -DCMAKE_TOOLCHAIN_FILE=/home/huy/nav2_ws/toolchain_aarch64.cmake
+colcon build --merge-install  --cmake-clean-cache --cmake-force-configure   --cmake-args -DRMW_IMPLEMENTATION=rmw_cyclonedds_cpp -DCMAKE_TOOLCHAIN_FILE=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/toolchain_aarch64.cmake
 
 # Bước 2: Chạy script fix setup bash
 echo "Running fix setup bash..."
