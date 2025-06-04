@@ -1,31 +1,30 @@
 // Arduino sketch cho Xiao BLE với giao tiếp I2C
 #include <Arduino.h>
-#include <LSM6DS3.h>  // Thư viện IMU
-#include <Wire.h>     // Thư viện I2C
+#include <LSM6DS3.h>    // Thư viện IMU
+#include <Wire.h>       // Thư viện I2C
 #include <Adafruit_AHRS.h>    // Thư viện Adafruit AHRS
 #include <PID_v1.h>
 
 
 Adafruit_Madgwick filter; // Thuật toán Madgwick
 
-#define I2C_SLAVE_ADDR 0x08  // Địa chỉ I2C của Xiao BLE (có thể thay đổi)
+#define I2C_SLAVE_ADDR 0x08   // Địa chỉ I2C của Xiao BLE (có thể thay đổi)
 
 // Định nghĩa các lệnh I2C
-#define CMD_PING           0x01  // Kiểm tra kết nối
-#define CMD_CALIBRATE_IMU  0x02  // Hiệu chuẩn IMU
-#define CMD_SET_MOTOR      0x03  // Điều khiển động cơ
-#define CMD_GET_IMU        0x04  // Đọc dữ liệu IMU
-#define CMD_GET_STATUS     0x05  // Đọc trạng thái
+#define CMD_PING          0x01  // Kiểm tra kết nối
+#define CMD_CALIBRATE_IMU 0x02  // Hiệu chuẩn IMU
+#define CMD_SET_MOTOR     0x03  // Điều khiển động cơ
+#define CMD_GET_IMU       0x04  // Đọc dữ liệu IMU
+#define CMD_GET_STATUS    0x05  // Đọc trạng thái
 
-#define G_STANDARD         9.80665 // Giá trị tiêu chuẩn chính xác
+#define G_STANDARD        9.80665 // Giá trị tiêu chuẩn chính xác
 
 #define PWM_LEFT  0
 #define DIR_LEFT  1
 #define PWM_RIGH  2
 #define DIR_RIGH  3
 
-LSM6DS3 imu(I2C_MODE, 0x6A);  // I2C mode với địa chỉ 0x6A
-// Madgwick filter;              // Tạo đối tượng Madgwick filter
+LSM6DS3 imu(I2C_MODE, 0x6A);    // I2C mode với địa chỉ 0x6A
 
 // Biến toàn cục cho động cơ
 float g_left_speed = 0.0;
@@ -39,7 +38,7 @@ float gyro_x = 0.0, gyro_y = 0.0, gyro_z = 0.0;
 float accel_x = 0.0, accel_y = 0.0, accel_z = 0.0;
 
 // Dữ liệu quaternion
-float q0 = 1.0, q1 = 0.0, q2 = 0.0, q3 = 0.0;  // w, x, y, z
+float q0 = 1.0, q1 = 0.0, q2 = 0.0, q3 = 0.0;   // w, x, y, z
 
 // Thời gian cho thuật toán Madgwick
 unsigned long previousTime = 0;
@@ -58,13 +57,24 @@ volatile uint8_t i2c_cmd = 0;
 uint8_t i2c_send_buffer[40];
 uint8_t i2c_send_len = 0;
 
+// --- Các biến mới cho LED và trạng thái giao tiếp ---
+#define LED_PIN         LED_GREEN // Sử dụng LED_BUILTIN hoặc thay bằng chân GPIO bạn muốn dùng cho LED đỏ
+#define I2C_TIMEOUT_MS   500        // Thời gian timeout để coi là không có giao tiếp (ms)
+
+unsigned long lastI2CActivityTime = 0; // Thời điểm cuối cùng nhận được dữ liệu I2C
+unsigned long lastLedToggleTime = 0;   // Thời điểm cuối cùng LED đổi trạng thái
+bool ledState = LOW;                 // Trạng thái hiện tại của LED
+
+// --- Khai báo hàm mới ---
+void updateLedStatus();
+
 void setup() {
   // Debug qua USB (tùy chọn)
   Serial.begin(115200);
   
   // Khởi tạo I2C slave
   Wire.begin(I2C_SLAVE_ADDR);
-  Wire.setClock(400000);
+  Wire.setClock(1000000);
   Wire.onReceive(receiveEvent);
   Wire.onRequest(requestEvent);
   
@@ -74,21 +84,23 @@ void setup() {
   }
 
   // Đặt khoảng thời gian đo IMU
-  imu.settings.gyroSampleRate = 208;  // Hz
+  imu.settings.gyroSampleRate = 208;    // Hz
   imu.settings.accelSampleRate = 208; // Hz
   
   // Khởi tạo Madgwick filter với tần số cập nhật 100Hz
-  // Khởi tạo bộ lọc AHRS (Madgwick hoặc Mahony)
   filter.begin(FILTER_UPDATE_RATE_HZ);
   Serial.println("Khoi tao bo loc AHRS thanh cong.");
 
-  
   // Khởi tạo chân điều khiển động cơ
-  pinMode(PWM_LEFT, OUTPUT);  // PWM cho động cơ trái
-  pinMode(DIR_LEFT, OUTPUT);  // DIR cho động cơ trái
-  pinMode(PWM_RIGH, OUTPUT);  // PWM cho động cơ phải
-  pinMode(DIR_RIGH, OUTPUT);  // DIR cho động cơ phải
-  
+  pinMode(PWM_LEFT, OUTPUT);    // PWM cho động cơ trái
+  pinMode(DIR_LEFT, OUTPUT);    // DIR cho động cơ trái
+  pinMode(PWM_RIGH, OUTPUT);    // PWM cho động cơ phải
+  pinMode(DIR_RIGH, OUTPUT);    // DIR cho động cơ phải
+
+  // --- Khởi tạo chân LED ---
+  pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, LOW); // Đảm bảo LED tắt ban đầu
+
   previousTime = millis();
   
   Serial.println("Xiao BLE đã sẵn sàng (I2C Slave mode)");
@@ -99,20 +111,25 @@ void loop() {
   processCommand();
   
   // Đọc IMU và cập nhật dữ liệu
-  
   if ((millis() - previousTime) >= FILTER_UPDATE_INTERVAL_MS) {
     updateIMUData();       // Đọc IMU, cập nhật bộ lọc, lấy quaternion
     previousTime = millis(); // Cập nhật thời điểm
-    }
+  }
   
   // Điều khiển động cơ theo tốc độ hiện tại
   updateMotors();
   
-  delay(1);  // Giảm tải CPU
+  // --- Cập nhật trạng thái LED ---
+  updateLedStatus();
+
+  delay(1);   // Giảm tải CPU
 }
 
 // Hàm callback khi có dữ liệu nhận từ master
 void receiveEvent(int numBytes) {
+  // --- Cập nhật thời gian nhận I2C để theo dõi trạng thái giao tiếp ---
+  lastI2CActivityTime = millis();
+
   if (numBytes < 1) return;
   
   // Đọc lệnh
@@ -124,33 +141,22 @@ void receiveEvent(int numBytes) {
   while (Wire.available() && i2c_recv_len < sizeof(i2c_recv_buffer)) {
     i2c_recv_buffer[i2c_recv_len++] = Wire.read();
   }
-  
-  // In debug nếu cần
-  Serial.print("I2C command: 0x");
-  Serial.print(i2c_cmd, HEX);
-  Serial.print(" with ");
-  Serial.print(i2c_recv_len);
-  Serial.println(" bytes");
 }
 
 // Hàm callback khi master yêu cầu dữ liệu
 void requestEvent() {
   // Gửi dữ liệu trong buffer trả về
   Wire.write(i2c_send_buffer, i2c_send_len);
-  
-  Serial.print("Sent ");
-  Serial.print(i2c_send_len);
-  Serial.println(" bytes to master");
 }
 
 // Xử lý lệnh nhận được qua I2C
 void processCommand() {
-  if (i2c_cmd == 0) return;  // Không có lệnh mới
+  if (i2c_cmd == 0) return;   // Không có lệnh mới
   
   switch (i2c_cmd) {
     case CMD_PING:
       // Chuẩn bị phản hồi ping
-      i2c_send_buffer[0] = 0xAA;  // Magic value
+      i2c_send_buffer[0] = 0xAA;   // Magic value
       i2c_send_len = 1;
       break;
       
@@ -159,7 +165,7 @@ void processCommand() {
       calibrateIMU();
       
       // Trả về trạng thái hoàn thành
-      i2c_send_buffer[0] = 1;  // 1 = thành công
+      i2c_send_buffer[0] = 1;   // 1 = thành công
       i2c_send_len = 1;
       break;
       
@@ -197,7 +203,7 @@ void processCommand() {
       
     default:
       // Lệnh không được hỗ trợ
-      i2c_send_buffer[0] = 0xFF;  // Mã lỗi
+      i2c_send_buffer[0] = 0xFF;   // Mã lỗi
       i2c_send_len = 1;
       break;
   }
@@ -210,18 +216,17 @@ void processCommand() {
 void prepareIMUData() {
   // Chuyển dữ liệu IMU sang mảng bytes
   // Thêm quaternion vào dữ liệu trả về
-// Chỉnh sửa thành thứ tự Gyro → Accel → Quat để khớp với control_table
-memcpy(i2c_send_buffer + 0,  &gyro_x, 4);   // [0-3]: Gyro X (địa chỉ 60)
-memcpy(i2c_send_buffer + 4,  &gyro_y, 4);   // [4-7]: Gyro Y (địa chỉ 64)
-memcpy(i2c_send_buffer + 8,  &gyro_z, 4);   // [8-11]: Gyro Z (địa chỉ 68)
-memcpy(i2c_send_buffer + 12, &accel_x, 4);  // [12-15]: Accel X (địa chỉ 72)
-memcpy(i2c_send_buffer + 16, &accel_y, 4);  // [16-19]: Accel Y (địa chỉ 76)
-memcpy(i2c_send_buffer + 20, &accel_z, 4);  // [20-23]: Accel Z (địa chỉ 80)
-memcpy(i2c_send_buffer + 24, &q0, 4);       // [24-27]: Quaternion W (địa chỉ 96)
-memcpy(i2c_send_buffer + 28, &q1, 4);       // [28-31]: Quaternion X (địa chỉ 100)
-memcpy(i2c_send_buffer + 32, &q2, 4);       // [32-35]: Quaternion Y (địa chỉ 104)
-memcpy(i2c_send_buffer + 36, &q3, 4);       // [36-39]: Quaternion Z (địa chỉ 108)
-  i2c_send_len = 40;  // 10 giá trị float, mỗi giá trị 4 bytes
+  memcpy(i2c_send_buffer + 0,    &gyro_x, 4);   // [0-3]: Gyro X (địa chỉ 60)
+  memcpy(i2c_send_buffer + 4,    &gyro_y, 4);   // [4-7]: Gyro Y (địa chỉ 64)
+  memcpy(i2c_send_buffer + 8,    &gyro_z, 4);   // [8-11]: Gyro Z (địa chỉ 68)
+  memcpy(i2c_send_buffer + 12, &accel_x, 4);   // [12-15]: Accel X (địa chỉ 72)
+  memcpy(i2c_send_buffer + 16, &accel_y, 4);   // [16-19]: Accel Y (địa chỉ 76)
+  memcpy(i2c_send_buffer + 20, &accel_z, 4);   // [20-23]: Accel Z (địa chỉ 80)
+  memcpy(i2c_send_buffer + 24, &q0, 4);       // [24-27]: Quaternion W (địa chỉ 96)
+  memcpy(i2c_send_buffer + 28, &q1, 4);       // [28-31]: Quaternion X (địa chỉ 100)
+  memcpy(i2c_send_buffer + 32, &q2, 4);       // [32-35]: Quaternion Y (địa chỉ 104)
+  memcpy(i2c_send_buffer + 36, &q3, 4);       // [36-39]: Quaternion Z (địa chỉ 108)
+  i2c_send_len = 40;   // 10 giá trị float, mỗi giá trị 4 bytes
 }
 
 // Chuẩn bị dữ liệu trạng thái
@@ -232,7 +237,7 @@ void prepareStatusData() {
   
   // Thêm các thông tin khác nếu cần
   
-  i2c_send_len = 8;  // 2 giá trị float, mỗi giá trị 4 bytes
+  i2c_send_len = 8;   // 2 giá trị float, mỗi giá trị 4 bytes
 }
 
 void calibrateIMU() {
@@ -260,7 +265,6 @@ void calibrateIMU() {
   q1 = 0.0;
   q2 = 0.0;
   q3 = 0.0;
-  // filter.begin(100);
   
   Serial.println("Hoàn thành hiệu chuẩn IMU");
 }
@@ -287,12 +291,10 @@ void updateIMUData() {
   // Cập nhật thuật toán Madgwick
   filter.updateIMU(gx_rad, gy_rad, gz_rad, raw_ax_g, raw_ay_g, raw_az_g);
   filter.getQuaternion(&q0, &q1, &q2, &q3);
-  // Serial.print("Quaternion: "); Serial.print(q0, 4); Serial.print(","); Serial.print(q1, 4); Serial.print(","); Serial.print(q2, 4); Serial.print(","); Serial.println(q3, 4);
-  
 }
 
 void controlMotors(float linear_x, float angular_z) {
-  float wheel_separation = 0.160;  // Khoảng cách giữa hai bánh xe (m)
+  float wheel_separation = 0.160;   // Khoảng cách giữa hai bánh xe (m)
   
   // Tính toán vận tốc cho từng bánh xe
   g_left_speed = linear_x - (angular_z * wheel_separation / 2.0);
@@ -306,14 +308,38 @@ void controlMotors(float linear_x, float angular_z) {
 
 void updateMotors() {
   // Chuyển đổi từ vận tốc (m/s) sang giá trị PWM (0-255)
-  int left_pwm = map(abs(g_left_speed * 100), 0, 30, 0, 255);  // Max 0.3 m/s
+  // Giả sử vận tốc tối đa 0.3 m/s tương ứng với PWM 255.
+  int left_pwm = map(abs(g_left_speed * 100), 0, 30, 0, 255);
   int right_pwm = map(abs(g_right_speed * 100), 0, 30, 0, 255);
   
   // Đặt hướng quay
+  // Đối với một số module điều khiển động cơ, HIGH/LOW có thể ngược lại tùy theo cách đấu dây.
   digitalWrite(DIR_RIGH, g_left_speed >= 0 ? HIGH : LOW);
   digitalWrite(DIR_LEFT, g_right_speed >= 0 ? HIGH : LOW);
   
   // Đặt tốc độ PWM
   analogWrite(PWM_LEFT, left_pwm);
   analogWrite(PWM_RIGH, right_pwm);
+}
+
+// --- Hàm mới: Cập nhật trạng thái nháy LED ---
+void updateLedStatus() {
+  unsigned long currentTime = millis();
+  unsigned long blinkInterval;
+
+  // Kiểm tra nếu có giao tiếp I2C gần đây
+  if ((currentTime - lastI2CActivityTime) < I2C_TIMEOUT_MS) {
+    // Có giao tiếp I2C, nháy 5Hz (chu kỳ 200ms, mỗi trạng thái 100ms)
+    blinkInterval = 1000 / 5 / 2;
+  } else {
+    // Không có giao tiếp I2C, nháy 1Hz (chu kỳ 1000ms, mỗi trạng thái 500ms)
+    blinkInterval = 1000 / 1 / 2;
+  }
+
+  // Đổi trạng thái LED nếu đã đến lúc
+  if ((currentTime - lastLedToggleTime) >= blinkInterval) {
+    ledState = !ledState;
+    digitalWrite(LED_PIN, ledState);
+    lastLedToggleTime = currentTime;
+  }
 }
