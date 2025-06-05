@@ -253,8 +253,8 @@ bool XiaoBLEI2CWrapper::set_data_to_device(
   uint8_t * data,
   std::string * msg)
 {
-  RCLCPP_INFO(rclcpp::get_logger("XiaoBLEI2CWrapper"), 
-              "set_data_to_device - addr: %d, length: %d, data[0]: %d", addr, length, data[0]);
+  // RCLCPP_INFO(rclcpp::get_logger("XiaoBLEI2CWrapper"), 
+  //             "set_data_to_device - addr: %d, length: %d, data[0]: %d", addr, length, data[0]);
 
   // // In ra dữ liệu nhận được
   // RCLCPP_INFO(rclcpp::get_logger("XiaoBLEI2CWrapper"), "Dữ liệu nhận được:");
@@ -425,11 +425,11 @@ bool XiaoBLEI2CWrapper::control_motors(float linear_x, float angular_z, std::str
   }
   
   // In ra buffer để debug
-  RCLCPP_INFO(rclcpp::get_logger("XiaoBLEI2CWrapper"), "Buffer I2C:");
-  for(int i = 0; i < sizeof(buffer); i++) {
-    RCLCPP_INFO(rclcpp::get_logger("XiaoBLEI2CWrapper"), 
-                "buffer[%d] = 0x%02X", i, buffer[i]);
-  }
+  // RCLCPP_INFO(rclcpp::get_logger("XiaoBLEI2CWrapper"), "Buffer I2C:");
+  // for(int i = 0; i < sizeof(buffer); i++) {
+  //   RCLCPP_INFO(rclcpp::get_logger("XiaoBLEI2CWrapper"), 
+  //               "buffer[%d] = 0x%02X", i, buffer[i]);
+  // }
   
   if (!i2c_write(buffer, sizeof(buffer))) {
     if (msg) *msg = "Lỗi gửi lệnh điều khiển động cơ";

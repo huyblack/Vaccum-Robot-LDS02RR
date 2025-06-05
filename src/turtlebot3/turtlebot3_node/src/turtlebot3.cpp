@@ -362,20 +362,20 @@ void TurtleBot3::cmd_vel_callback()
         uint8_t * p_data = &data.byte[0];
 
         // Thêm debug
-        RCLCPP_INFO(
-          this->get_logger(),
-          "Gửi cmd_vel: linear.x=%f, angular.z=%f", data.fdata[0], data.fdata[5]);
+        // RCLCPP_INFO(
+        //   this->get_logger(),
+        //   "Gửi cmd_vel: linear.x=%f, angular.z=%f", data.fdata[0], data.fdata[5]);
           
         // In ra bytes để debug
-        for(int i = 0; i < 8; i++) {
-          RCLCPP_INFO(this->get_logger(), "Byte[%d] = 0x%02X", i, p_data[i]);
-        }
+        // for(int i = 0; i < 8; i++) {
+        //   RCLCPP_INFO(this->get_logger(), "Byte[%d] = 0x%02X", i, p_data[i]);
+        // }
         
         dxl_sdk_wrapper_->set_data_to_device(start_addr, addr_length, p_data, &sdk_msg);
 
-        RCLCPP_DEBUG(
-          this->get_logger(),
-          "lin_vel: %f ang_vel: %f msg : %s", msg->linear.x, msg->angular.z, sdk_msg.c_str());
+        // RCLCPP_DEBUG(
+        //   this->get_logger(),
+        //   "lin_vel: %f ang_vel: %f msg : %s", msg->linear.x, msg->angular.z, sdk_msg.c_str());
       }
     ),
     std::function<void(const geometry_msgs::msg::TwistStamped::SharedPtr)>(
@@ -399,18 +399,18 @@ void TurtleBot3::cmd_vel_callback()
         uint16_t addr_length =
         (extern_control_table.cmd_velocity_angular_z.addr -
         extern_control_table.cmd_velocity_linear_x.addr) +
-        extern_control_table.cmd_velocity_angular_z.length;
+        extern_control_table.cmd_velocity_angular_z.length; 
 
         uint8_t * p_data = &data.byte[0];
 
         dxl_sdk_wrapper_->set_data_to_device(start_addr, addr_length, p_data, &sdk_msg);
 
-        RCLCPP_DEBUG(
-          this->get_logger(),
-          "lin_vel: %f ang_vel: %f msg : %s",
-          msg->twist.linear.x,
-          msg->twist.angular.z,
-          sdk_msg.c_str());
+        // RCLCPP_DEBUG(
+        //   this->get_logger(),
+        //   "lin_vel: %f ang_vel: %f msg : %s",
+        //   msg->twist.linear.x,
+        //   msg->twist.angular.z,
+        //   sdk_msg.c_str());
       }
     )
   );
