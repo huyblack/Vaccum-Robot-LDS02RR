@@ -19,7 +19,9 @@
 
 #include <memory>
 #include <string>
+#include <chrono>
 
+#include <rclcpp/rclcpp.hpp>
 #include <std_srvs/srv/set_bool.hpp>
 
 #include "turtlebot3_node/devices/devices.hpp"
@@ -46,6 +48,9 @@ public:
 
 private:
   rclcpp::Service<std_srvs::srv::SetBool>::SharedPtr srv_;
+  rclcpp::TimerBase::SharedPtr timer_;
+  
+  void auto_enable_motor();
 };
 }  // namespace devices
 }  // namespace turtlebot3

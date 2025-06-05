@@ -22,6 +22,7 @@
 #define CMD_SET_MOTOR      0x03  // Điều khiển động cơ
 #define CMD_GET_IMU        0x04  // Đọc dữ liệu IMU
 #define CMD_GET_STATUS     0x05  // Đọc trạng thái
+#define CMD_MOTOR_TORQUE   0x06  // Bật/tắt motor torque
 
 // Địa chỉ I2C mặc định của Xiao BLE
 #define DEFAULT_XIAO_BLE_I2C_ADDRESS 0x08
@@ -96,6 +97,9 @@ public:
   
   // Điều khiển động cơ với vận tốc tuyến tính và góc
   bool control_motors(float linear_x, float angular_z, std::string * msg = nullptr);
+  
+  // Bật/tắt motor torque
+  bool set_motor_torque_enable(uint8_t enable, std::string * msg = nullptr);
   
   // Đọc dữ liệu IMU từ thiết bị
   bool read_imu(float &quat_w, float &quat_x, float &quat_y, float &quat_z,

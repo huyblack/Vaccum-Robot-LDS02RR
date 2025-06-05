@@ -173,20 +173,29 @@ void XiaoBLEI2CWrapper::read_data_set()
     
     delay_ms(10);  // 10ms
     
-    // Đọc cả vận tốc và vị trí của cả hai động cơ (4 giá trị int32 = 16 bytes)
-    uint8_t motor_buffer[16];
+    // Đọc đầy đủ trạng thái động cơ (6 float + 1 byte = 25 bytes)
+    // present_current_left/right, present_velocity_left/right, 
+    // present_position_left/right, motor_torque_enable
+    uint8_t motor_buffer[25];
     if (!i2c_read(motor_buffer, sizeof(motor_buffer))) {
       RCLCPP_ERROR(rclcpp::get_logger("XiaoBLEI2CWrapper"), "Lỗi đọc trạng thái động cơ");
       return;
     }
     
+    // Cập nhật dòng điện động cơ
+    memcpy(&control_table_data_[120], motor_buffer, 4);     // present_current_left
+    memcpy(&control_table_data_[124], motor_buffer + 4, 4); // present_current_right
+    
     // Cập nhật vận tốc động cơ
-    memcpy(&control_table_data_[128], motor_buffer, 4);     // present_velocity_left
-    memcpy(&control_table_data_[132], motor_buffer + 4, 4); // present_velocity_right
+    memcpy(&control_table_data_[128], motor_buffer + 8, 4);  // present_velocity_left
+    memcpy(&control_table_data_[132], motor_buffer + 12, 4); // present_velocity_right
     
     // Cập nhật vị trí động cơ (encoder)
-    memcpy(&control_table_data_[136], motor_buffer + 8, 4);  // present_position_left
-    memcpy(&control_table_data_[140], motor_buffer + 12, 4); // present_position_right
+    memcpy(&control_table_data_[136], motor_buffer + 16, 4); // present_position_left
+    memcpy(&control_table_data_[140], motor_buffer + 20, 4); // present_position_right
+    
+    // Cập nhật trạng thái motor torque enable
+    control_table_data_[149] = motor_buffer[24];            // motor_torque_enable
     
     // Cập nhật thời gian
     uint32_t current_millis = static_cast<uint32_t>(std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -244,20 +253,20 @@ bool XiaoBLEI2CWrapper::set_data_to_device(
   uint8_t * data,
   std::string * msg)
 {
-  RCLCPP_DEBUG(rclcpp::get_logger("XiaoBLEI2CWrapper"), 
-              "Yêu cầu ghi - Địa chỉ: %d, Độ dài: %d", addr, length);
-
-  // In ra dữ liệu nhận được
-  RCLCPP_INFO(rclcpp::get_logger("XiaoBLEI2CWrapper"), "Dữ liệu nhận được:");
-  for(int i = 0; i < length; i++) {
-    RCLCPP_INFO(rclcpp::get_logger("XiaoBLEI2CWrapper"), 
-                "data[%d] = 0x%02X", i, data[i]);
-  }
-  
-  float test_float;
-  memcpy(&test_float, data, 4);
   RCLCPP_INFO(rclcpp::get_logger("XiaoBLEI2CWrapper"), 
-              "Giá trị float kiểm tra: %f", test_float);
+              "set_data_to_device - addr: %d, length: %d, data[0]: %d", addr, length, data[0]);
+
+  // // In ra dữ liệu nhận được
+  // RCLCPP_INFO(rclcpp::get_logger("XiaoBLEI2CWrapper"), "Dữ liệu nhận được:");
+  // for(int i = 0; i < length; i++) {
+  //   RCLCPP_INFO(rclcpp::get_logger("XiaoBLEI2CWrapper"), 
+  //               "data[%d] = 0x%02X", i, data[i]);
+  // }
+  
+  // float test_float;
+  // memcpy(&test_float, data, 4);
+  // RCLCPP_INFO(rclcpp::get_logger("XiaoBLEI2CWrapper"), 
+  //             "Giá trị float kiểm tra: %f", test_float);
   
   // Cập nhật control table local
   {
@@ -274,6 +283,10 @@ bool XiaoBLEI2CWrapper::set_data_to_device(
   if (addr == 59 && length == 1 && data[0] == 1) {
     // Hiệu chuẩn IMU
     return calibrate_imu(msg);
+  }
+  else if (addr == 149 && length == 1) {
+    // Motor torque enable/disable
+    return set_motor_torque_enable(data[0], msg);
   }
   else if (addr == 150 && length >= 4) {
     // Điều khiển động cơ với linear_x
@@ -343,6 +356,45 @@ bool XiaoBLEI2CWrapper::calibrate_imu(std::string * msg)
   return true;
 #else
   if (msg) *msg = "Giả lập: Hiệu chuẩn IMU thành công";
+  return true;
+#endif
+}
+
+bool XiaoBLEI2CWrapper::set_motor_torque_enable(uint8_t enable, std::string * msg)
+{
+#ifdef __linux__
+  RCLCPP_INFO(rclcpp::get_logger("XiaoBLEI2CWrapper"), 
+              "Gửi lệnh %s motor torque", enable ? "enable" : "disable");
+              
+  uint8_t buffer[2];
+  buffer[0] = CMD_MOTOR_TORQUE;  // Sử dụng lệnh riêng cho motor torque
+  buffer[1] = enable;
+  
+  if (!i2c_write(buffer, sizeof(buffer))) {
+    if (msg) *msg = "Lỗi gửi lệnh motor torque enable";
+    return false;
+  }
+  
+  delay_ms(10);
+  
+  uint8_t response;
+  if (!i2c_read(&response, 1)) {
+    if (msg) *msg = "Lỗi đọc phản hồi motor torque enable";
+    return false;
+  }
+  
+  RCLCPP_INFO(rclcpp::get_logger("XiaoBLEI2CWrapper"), 
+              "Arduino response: 0x%02X", response);
+              
+  if (response != 1) {
+    if (msg) *msg = "Motor torque enable thất bại - Arduino response: " + std::to_string(response);
+    return false;
+  }
+  
+  if (msg) *msg = enable ? "Motor torque enabled" : "Motor torque disabled";
+  return true;
+#else
+  if (msg) *msg = enable ? "Giả lập: Motor torque enabled" : "Giả lập: Motor torque disabled";
   return true;
 #endif
 }

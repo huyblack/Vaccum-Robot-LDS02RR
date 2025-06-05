@@ -16,6 +16,7 @@ Adafruit_Madgwick filter; // Thuật toán Madgwick
 #define CMD_SET_MOTOR     0x03  // Điều khiển động cơ
 #define CMD_GET_IMU       0x04  // Đọc dữ liệu IMU
 #define CMD_GET_STATUS    0x05  // Đọc trạng thái
+#define CMD_MOTOR_TORQUE  0x06  // Bật/tắt motor torque
 
 #define G_STANDARD        9.80665 // Giá trị tiêu chuẩn chính xác
 
@@ -24,11 +25,42 @@ Adafruit_Madgwick filter; // Thuật toán Madgwick
 #define PWM_RIGH  2
 #define DIR_RIGH  3
 
+// Định nghĩa chân cho encoder (nếu có)
+#define ENCODER_LEFT_A   A0
+#define ENCODER_LEFT_B   A1
+#define ENCODER_RIGHT_A  A2
+#define ENCODER_RIGHT_B  A3
+
+
 LSM6DS3 imu(I2C_MODE, 0x6A);    // I2C mode với địa chỉ 0x6A
 
 // Biến toàn cục cho động cơ
 float g_left_speed = 0.0;
 float g_right_speed = 0.0;
+bool motor_torque_enabled = false;
+
+// Biến cho encoder
+volatile long encoder_left_count = 0;
+volatile long encoder_right_count = 0;
+float present_velocity_left = 0.0;   // Vận tốc thực tế từ encoder (m/s)
+float present_velocity_right = 0.0;
+float present_position_left = 0.0;   // Vị trí từ encoder (m)
+float present_position_right = 0.0;
+
+// Biến cho current sensing
+float present_current_left = 0.0;    // Dòng điện hiện tại (mA)
+float present_current_right = 0.0;
+
+// Encoder parameters
+const float WHEEL_RADIUS = 0.033;    // Bán kính bánh xe (m)
+const int ENCODER_PPR = 600;         // Pulse per revolution của encoder
+const float WHEEL_CIRCUMFERENCE = 2.0 * PI * WHEEL_RADIUS;
+const float DISTANCE_PER_PULSE = WHEEL_CIRCUMFERENCE / ENCODER_PPR;
+
+// Thời gian cho tính toán vận tốc
+unsigned long last_velocity_update = 0;
+long last_encoder_left = 0;
+long last_encoder_right = 0;
 
 // Offset cho hiệu chuẩn IMU
 float gyro_offset_x = 0.0, gyro_offset_y = 0.0, gyro_offset_z = 0.0;
@@ -97,11 +129,24 @@ void setup() {
   pinMode(PWM_RIGH, OUTPUT);    // PWM cho động cơ phải
   pinMode(DIR_RIGH, OUTPUT);    // DIR cho động cơ phải
 
+  // Khởi tạo encoder pins (nếu có)
+  pinMode(ENCODER_LEFT_A, INPUT_PULLUP);
+  pinMode(ENCODER_LEFT_B, INPUT_PULLUP);
+  pinMode(ENCODER_RIGHT_A, INPUT_PULLUP);
+  pinMode(ENCODER_RIGHT_B, INPUT_PULLUP);
+  
+  // Gắn interrupt cho encoder
+  attachInterrupt(digitalPinToInterrupt(ENCODER_LEFT_A), encoderLeftISR, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(ENCODER_RIGHT_A), encoderRightISR, CHANGE);
+
+  // Current sensing hiện tại không sử dụng
+
   // --- Khởi tạo chân LED ---
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, LOW); // Đảm bảo LED tắt ban đầu
 
   previousTime = millis();
+  last_velocity_update = millis();
   
   Serial.println("Xiao BLE đã sẵn sàng (I2C Slave mode)");
 }
@@ -115,6 +160,9 @@ void loop() {
     updateIMUData();       // Đọc IMU, cập nhật bộ lọc, lấy quaternion
     previousTime = millis(); // Cập nhật thời điểm
   }
+  
+  // Cập nhật thông tin encoder và current sensing
+  updateMotorStatus();
   
   // Điều khiển động cơ theo tốc độ hiện tại
   updateMotors();
@@ -170,7 +218,7 @@ void processCommand() {
       break;
       
     case CMD_SET_MOTOR:
-      // Đọc vận tốc từ buffer
+      // Điều khiển vận tốc động cơ
       if (i2c_recv_len >= 8) {
         float linear_x, angular_z;
         
@@ -184,6 +232,34 @@ void processCommand() {
         // Chuẩn bị phản hồi thành công
         i2c_send_buffer[0] = 1;
         i2c_send_len = 1;
+      } else {
+        // Dữ liệu không đủ
+        i2c_send_buffer[0] = 0;
+        i2c_send_len = 1;
+      }
+      break;
+      
+    case CMD_MOTOR_TORQUE:
+      // Bật/tắt motor torque
+      if (i2c_recv_len >= 1) {
+        uint8_t torque_cmd = i2c_recv_buffer[0];
+        if (torque_cmd == 0 || torque_cmd == 1) {
+          motor_torque_enabled = (torque_cmd == 1);
+          Serial.print("Motor torque ");
+          Serial.println(motor_torque_enabled ? "enabled" : "disabled");
+          
+          // Nếu disable thì dừng động cơ ngay
+          if (!motor_torque_enabled) {
+            g_left_speed = 0.0;
+            g_right_speed = 0.0;
+          }
+          
+          i2c_send_buffer[0] = 1;
+          i2c_send_len = 1;
+        } else {
+          i2c_send_buffer[0] = 0;
+          i2c_send_len = 1;
+        }
       } else {
         // Dữ liệu không đủ
         i2c_send_buffer[0] = 0;
@@ -231,13 +307,23 @@ void prepareIMUData() {
 
 // Chuẩn bị dữ liệu trạng thái
 void prepareStatusData() {
-  // Trả về trạng thái động cơ
-  memcpy(i2c_send_buffer, &g_left_speed, 4);
-  memcpy(i2c_send_buffer + 4, &g_right_speed, 4);
+  // Trả về trạng thái động cơ đầy đủ theo control table
+  // Thứ tự: present_current_left, present_current_right, 
+  //         present_velocity_left, present_velocity_right,
+  //         present_position_left, present_position_right,
+  //         motor_torque_enable
   
-  // Thêm các thông tin khác nếu cần
+  memcpy(i2c_send_buffer, &present_current_left, 4);     // [0-3]: current left
+  memcpy(i2c_send_buffer + 4, &present_current_right, 4); // [4-7]: current right
+  memcpy(i2c_send_buffer + 8, &present_velocity_left, 4); // [8-11]: velocity left
+  memcpy(i2c_send_buffer + 12, &present_velocity_right, 4); // [12-15]: velocity right
+  memcpy(i2c_send_buffer + 16, &present_position_left, 4); // [16-19]: position left
+  memcpy(i2c_send_buffer + 20, &present_position_right, 4); // [20-23]: position right
   
-  i2c_send_len = 8;   // 2 giá trị float, mỗi giá trị 4 bytes
+  uint8_t torque_enable = motor_torque_enabled ? 1 : 0;
+  i2c_send_buffer[24] = torque_enable;                     // [24]: motor enable status
+  
+  i2c_send_len = 25;   // 6 float (24 bytes) + 1 byte enable
 }
 
 void calibrateIMU() {
@@ -296,6 +382,14 @@ void updateIMUData() {
 void controlMotors(float linear_x, float angular_z) {
   float wheel_separation = 0.160;   // Khoảng cách giữa hai bánh xe (m)
   
+  // Kiểm tra nếu động cơ được enable
+  if (!motor_torque_enabled) {
+    g_left_speed = 0.0;
+    g_right_speed = 0.0;
+    Serial.println("Motor disabled - torque not enabled");
+    return;
+  }
+  
   // Tính toán vận tốc cho từng bánh xe
   g_left_speed = linear_x - (angular_z * wheel_separation / 2.0);
   g_right_speed = linear_x + (angular_z * wheel_separation / 2.0);
@@ -320,6 +414,64 @@ void updateMotors() {
   // Đặt tốc độ PWM
   analogWrite(PWM_LEFT, left_pwm);
   analogWrite(PWM_RIGH, right_pwm);
+}
+
+// --- Encoder interrupt service routines ---
+void encoderLeftISR() {
+  // Đọc trạng thái của cả hai chân encoder
+  bool a = digitalRead(ENCODER_LEFT_A);
+  bool b = digitalRead(ENCODER_LEFT_B);
+  
+  // Xác định hướng quay và cập nhật counter
+  if (a == b) {
+    encoder_left_count++;
+  } else {
+    encoder_left_count--;
+  }
+}
+
+void encoderRightISR() {
+  // Đọc trạng thái của cả hai chân encoder
+  bool a = digitalRead(ENCODER_RIGHT_A);
+  bool b = digitalRead(ENCODER_RIGHT_B);
+  
+  // Xác định hướng quay và cập nhật counter
+  if (a == b) {
+    encoder_right_count++;
+  } else {
+    encoder_right_count--;
+  }
+}
+
+// --- Cập nhật thông tin động cơ từ encoder và current sensing ---
+void updateMotorStatus() {
+  unsigned long current_time = millis();
+  
+  // Cập nhật vận tốc từ encoder (mỗi 50ms)
+  if (current_time - last_velocity_update >= 50) {
+    float dt = (current_time - last_velocity_update) / 1000.0; // Chuyển sang giây
+    
+    // Tính số pulse đã di chuyển
+    long left_pulses = encoder_left_count - last_encoder_left;
+    long right_pulses = encoder_right_count - last_encoder_right;
+    
+    // Tính vận tốc (m/s)
+    present_velocity_left = (left_pulses * DISTANCE_PER_PULSE) / dt;
+    present_velocity_right = (right_pulses * DISTANCE_PER_PULSE) / dt;
+    
+    // Cập nhật vị trí tích lũy (m)
+    present_position_left += left_pulses * DISTANCE_PER_PULSE;
+    present_position_right += right_pulses * DISTANCE_PER_PULSE;
+    
+    // Lưu giá trị hiện tại
+    last_encoder_left = encoder_left_count;
+    last_encoder_right = encoder_right_count;
+    last_velocity_update = current_time;
+  }
+  
+  // Current sensing hiện tại không sử dụng - set mặc định là 0
+  present_current_left = 0.0;
+  present_current_right = 0.0;
 }
 
 // --- Hàm mới: Cập nhật trạng thái nháy LED ---

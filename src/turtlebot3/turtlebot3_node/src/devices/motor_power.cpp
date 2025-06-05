@@ -37,6 +37,9 @@ MotorPower::MotorPower(
       this->command(static_cast<void *>(request.get()), static_cast<void *>(response.get()));
     }
   );
+  
+  // Tự động enable motor sau khi tạo service thành công
+  auto_enable_motor();
 }
 
 // Thay đổi ghi dữ liệu để kích hoạt/tắt động cơ
@@ -46,6 +49,12 @@ void MotorPower::command(const void * request, void * response)
   std_srvs::srv::SetBool::Response * res = (std_srvs::srv::SetBool::Response *)response;
 
   // Tương thích với XiaoBLEI2CWrapper
+  RCLCPP_INFO(nh_->get_logger(), 
+              "Calling set_data_to_device - addr: %d, length: %d, data: %d", 
+              extern_control_table.motor_torque_enable.addr,
+              extern_control_table.motor_torque_enable.length, 
+              req.data);
+              
   res->success = dxl_sdk_wrapper_->set_data_to_device(
     extern_control_table.motor_torque_enable.addr,
     extern_control_table.motor_torque_enable.length,
@@ -63,4 +72,35 @@ void MotorPower::request(
 {
   auto request = std::make_shared<std_srvs::srv::SetBool::Request>(req);
   auto result = client->async_send_request(request);
+}
+
+void MotorPower::auto_enable_motor()
+{
+  // Sử dụng timer để delay 1 giây trước khi enable motor
+  // Đảm bảo I2C connection đã ổn định
+  auto timer = nh_->create_wall_timer(
+    std::chrono::seconds(1),
+    [this]() {
+      // Tạo fake request để enable motor
+      std_srvs::srv::SetBool::Request req;
+      std_srvs::srv::SetBool::Response res;
+      
+      req.data = true;  // Enable motor
+      
+      // Gọi hàm command để enable motor
+      command(static_cast<void *>(&req), static_cast<void *>(&res));
+      
+      if (res.success) {
+        RCLCPP_INFO(nh_->get_logger(), "Motor automatically enabled on startup");
+      } else {
+        RCLCPP_WARN(nh_->get_logger(), "Failed to automatically enable motor: %s", res.message.c_str());
+      }
+      
+      // Chỉ chạy một lần
+      timer_->cancel();
+    }
+  );
+  
+  // Lưu timer để có thể cancel
+  timer_ = timer;
 }
