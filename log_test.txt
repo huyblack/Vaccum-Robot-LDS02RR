@@ -36,3 +36,88 @@ currently:	linear velocity 0.0	 angular velocity 0.0
 currently:	linear velocity 0.0	 angular velocity 0.0 
 currently:	linear velocity 0.01	 angular velocity 0.0 
 currently:	linear velocity 0.02	 angular velocity 0.0 
+
+
+
+
+huy@huy:~$ ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
+[INFO] [launch]: All log files can be found below /home/huy/.ros/log/2025-06-07-00-14-40-387842-huy-12131
+[INFO] [launch]: Default logging verbosity is set to INFO
+urdf_file_name : turtlebot3_burger.urdf
+urdf_file_name : turtlebot3_burger.urdf
+[INFO] [gzserver-1]: process started with pid [12135]
+[INFO] [gzclient-2]: process started with pid [12137]
+[INFO] [robot_state_publisher-3]: process started with pid [12139]
+[INFO] [spawn_entity.py-4]: process started with pid [12141]
+[robot_state_publisher-3] [INFO] [1749230081.701857356] [robot_state_publisher]: got segment base_footprint
+[robot_state_publisher-3] [INFO] [1749230081.702015650] [robot_state_publisher]: got segment base_link
+[robot_state_publisher-3] [INFO] [1749230081.702028975] [robot_state_publisher]: got segment base_scan
+[robot_state_publisher-3] [INFO] [1749230081.702035824] [robot_state_publisher]: got segment caster_back_link
+[robot_state_publisher-3] [INFO] [1749230081.702042139] [robot_state_publisher]: got segment imu_link
+[robot_state_publisher-3] [INFO] [1749230081.702048058] [robot_state_publisher]: got segment wheel_left_link
+[robot_state_publisher-3] [INFO] [1749230081.702054133] [robot_state_publisher]: got segment wheel_right_link
+[ERROR] [gzserver-1]: process has died [pid 12135, exit code 255, cmd 'gzserver /opt/ros/humble/share/turtlebot3_gazebo/worlds/turtlebot3_world.world -slibgazebo_ros_init.so -slibgazebo_ros_factory.so -slibgazebo_ros_force_system.so'].
+[spawn_entity.py-4] [INFO] [1749230082.192636612] [spawn_entity]: Spawn Entity started
+[spawn_entity.py-4] [INFO] [1749230082.193042209] [spawn_entity]: Loading entity XML from file /opt/ros/humble/share/turtlebot3_gazebo/models/turtlebot3_burger/model.sdf
+[spawn_entity.py-4] [INFO] [1749230082.193880647] [spawn_entity]: Waiting for service /spawn_entity, timeout = 30
+[spawn_entity.py-4] [INFO] [1749230082.194295908] [spawn_entity]: Waiting for service /spawn_entity
+[spawn_entity.py-4] [INFO] [1749230082.199383795] [spawn_entity]: Calling service /spawn_entity
+[spawn_entity.py-4] [INFO] [1749230082.230777069] [spawn_entity]: Spawn status: Entity [burger] already exists.
+[spawn_entity.py-4] [ERROR] [1749230082.231265867] [spawn_entity]: Spawn service failed. Exiting.
+[ERROR] [spawn_entity.py-4]: process has died [pid 12141, exit code 1, cmd '/opt/ros/humble/lib/gazebo_ros/spawn_entity.py -entity burger -file /opt/ros/humble/share/turtlebot3_gazebo/models/turtlebot3_burger/model.sdf -x -2.0 -y -0.5 -z 0.01 --ros-args'].
+
+
+
+
+
+
+huy@huy:~$ ros2 launch gazebo_ros gazebo.launch.py headless:=true
+[INFO] [launch]: All log files can be found below /home/huy/.ros/log/2025-06-07-00-27-44-923628-huy-14161
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [gzserver-1]: process started with pid [14162]
+[INFO] [gzclient-2]: process started with pid [14164]
+[ERROR] [gzserver-1]: process has died [pid 14162, exit code 255, cmd 'gzserver /opt/ros/humble/share/gazebo_ros/worlds/empty.world -slibgazebo_ros_init.so -slibgazebo_ros_factory.so -slibgazebo_ros_force_system.so'].
+
+
+
+
+
+huy@huy:~$ gzserver --verbose
+Gazebo multi-robot simulator, version 11.10.2
+Copyright (C) 2012 Open Source Robotics Foundation.
+Released under the Apache 2 License.
+http://gazebosim.org
+
+[Err] [Master.cc:96] EXCEPTION: Unable to start server[bind: Address already in use]. There is probably another Gazebo process running.
+
+[Err] [Master.cc:96] EXCEPTION: Unable to start server[bind: Address already in use]. There is probably another Gazebo process running.
+
+
+
+
+
+
+huy@huy:~$ gzserver --verbose
+Gazebo multi-robot simulator, version 11.10.2
+Copyright (C) 2012 Open Source Robotics Foundation.
+Released under the Apache 2 License.
+http://gazebosim.org
+
+[Err] [Master.cc:96] EXCEPTION: Unable to start server[bind: Address already in use]. There is probably another Gazebo process running.
+
+[Err] [Master.cc:96] EXCEPTION: Unable to start server[bind: Address already in use]. There is probably another Gazebo process running.
+
+huy@huy:~$ killall -9 gzserver
+gzserver: no process found
+huy@huy:~$ killall -9 gzserver
+gzserver: no process found
+huy@huy:~$ gzserver --verbose
+Gazebo multi-robot simulator, version 11.10.2
+Copyright (C) 2012 Open Source Robotics Foundation.
+Released under the Apache 2 License.
+http://gazebosim.org
+
+[Msg] Waiting for master.
+[Msg] Connected to gazebo master @ http://127.0.0.1:11345
+[Msg] Publicized address: 192.168.2.27
+[Msg] Loading world file [/usr/share/gazebo-11/worlds/empty.world]

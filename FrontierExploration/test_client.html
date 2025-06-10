@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROS2 WebSocket Visualizer</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            margin: 0; 
+            padding: 0;
+            background-color: #f0f2f5; 
+            color: #1c1e21;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        #sidebar {
+            width: 350px;
+            padding: 1.5em;
+            background-color: #ffffff;
+            border-right: 1px solid #dddfe2;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        #main-content {
+            flex-grow: 1;
+            padding: 1.5em;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #e9ebee;
+        }
+        #map-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #d1d1d1;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        canvas {
+            max-width: 100%;
+            max-height: 100%;
+            background-color: #7f7f7f; /* Màu xám cho vùng chưa biết */
+            image-rendering: pixelated; /* Giữ cho map sắc nét khi phóng to */
+        }
+        h1, h2 { color: #0056b3; border-bottom: 2px solid #e9ebee; padding-bottom: 10px;}
+        #status { padding: 12px; border-radius: 8px; font-weight: bold; text-align: center; margin-bottom: 1em; transition: all 0.3s ease; }
+        .connecting { background-color: #ffc107; color: #333; }
+        .connected { background-color: #28a745; color: white; }
+        .disconnected { background-color: #dc3545; color: white; }
+        pre { background-color: #2b2b2b; color: #f8f8f2; padding: 1em; border-radius: 8px; white-space: pre-wrap; word-wrap: break-word; font-size: 0.85em; }
+        code { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace; }
+        small { color: #666; }
+    </style>
+</head>
+<body>
+
+    <div id="sidebar">
+        <h1>📊 ROS2 Visualizer</h1>
+        <p>Hiển thị dữ liệu SLAM từ robot qua WebSocket.</p>
+        
+        <div id="status" class="connecting">Đang kết nối...</div>
+
+        <h2>Dữ liệu Odometry (Vị trí)</h2>
+        <pre id="odom-data"><code>Chưa nhận được dữ liệu...</code></pre>
+        
+        <h2>Thông tin bản đồ</h2>
+        <pre id="map-info"><code>Chưa nhận được dữ liệu...</code></pre>
+
+        <p><small>Địa chỉ: <span id="ws-address"></span></small></p>
+    </div>
+
+    <div id="main-content">
+        <div id="map-container">
+            <canvas id="map-canvas"></canvas>
+        </div>
+    </div>
+
+    <script>
+        const WS_URL = `ws://${window.location.hostname || "192.168.2.27"}:8765`;
+        document.getElementById('ws-address').textContent = WS_URL;
+
+        // Element references
+        const statusDiv = document.getElementById('status');
+        const odomDataElem = document.getElementById('odom-data').querySelector('code');
+        const mapInfoElem = document.getElementById('map-info').querySelector('code');
+        const canvas = document.getElementById('map-canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Global state
+        let mapData = null;
+        let odomData = null;
+
+        function draw() {
+            if (!mapData) return;
+
+            // Thiết lập kích thước canvas
+            canvas.width = mapData.info.width;
+            canvas.height = mapData.info.height;
+            
+            // Xóa canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Vẽ bản đồ từ dữ liệu
+            const imageData = ctx.createImageData(canvas.width, canvas.height);
+            for (let i = 0; i < mapData.data.length; i++) {
+                const val = mapData.data[i];
+                let r, g, b;
+                if (val === -1) { // Unknown
+                    r = 127; g = 127; b = 127; // Gray
+                } else if (val === 0) { // Free
+                    r = 255; g = 255; b = 255; // White
+                } else { // Occupied
+                    r = 0; g = 0; b = 0;       // Black
+                }
+                const pixelIndex = i * 4;
+                imageData.data[pixelIndex] = r;
+                imageData.data[pixelIndex + 1] = g;
+                imageData.data[pixelIndex + 2] = b;
+                imageData.data[pixelIndex + 3] = 255; // Alpha
+            }
+            // Vẽ ngược lại vì hệ tọa độ của map ROS khác với canvas
+            ctx.putImageData(imageData, 0, 0);
+            ctx.save();
+            ctx.scale(1, -1);
+            ctx.translate(0, -canvas.height);
+            ctx.drawImage(canvas, 0, 0);
+            ctx.restore();
+
+
+            // Vẽ robot nếu có dữ liệu
+            if (odomData) {
+                const mapInfo = mapData.info;
+                const pose = odomData.pose;
+
+                // Chuyển đổi tọa độ thế giới (mét) sang tọa độ pixel trên canvas
+                const gridX = (pose.position.x - mapInfo.origin.x) / mapInfo.resolution;
+                const gridY = (pose.position.y - mapInfo.origin.y) / mapInfo.resolution;
+
+                // Vẽ robot (vòng tròn màu đỏ)
+                ctx.fillStyle = 'rgba(255, 0, 0, 0.9)';
+                ctx.beginPath();
+                ctx.arc(gridX, gridY, 5, 0, 2 * Math.PI); // Bán kính 5 pixel
+                ctx.fill();
+
+                // Vẽ hướng của robot (đường kẻ)
+                const yaw = pose.orientation_yaw;
+                const lineLength = 10; // Chiều dài đường chỉ hướng
+                const endX = gridX + lineLength * Math.cos(yaw);
+                const endY = gridY + lineLength * Math.sin(yaw);
+                
+                ctx.strokeStyle = 'rgba(0, 255, 0, 0.9)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(gridX, gridY);
+                ctx.lineTo(endX, endY);
+                ctx.stroke();
+            }
+        }
+
+        function connect() {
+            console.log(`Đang cố gắng kết nối tới ${WS_URL}`);
+            const ws = new WebSocket(WS_URL);
+
+            ws.onopen = function() {
+                statusDiv.textContent = "Đã kết nối";
+                statusDiv.className = "connected";
+            };
+
+            ws.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                
+                if (data.type === 'map' && data.info) {
+                    mapData = data; // Lưu toàn bộ dữ liệu map
+                    mapInfoElem.textContent = JSON.stringify({
+                        resolution: data.info.resolution.toFixed(4),
+                        width: data.info.width,
+                        height: data.info.height,
+                        origin: `(${data.info.origin.x.toFixed(2)}, ${data.info.origin.y.toFixed(2)})`
+                    }, null, 2);
+                } else if (data.type === 'odom' && data.pose) {
+                    odomData = data; // Lưu dữ liệu odom
+                    odomDataElem.textContent = JSON.stringify({
+                        position: {
+                            x: data.pose.position.x.toFixed(3),
+                            y: data.pose.position.y.toFixed(3)
+                        },
+                        yaw_degrees: (data.pose.orientation_yaw * 180 / Math.PI).toFixed(2)
+                    }, null, 2);
+                }
+
+                // Vẽ lại toàn bộ sau khi nhận được dữ liệu mới
+                draw();
+            };
+
+            ws.onclose = function() {
+                statusDiv.textContent = "Đã ngắt kết nối. Đang thử lại...";
+                statusDiv.className = "disconnected";
+                setTimeout(connect, 3000);
+            };
+
+            ws.onerror = function(err) {
+                console.error("Lỗi WebSocket:", err);
+                statusDiv.textContent = "Lỗi kết nối";
+                statusDiv.className = "disconnected";
+                ws.close();
+            };
+        }
+
+        // Bắt đầu kết nối
+        connect();
+    </script>
+</body>
+</html> 
