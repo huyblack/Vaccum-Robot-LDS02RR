@@ -1,415 +1,497 @@
+// Arduino sketch cho Xiao BLE với giao tiếp I2C
 #include <Arduino.h>
-#include <LSM6DS3.h>
-#include <Wire.h>
-#include <Adafruit_AHRS.h>
-#include <PID_v1.h>         // Thư viện PID chính
+#include <LSM6DS3.h>    // Thư viện IMU
+#include <Wire.h>       // Thư viện I2C
+#include <Adafruit_AHRS.h>    // Thư viện Adafruit AHRS
+#include <PID_v1.h>
 
-// --- Định nghĩa chân ---
-// *** KIỂM TRA KỸ VÀ THAY ĐỔI CHO PHÙ HỢP VỚI XIAO BLE CỦA BẠN ***
-// Motor Trái
-#define PWM_L 3   // Chân PWM Motor Trái
-#define IN1_L 6   // Chân DIR 1 Motor Trái (Ví dụ: HIGH=Forward, LOW=Backward với IN2_L=LOW)
-#define IN2_L 7   // Chân DIR 2 Motor Trái (Giữ LOW hoặc dùng cho Brake)
-#define ENCA_L 0  // Chân Encoder A Trái (Cần hỗ trợ ngắt)
-#define ENCB_L 10 // Chân Encoder B Trái (Cần hỗ trợ ngắt) - Đã đổi từ code trước
 
-// Motor Phải
-#define PWM_R 5   // Chân PWM Motor Phải (Ví dụ D5)
-#define IN1_R 8   // Chân DIR 1 Motor Phải (Ví dụ D8)
-#define IN2_R 9   // Chân DIR 2 Motor Phải (Ví dụ D9)
-#define ENCA_R 2  // Chân Encoder A Phải (Ví dụ D2 - Cần hỗ trợ ngắt)
-#define ENCB_R 4  // Chân Encoder B Phải (Ví dụ D4 - Cần hỗ trợ ngắt)
+Adafruit_Madgwick filter; // Thuật toán Madgwick
 
-// --- Cấu hình I2C và các lệnh ---
-#define I2C_SLAVE_ADDR 0x08
-#define CMD_PING           0x01
-#define CMD_CALIBRATE_IMU  0x02
-#define CMD_SET_MOTOR      0x03 // Nhận linear_x, angular_z
-#define CMD_GET_IMU        0x04
-#define CMD_GET_ODOM       0x06 // Lệnh lấy dữ liệu Encoder ticks L/R
+#define I2C_SLAVE_ADDR 0x08   // Địa chỉ I2C của Xiao BLE (có thể thay đổi)
 
-// --- Các thông số của robot và động cơ ---
-// *** ĐIỀN CÁC GIÁ TRỊ THỰC TẾ CỦA BẠN VÀO ĐÂY ***
-#define WHEEL_DIAMETER         0.066  // Đường kính bánh xe (mét)
-#define WHEEL_RADIUS           (WHEEL_DIAMETER / 2.0)
-#define WHEEL_CIRCUMFERENCE    (PI * WHEEL_DIAMETER)
-#define WHEEL_SEPARATION       0.160  // Khoảng cách giữa hai bánh xe (mét)
-#define ENCODER_PPR            11     // Số xung/vòng encoder (trên trục motor) - Ví dụ: 11
-#define GEAR_RATIO             46.8   // Tỉ số truyền động cơ - Ví dụ: 46.8
-#define COUNTS_PER_MOTOR_REV_4X (ENCODER_PPR * 4) // 44 nếu PPR=11
-#define COUNTS_PER_OUTPUT_REV_4X (COUNTS_PER_MOTOR_REV_4X * GEAR_RATIO) // 2059.2 nếu PPR=11, GR=46.8
-#define CONTROL_INTERVAL       20     // Chu kỳ điều khiển PID và tính tốc độ (ms) -> 50Hz
+// Định nghĩa các lệnh I2C
+#define CMD_PING          0x01  // Kiểm tra kết nối
+#define CMD_CALIBRATE_IMU 0x02  // Hiệu chuẩn IMU
+#define CMD_SET_MOTOR     0x03  // Điều khiển động cơ
+#define CMD_GET_IMU       0x04  // Đọc dữ liệu IMU
+#define CMD_GET_STATUS    0x05  // Đọc trạng thái
+#define CMD_MOTOR_TORQUE  0x06  // Bật/tắt motor torque
 
-// --- Biến toàn cục cho IMU ---
-LSM6DS3 imu(I2C_MODE, 0x6A);
-Adafruit_Madgwick filter;
+#define G_STANDARD        9.80665 // Giá trị tiêu chuẩn chính xác
+
+#define PWM_LEFT  0
+#define DIR_LEFT  1
+#define PWM_RIGH  2
+#define DIR_RIGH  3
+
+// Định nghĩa chân cho encoder (nếu có)
+#define ENCODER_LEFT_A   A0
+#define ENCODER_LEFT_B   A1
+#define ENCODER_RIGHT_A  A2
+#define ENCODER_RIGHT_B  A3
+
+
+LSM6DS3 imu(I2C_MODE, 0x6A);    // I2C mode với địa chỉ 0x6A
+
+// Biến toàn cục cho động cơ
+float g_left_speed = 0.0;
+float g_right_speed = 0.0;
+bool motor_torque_enabled = false;
+
+// Biến cho encoder
+volatile long encoder_left_count = 0;
+volatile long encoder_right_count = 0;
+float present_velocity_left = 0.0;   // Vận tốc thực tế từ encoder (m/s)
+float present_velocity_right = 0.0;
+float present_position_left = 0.0;   // Vị trí từ encoder (m)
+float present_position_right = 0.0;
+
+// Biến cho current sensing
+float present_current_left = 0.0;    // Dòng điện hiện tại (mA)
+float present_current_right = 0.0;
+
+// Encoder parameters
+const float WHEEL_RADIUS = 0.033;    // Bán kính bánh xe (m)
+const int ENCODER_PPR = 600;         // Pulse per revolution của encoder
+const float WHEEL_CIRCUMFERENCE = 2.0 * PI * WHEEL_RADIUS;
+const float DISTANCE_PER_PULSE = WHEEL_CIRCUMFERENCE / ENCODER_PPR;
+
+// Thời gian cho tính toán vận tốc
+unsigned long last_velocity_update = 0;
+long last_encoder_left = 0;
+long last_encoder_right = 0;
+
+// Offset cho hiệu chuẩn IMU
+float gyro_offset_x = 0.0, gyro_offset_y = 0.0, gyro_offset_z = 0.0;
+
+// Dữ liệu IMU hiện tại
 float gyro_x = 0.0, gyro_y = 0.0, gyro_z = 0.0;
 float accel_x = 0.0, accel_y = 0.0, accel_z = 0.0;
-float q0 = 1.0, q1 = 0.0, q2 = 0.0, q3 = 0.0;
-float gyro_offset_x = 0.0, gyro_offset_y = 0.0, gyro_offset_z = 0.0;
-#define G_STANDARD 9.80665
 
-// --- Biến cho Encoder và RPM (Trái và Phải) ---
-volatile long pos_i_L = 0;
-volatile long pos_i_R = 0;
-long posPrev_L = 0;
-long posPrev_R = 0;
-float v1Filt_L = 0;
-float v1Filt_R = 0;
-float v1Prev_L = 0;
-float v1Prev_R = 0;
-volatile byte last_AB_state_L = 0;
-volatile byte last_AB_state_R = 0;
-unsigned long prevControlTime = 0; // Thay thế previous_control_time và previous_pid_time
+// Dữ liệu quaternion
+float q0 = 1.0, q1 = 0.0, q2 = 0.0, q3 = 0.0;   // w, x, y, z
 
-// --- Biến cho PID (Trái và Phải) ---
-// PID Inputs/Outputs/Setpoints (RPM)
-double target_rpm_L = 0.0;
-double target_rpm_R = 0.0;
-double current_rpm_L = 0.0; // Input PID L (RPM đã lọc)
-double current_rpm_R = 0.0; // Input PID R (RPM đã lọc)
-double motor_output_L = 0.0; // Output PID L (PWM 0-255)
-double motor_output_R = 0.0; // Output PID R (PWM 0-255)
+// Thời gian cho thuật toán Madgwick
+unsigned long previousTime = 0;
+float deltaTime = 0.0;
 
-// Hướng mục tiêu (tính từ vận tốc)
-int target_dir_L = 0;
-int target_dir_R = 0;
+// --- Thời gian cho bộ lọc AHRS ---
+#define FILTER_UPDATE_RATE_HZ 100 // Tần số cập nhật bộ lọc (Hz)
+#define FILTER_UPDATE_INTERVAL_MS (1000 / FILTER_UPDATE_RATE_HZ) // Khoảng thời gian cập nhật (ms)
 
-// Hệ số PID cuối cùng đã chọn
-// *** ĐIỀN GIÁ TRỊ ĐÃ TUNING CỦA BẠN ***
-double Kp_param = 1.0; // Có thể tách Kp_L, Kp_R nếu cần
-double Ki_param = 10.0; // Có thể tách Ki_L, Ki_R nếu cần
-double Kd_param = 0.03; // Có thể tách Kd_L, Kd_R nếu cần
-
-// Khởi tạo đối tượng PID
-PID motorPID_L(&current_rpm_L, &motor_output_L, &target_rpm_L, Kp_param, Ki_param, Kd_param, DIRECT);
-PID motorPID_R(&current_rpm_R, &motor_output_R, &target_rpm_R, Kp_param, Ki_param, Kd_param, DIRECT);
-
-// --- Biến I2C ---
+// Buffer nhận dữ liệu I2C
 volatile uint8_t i2c_recv_buffer[32];
 volatile uint8_t i2c_recv_len = 0;
 volatile uint8_t i2c_cmd = 0;
-uint8_t i2c_send_buffer[40]; // Kích thước đủ cho IMU hoặc Odom
+
+// Buffer gửi dữ liệu I2C
+uint8_t i2c_send_buffer[40];
 uint8_t i2c_send_len = 0;
 
-// --- Thời gian ---
-unsigned long previousImuTime = 0;
+// --- Các biến mới cho LED và trạng thái giao tiếp ---
+#define LED_PIN         LED_GREEN // Sử dụng LED_BUILTIN hoặc thay bằng chân GPIO bạn muốn dùng cho LED đỏ
+#define I2C_TIMEOUT_MS   500        // Thời gian timeout để coi là không có giao tiếp (ms)
 
-// --- Bảng tra 4X Encoder ---
-const int8_t QEM [16] = {0, +1, -1, 0, -1, 0, 0, +1, +1, 0, 0, -1, 0, -1, +1, 0};
+unsigned long lastI2CActivityTime = 0; // Thời điểm cuối cùng nhận được dữ liệu I2C
+unsigned long lastLedToggleTime = 0;   // Thời điểm cuối cùng LED đổi trạng thái
+bool ledState = LOW;                 // Trạng thái hiện tại của LED
 
-// --- Hàm ISR 4X cho Encoder Trái ---
-void quadEncoderISR_L() {
-  byte current_A = digitalRead(ENCA_L);
-  byte current_B = digitalRead(ENCB_L);
-  byte current_AB_state = (current_A << 1) | current_B;
-  if (current_AB_state == last_AB_state_L) return;
-  int8_t change = QEM[(last_AB_state_L << 2) | current_AB_state];
-  pos_i_L += change;
-  last_AB_state_L = current_AB_state;
-}
-
-// --- Hàm ISR 4X cho Encoder Phải ---
-void quadEncoderISR_R() {
-  byte current_A = digitalRead(ENCA_R);
-  byte current_B = digitalRead(ENCB_R);
-  byte current_AB_state = (current_A << 1) | current_B;
-  if (current_AB_state == last_AB_state_R) return;
-  int8_t change = QEM[(last_AB_state_R << 2) | current_AB_state];
-  pos_i_R += change;
-  last_AB_state_R = current_AB_state;
-}
-// --------------------------------
+// --- Khai báo hàm mới ---
+void updateLedStatus();
 
 void setup() {
+  // Debug qua USB (tùy chọn)
   Serial.begin(115200);
-  Serial.println("Xiao BLE I2C Slave with 4X Encoder PID RPM Control");
-
+  
+  // Khởi tạo I2C slave
   Wire.begin(I2C_SLAVE_ADDR);
-  Wire.setClock(400000);
+  Wire.setClock(1000000);
   Wire.onReceive(receiveEvent);
   Wire.onRequest(requestEvent);
-
-  if (!imu.begin()) { Serial.println("IMU Connection Error!"); /* Xử lý lỗi */ }
-  imu.settings.gyroSampleRate = 208; // Tần số phù hợp với vòng điều khiển
-  imu.settings.accelSampleRate = 208;
-
-  filter.begin(100); // Tần số bộ lọc AHRS
-
-  // Cấu hình chân Motor L/R
-  pinMode(PWM_L, OUTPUT); pinMode(IN1_L, OUTPUT); pinMode(IN2_L, OUTPUT);
-  pinMode(PWM_R, OUTPUT); pinMode(IN1_R, OUTPUT); pinMode(IN2_R, OUTPUT);
-
-  // Cấu hình chân Encoder L/R
-  pinMode(ENCA_L, INPUT_PULLUP); pinMode(ENCB_L, INPUT_PULLUP);
-  pinMode(ENCA_R, INPUT_PULLUP); pinMode(ENCB_R, INPUT_PULLUP);
-
-  // Khởi tạo trạng thái encoder
-  noInterrupts(); // Tắt ngắt tạm thời khi đọc và ghi biến volatile
-  last_AB_state_L = (digitalRead(ENCA_L) << 1) | digitalRead(ENCB_L);
-  last_AB_state_R = (digitalRead(ENCA_R) << 1) | digitalRead(ENCB_R);
-  // Reset bộ đếm encoder (tùy chọn)
-  pos_i_L = 0;
-  pos_i_R = 0;
-  posPrev_L = 0;
-  posPrev_R = 0;
-  interrupts();
-
-  // Gắn ngắt Encoder 4X
-  // *** KIỂM TRA LẠI CHÂN NGẮT TRÊN XIAO BLE ***
-  bool interrupt_ok = true;
-  // Kiểm tra cả 4 chân
-  if (digitalPinToInterrupt(ENCA_L) == NOT_AN_INTERRUPT || digitalPinToInterrupt(ENCB_L) == NOT_AN_INTERRUPT ||
-      digitalPinToInterrupt(ENCA_R) == NOT_AN_INTERRUPT || digitalPinToInterrupt(ENCB_R) == NOT_AN_INTERRUPT) {
-     Serial.println("ERROR: One or more encoder pins cannot be used for interrupts!");
-     interrupt_ok = false;
+  
+  // Khởi tạo IMU
+  if (!imu.begin()) {
+    Serial.println("Lỗi kết nối IMU");
   }
 
-  if (interrupt_ok) {
-    attachInterrupt(digitalPinToInterrupt(ENCA_L), quadEncoderISR_L, CHANGE);
-    attachInterrupt(digitalPinToInterrupt(ENCB_L), quadEncoderISR_L, CHANGE);
-    attachInterrupt(digitalPinToInterrupt(ENCA_R), quadEncoderISR_R, CHANGE);
-    attachInterrupt(digitalPinToInterrupt(ENCB_R), quadEncoderISR_R, CHANGE);
-    Serial.println("4X Encoder interrupts attached (L & R).");
-  } else {
-    Serial.println("Halting due to interrupt pin error."); while(1);
-  }
+  // Đặt khoảng thời gian đo IMU
+  imu.settings.gyroSampleRate = 208;    // Hz
+  imu.settings.accelSampleRate = 208; // Hz
+  
+  // Khởi tạo Madgwick filter với tần số cập nhật 100Hz
+  filter.begin(FILTER_UPDATE_RATE_HZ);
+  Serial.println("Khoi tao bo loc AHRS thanh cong.");
 
-  // Cấu hình PID L/R
-  motorPID_L.SetMode(AUTOMATIC);
-  motorPID_L.SetOutputLimits(0, 255);
-  motorPID_L.SetSampleTime(CONTROL_INTERVAL);
+  // Khởi tạo chân điều khiển động cơ
+  pinMode(PWM_LEFT, OUTPUT);    // PWM cho động cơ trái
+  pinMode(DIR_LEFT, OUTPUT);    // DIR cho động cơ trái
+  pinMode(PWM_RIGH, OUTPUT);    // PWM cho động cơ phải
+  pinMode(DIR_RIGH, OUTPUT);    // DIR cho động cơ phải
 
-  motorPID_R.SetMode(AUTOMATIC);
-  motorPID_R.SetOutputLimits(0, 255);
-  motorPID_R.SetSampleTime(CONTROL_INTERVAL);
+  // Khởi tạo encoder pins (nếu có)
+  pinMode(ENCODER_LEFT_A, INPUT_PULLUP);
+  pinMode(ENCODER_LEFT_B, INPUT_PULLUP);
+  pinMode(ENCODER_RIGHT_A, INPUT_PULLUP);
+  pinMode(ENCODER_RIGHT_B, INPUT_PULLUP);
+  
+  // Gắn interrupt cho encoder
+  attachInterrupt(digitalPinToInterrupt(ENCODER_LEFT_A), encoderLeftISR, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(ENCODER_RIGHT_A), encoderRightISR, CHANGE);
 
-  // Hiệu chuẩn IMU
-  calibrateIMU();
+  // Current sensing hiện tại không sử dụng
 
-  // Khởi tạo thời gian
-  previousImuTime = millis();
-  prevControlTime = millis(); // Dùng chung cho tính tốc độ và chạy PID
+  // --- Khởi tạo chân LED ---
+  pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, LOW); // Đảm bảo LED tắt ban đầu
 
-  Serial.println("Initialization complete!");
-  Serial.print("Using Gains: Kp="); Serial.print(motorPID_L.GetKp()); // Giả sử Kp L/R giống nhau ban đầu
-  Serial.print(", Ki="); Serial.print(motorPID_L.GetKi());
-  Serial.print(", Kd="); Serial.println(motorPID_L.GetKd());
-  Serial.println("I2C Slave Ready. Waiting for commands...");
+  previousTime = millis();
+  last_velocity_update = millis();
+  
+  Serial.println("Xiao BLE đã sẵn sàng (I2C Slave mode)");
 }
 
 void loop() {
-  // Xử lý lệnh từ I2C nếu có
+  // Xử lý lệnh nhận được qua I2C
   processCommand();
-
-  unsigned long currentTime = millis();
-
-  // Cập nhật IMU (Ví dụ: 100Hz)
-  if (currentTime - previousImuTime >= (1000 / 100)) {
-    updateIMUData();
-    previousImuTime = currentTime;
+  
+  // Đọc IMU và cập nhật dữ liệu
+  if ((millis() - previousTime) >= FILTER_UPDATE_INTERVAL_MS) {
+    updateIMUData();       // Đọc IMU, cập nhật bộ lọc, lấy quaternion
+    previousTime = millis(); // Cập nhật thời điểm
   }
+  
+  // Cập nhật thông tin encoder và current sensing
+  updateMotorStatus();
+  
+  // Điều khiển động cơ theo tốc độ hiện tại
+  updateMotors();
+  
+  // --- Cập nhật trạng thái LED ---
+  updateLedStatus();
 
-  // Chạy vòng điều khiển PID và tính tốc độ (Ví dụ: 50Hz)
-  if (currentTime - prevControlTime >= CONTROL_INTERVAL) {
-    // 1. Tính toán RPM hiện tại cho cả hai bánh
-    calculateCurrentRPMs();
-
-    // 2. Chạy bộ điều khiển PID cho cả hai bánh
-    //    (Input và Setpoint đã được cập nhật ở calculateCurrentRPMs và processCommand)
-    motorPID_L.Compute(); // Tính motor_output_L
-    motorPID_R.Compute(); // Tính motor_output_R
-
-    // 3. Điều khiển động cơ dựa trên Output của PID và hướng mục tiêu
-    //    (target_dir_L/R được cập nhật trong calculateAndSetTargets khi có lệnh CMD_SET_MOTOR)
-    setMotor(target_dir_L, (int)motor_output_L, PWM_L, IN1_L, IN2_L);
-    setMotor(target_dir_R, (int)motor_output_R, PWM_R, IN1_R, IN2_R);
-
-    prevControlTime = currentTime; // Cập nhật thời gian cho vòng điều khiển tiếp theo
-
-     // --- Gửi log qua Serial USB (Tùy chọn - Bỏ comment nếu cần debug) ---
-     // Serial.print(target_rpm_L); Serial.print(","); Serial.print(current_rpm_L);
-     // Serial.print(" | ");
-     // Serial.print(target_rpm_R); Serial.print(","); Serial.println(current_rpm_R);
-     // Serial.print(" | Out L:"); Serial.print(motor_output_L);
-     // Serial.print(" Out R:"); Serial.println(motor_output_R);
-  }
-
-  // Không cần delay(1) nếu vòng lặp chính không quá nặng
-  // Có thể thêm delay nhỏ nếu cần nhường CPU
+  delay(1);   // Giảm tải CPU
 }
 
-// --- Hàm tính toán RPM hiện tại cho cả hai bánh ---
-void calculateCurrentRPMs() {
-  long current_pos_L = 0;
-  long current_pos_R = 0;
-  unsigned long now_us = micros(); // Dùng micros() để tính deltaT chính xác hơn
-
-  // Biến cục bộ để lưu thời gian trước đó của hàm này
-  static unsigned long prevRPMTime_us = now_us;
-
-  noInterrupts();
-  current_pos_L = pos_i_L;
-  current_pos_R = pos_i_R;
-  interrupts();
-
-  float deltaT_s = ((float)(now_us - prevRPMTime_us)) / 1.0e6; // deltaT tính bằng giây
-
-  // Chỉ tính nếu deltaT hợp lệ (tránh chia cho 0 ở lần đầu hoặc lỗi thời gian)
-  if (deltaT_s <= 0.0) {
-      prevRPMTime_us = now_us;
-      return;
-  }
-
-  // Tính cho bánh trái
-  long deltaPos_L = current_pos_L - posPrev_L;
-  float velocity_L = (float)deltaPos_L / deltaT_s; // Xung/giây
-  float v1_L = velocity_L / COUNTS_PER_OUTPUT_REV_4X * 60.0; // RPM thô trái
-  v1Filt_L = 0.910 * v1Filt_L + 0.045 * v1_L + 0.045 * v1Prev_L; // Lọc (Ví dụ fc=1.5Hz)
-  v1Prev_L = v1_L;
-  current_rpm_L = v1Filt_L; // Input cho PID L
-
-  // Tính cho bánh phải
-  long deltaPos_R = current_pos_R - posPrev_R;
-  float velocity_R = (float)deltaPos_R / deltaT_s; // Xung/giây
-  float v1_R = velocity_R / COUNTS_PER_OUTPUT_REV_4X * 60.0; // RPM thô phải
-  v1Filt_R = 0.910 * v1Filt_R + 0.045 * v1_R + 0.045 * v1Prev_R; // Lọc (Ví dụ fc=1.5Hz)
-  v1Prev_R = v1_R;
-  current_rpm_R = v1Filt_R; // Input cho PID R
-
-  // Cập nhật giá trị cho lần tính sau
-  posPrev_L = current_pos_L;
-  posPrev_R = current_pos_R;
-  prevRPMTime_us = now_us;
-}
-
-// --- Hàm callback I2C (Giữ nguyên) ---
+// Hàm callback khi có dữ liệu nhận từ master
 void receiveEvent(int numBytes) {
+  // --- Cập nhật thời gian nhận I2C để theo dõi trạng thái giao tiếp ---
+  lastI2CActivityTime = millis();
+
   if (numBytes < 1) return;
+  
+  // Đọc lệnh
   i2c_cmd = Wire.read();
   numBytes--;
+  
+  // Đọc dữ liệu còn lại vào buffer
   i2c_recv_len = 0;
   while (Wire.available() && i2c_recv_len < sizeof(i2c_recv_buffer)) {
     i2c_recv_buffer[i2c_recv_len++] = Wire.read();
   }
 }
 
+// Hàm callback khi master yêu cầu dữ liệu
 void requestEvent() {
+  // Gửi dữ liệu trong buffer trả về
   Wire.write(i2c_send_buffer, i2c_send_len);
-  i2c_send_len = 0; // Reset độ dài sau khi gửi
 }
 
-// --- Xử lý lệnh I2C ---
+// Xử lý lệnh nhận được qua I2C
 void processCommand() {
-  if (i2c_cmd == 0) return; // Không có lệnh mới
-
+  if (i2c_cmd == 0) return;   // Không có lệnh mới
+  
   switch (i2c_cmd) {
     case CMD_PING:
-      i2c_send_buffer[0] = 0xAA; i2c_send_len = 1; break;
+      // Chuẩn bị phản hồi ping
+      i2c_send_buffer[0] = 0xAA;   // Magic value
+      i2c_send_len = 1;
+      break;
+      
     case CMD_CALIBRATE_IMU:
-      calibrateIMU(); i2c_send_buffer[0] = 1; i2c_send_len = 1; break;
+      // Hiệu chuẩn IMU
+      calibrateIMU();
+      
+      // Trả về trạng thái hoàn thành
+      i2c_send_buffer[0] = 1;   // 1 = thành công
+      i2c_send_len = 1;
+      break;
+      
     case CMD_SET_MOTOR:
+      // Điều khiển vận tốc động cơ
       if (i2c_recv_len >= 8) {
-        union { float f; uint8_t b[4]; } linear_union, angular_union;
-        for(int i = 0; i < 4; i++) {
-          linear_union.b[i] = i2c_recv_buffer[i];
-          angular_union.b[i] = i2c_recv_buffer[i+4];
-        }
-        calculateAndSetTargets(linear_union.f, angular_union.f); // Gọi hàm tính RPM và hướng
-        i2c_send_buffer[0] = 1; i2c_send_len = 1;
+        float linear_x, angular_z;
+        
+        // Sao chép dữ liệu từ buffer vào biến
+        memcpy(&linear_x, (void*)i2c_recv_buffer, 4);
+        memcpy(&angular_z, (void*)(i2c_recv_buffer + 4), 4);
+        
+        // Điều khiển động cơ
+        controlMotors(linear_x, angular_z);
+        
+        // Chuẩn bị phản hồi thành công
+        i2c_send_buffer[0] = 1;
+        i2c_send_len = 1;
       } else {
-        Serial.print("CMD_SET_MOTOR Error: Invalid data length "); Serial.println(i2c_recv_len);
-        i2c_send_buffer[0] = 0; i2c_send_len = 1;
+        // Dữ liệu không đủ
+        i2c_send_buffer[0] = 0;
+        i2c_send_len = 1;
       }
       break;
+      
+    case CMD_MOTOR_TORQUE:
+      // Bật/tắt motor torque
+      if (i2c_recv_len >= 1) {
+        uint8_t torque_cmd = i2c_recv_buffer[0];
+        if (torque_cmd == 0 || torque_cmd == 1) {
+          motor_torque_enabled = (torque_cmd == 1);
+          Serial.print("Motor torque ");
+          Serial.println(motor_torque_enabled ? "enabled" : "disabled");
+          
+          // Nếu disable thì dừng động cơ ngay
+          if (!motor_torque_enabled) {
+            g_left_speed = 0.0;
+            g_right_speed = 0.0;
+          }
+          
+          i2c_send_buffer[0] = 1;
+          i2c_send_len = 1;
+        } else {
+          i2c_send_buffer[0] = 0;
+          i2c_send_len = 1;
+        }
+      } else {
+        // Dữ liệu không đủ
+        i2c_send_buffer[0] = 0;
+        i2c_send_len = 1;
+      }
+      break;
+      
     case CMD_GET_IMU:
-      prepareIMUData(); break; // Chuẩn bị dữ liệu để gửi ở requestEvent
-    case CMD_GET_ODOM:
-      prepareOdomData(); break; // Chuẩn bị dữ liệu để gửi ở requestEvent
-    // Bỏ CMD_GET_STATUS vì đã có CMD_GET_ODOM hoặc có thể thêm lại nếu cần
+      // Chuẩn bị dữ liệu IMU để gửi về
+      prepareIMUData();
+      break;
+      
+    case CMD_GET_STATUS:
+      // Chuẩn bị dữ liệu trạng thái
+      prepareStatusData();
+      break;
+      
     default:
-      i2c_send_buffer[0] = 0xFF; i2c_send_len = 1; break; // Lệnh không hợp lệ
+      // Lệnh không được hỗ trợ
+      i2c_send_buffer[0] = 0xFF;   // Mã lỗi
+      i2c_send_len = 1;
+      break;
   }
-  i2c_cmd = 0; // Đã xử lý lệnh
+  
+  // Đã xử lý xong lệnh
+  i2c_cmd = 0;
 }
 
-// --- Hàm chuẩn bị dữ liệu trả về ---
+// Chuẩn bị dữ liệu IMU để trả về
 void prepareIMUData() {
-  memcpy(i2c_send_buffer + 0,  &gyro_x, 4); memcpy(i2c_send_buffer + 4,  &gyro_y, 4); memcpy(i2c_send_buffer + 8,  &gyro_z, 4);
-  memcpy(i2c_send_buffer + 12, &accel_x, 4); memcpy(i2c_send_buffer + 16, &accel_y, 4); memcpy(i2c_send_buffer + 20, &accel_z, 4);
-  memcpy(i2c_send_buffer + 24, &q0, 4); memcpy(i2c_send_buffer + 28, &q1, 4); memcpy(i2c_send_buffer + 32, &q2, 4); memcpy(i2c_send_buffer + 36, &q3, 4);
-  i2c_send_len = 40;
+  // Chuyển dữ liệu IMU sang mảng bytes
+  // Thêm quaternion vào dữ liệu trả về
+  memcpy(i2c_send_buffer + 0,    &gyro_x, 4);   // [0-3]: Gyro X (địa chỉ 60)
+  memcpy(i2c_send_buffer + 4,    &gyro_y, 4);   // [4-7]: Gyro Y (địa chỉ 64)
+  memcpy(i2c_send_buffer + 8,    &gyro_z, 4);   // [8-11]: Gyro Z (địa chỉ 68)
+  memcpy(i2c_send_buffer + 12, &accel_x, 4);   // [12-15]: Accel X (địa chỉ 72)
+  memcpy(i2c_send_buffer + 16, &accel_y, 4);   // [16-19]: Accel Y (địa chỉ 76)
+  memcpy(i2c_send_buffer + 20, &accel_z, 4);   // [20-23]: Accel Z (địa chỉ 80)
+  memcpy(i2c_send_buffer + 24, &q0, 4);       // [24-27]: Quaternion W (địa chỉ 96)
+  memcpy(i2c_send_buffer + 28, &q1, 4);       // [28-31]: Quaternion X (địa chỉ 100)
+  memcpy(i2c_send_buffer + 32, &q2, 4);       // [32-35]: Quaternion Y (địa chỉ 104)
+  memcpy(i2c_send_buffer + 36, &q3, 4);       // [36-39]: Quaternion Z (địa chỉ 108)
+  i2c_send_len = 40;   // 10 giá trị float, mỗi giá trị 4 bytes
 }
 
-void prepareOdomData() {
-  // Gửi về số xung encoder tích lũy của mỗi bánh
-  long odom_pos_l, odom_pos_r;
-  noInterrupts();
-  odom_pos_l = pos_i_L;
-  odom_pos_r = pos_i_R;
-  interrupts();
-
-  // Đảm bảo buffer đủ lớn (8 bytes)
-  if (sizeof(i2c_send_buffer) >= 8) {
-      memcpy(i2c_send_buffer + 0, &odom_pos_l, sizeof(long));
-      memcpy(i2c_send_buffer + sizeof(long), &odom_pos_r, sizeof(long));
-      i2c_send_len = 2 * sizeof(long);
-  } else {
-      i2c_send_len = 0; // Không gửi nếu buffer quá nhỏ
-      Serial.println("Error: i2c_send_buffer too small for Odom data!");
-  }
+// Chuẩn bị dữ liệu trạng thái
+void prepareStatusData() {
+  // Trả về trạng thái động cơ đầy đủ theo control table
+  // Thứ tự: present_current_left, present_current_right, 
+  //         present_velocity_left, present_velocity_right,
+  //         present_position_left, present_position_right,
+  //         motor_torque_enable
+  
+  memcpy(i2c_send_buffer, &present_current_left, 4);     // [0-3]: current left
+  memcpy(i2c_send_buffer + 4, &present_current_right, 4); // [4-7]: current right
+  memcpy(i2c_send_buffer + 8, &present_velocity_left, 4); // [8-11]: velocity left
+  memcpy(i2c_send_buffer + 12, &present_velocity_right, 4); // [12-15]: velocity right
+  memcpy(i2c_send_buffer + 16, &present_position_left, 4); // [16-19]: position left
+  memcpy(i2c_send_buffer + 20, &present_position_right, 4); // [20-23]: position right
+  
+  uint8_t torque_enable = motor_torque_enabled ? 1 : 0;
+  i2c_send_buffer[24] = torque_enable;                     // [24]: motor enable status
+  
+  i2c_send_len = 25;   // 6 float (24 bytes) + 1 byte enable
 }
 
-// --- Hiệu chuẩn IMU (Giữ nguyên) ---
 void calibrateIMU() {
-    // ... (code giữ nguyên) ...
+  Serial.println("Bắt đầu hiệu chuẩn IMU");
+  
+  // Khởi tạo các biến tổng
+  float sum_gx = 0, sum_gy = 0, sum_gz = 0;
+  int count = 200;
+  
+  // Thu thập dữ liệu trong khi đứng yên
+  for (int i = 0; i < count; i++) {
+    sum_gx += imu.readFloatGyroX();
+    sum_gy += imu.readFloatGyroY();
+    sum_gz += imu.readFloatGyroZ();
+    delay(5);
+  }
+  
+  // Tính toán offset
+  gyro_offset_x = sum_gx / count;
+  gyro_offset_y = sum_gy / count;
+  gyro_offset_z = sum_gz / count;
+
+  // Reset quaternion về giá trị mặc định (không xoay)
+  q0 = 1.0;
+  q1 = 0.0;
+  q2 = 0.0;
+  q3 = 0.0;
+  
+  Serial.println("Hoàn thành hiệu chuẩn IMU");
 }
 
-// --- Cập nhật IMU (Giữ nguyên) ---
 void updateIMUData() {
-    // ... (code giữ nguyên) ...
+  
+  // Đọc giá trị từ IMU và áp dụng offset
+  gyro_x = imu.readFloatGyroX() - gyro_offset_x;
+  gyro_y = imu.readFloatGyroY() - gyro_offset_y;
+  gyro_z = imu.readFloatGyroZ() - gyro_offset_z;
+
+  float raw_ax_g = imu.readFloatAccelX();
+  float raw_ay_g = imu.readFloatAccelY();
+  float raw_az_g = imu.readFloatAccelZ();
+
+  accel_x = raw_ax_g * G_STANDARD;
+  accel_y = raw_ay_g * G_STANDARD;
+  accel_z = raw_az_g * G_STANDARD;
+  // Chuyển đổi đơn vị từ deg/s sang rad/s cho thuật toán Madgwick
+  float gx_rad = gyro_x * DEG_TO_RAD;
+  float gy_rad = gyro_y * DEG_TO_RAD;
+  float gz_rad = gyro_z * DEG_TO_RAD;
+  
+  // Cập nhật thuật toán Madgwick
+  filter.updateIMU(gx_rad, gy_rad, gz_rad, raw_ax_g, raw_ay_g, raw_az_g);
+  filter.getQuaternion(&q0, &q1, &q2, &q3);
 }
 
-// --- Hàm tính toán và đặt mục tiêu RPM/Hướng từ V/W ---
-void calculateAndSetTargets(float linear_x, float angular_z) {
-  // Tính vận tốc dài tuyến tính cho mỗi bánh xe (m/s)
-  float v_left = linear_x - (angular_z * WHEEL_SEPARATION / 2.0);
-  float v_right = linear_x + (angular_z * WHEEL_SEPARATION / 2.0);
-
-  // Xác định hướng mục tiêu cho mỗi bánh (+1: tiến, -1: lùi, 0: dừng)
-  float stop_threshold = 0.001; // Ngưỡng để coi là dừng
-  target_dir_L = (abs(v_left) < stop_threshold) ? 0 : ((v_left > 0) ? 1 : -1);
-  target_dir_R = (abs(v_right) < stop_threshold) ? 0 : ((v_right > 0) ? 1 : -1);
-
-  // Chuyển đổi vận tốc dài (m/s) sang vận tốc góc bánh xe (rad/s)
-  float omega_left = v_left / WHEEL_RADIUS;
-  float omega_right = v_right / WHEEL_RADIUS;
-
-  // Chuyển đổi vận tốc góc bánh xe (rad/s) sang RPM (luôn dương)
-  target_rpm_L = abs(omega_left * (60.0 / (2.0 * PI)));
-  target_rpm_R = abs(omega_right * (60.0 / (2.0 * PI)));
-
-  // In debug (tùy chọn)
-  // Serial.print("Set Targets -> RPM_L: "); Serial.print(target_rpm_L); ...
+void controlMotors(float linear_x, float angular_z) {
+  float wheel_separation = 0.160;   // Khoảng cách giữa hai bánh xe (m)
+  
+  // Kiểm tra nếu động cơ được enable
+  if (!motor_torque_enabled) {
+    g_left_speed = 0.0;
+    g_right_speed = 0.0;
+    Serial.println("Motor disabled - torque not enabled");
+    return;
+  }
+  
+  // Tính toán vận tốc cho từng bánh xe
+  g_left_speed = linear_x - (angular_z * wheel_separation / 2.0);
+  g_right_speed = linear_x + (angular_z * wheel_separation / 2.0);
+  
+  Serial.print("Motor control: L=");
+  Serial.print(g_left_speed);
+  Serial.print(" R=");
+  Serial.println(g_right_speed);
 }
 
-// --- Hàm điều khiển một động cơ (Trái hoặc Phải) ---
-// *** Hàm này nhận các chân PWM, IN1, IN2 làm tham số ***
-void setMotor(int dir, int pwmVal, int pwmPin, int in1Pin, int in2Pin){
-  // Giới hạn PWM trong khoảng 0-255
-  analogWrite(pwmPin, constrain(pwmVal, 0, 255));
+void updateMotors() {
+  // Chuyển đổi từ vận tốc (m/s) sang giá trị PWM (0-255)
+  // Giả sử vận tốc tối đa 0.3 m/s tương ứng với PWM 255.
+  int left_pwm = map(abs(g_left_speed * 100), 0, 30, 0, 255);
+  int right_pwm = map(abs(g_right_speed * 100), 0, 30, 0, 255);
+  
+  // Đặt hướng quay
+  // Đối với một số module điều khiển động cơ, HIGH/LOW có thể ngược lại tùy theo cách đấu dây.
+  digitalWrite(DIR_RIGH, g_left_speed >= 0 ? HIGH : LOW);
+  digitalWrite(DIR_LEFT, g_right_speed >= 0 ? HIGH : LOW);
+  
+  // Đặt tốc độ PWM
+  analogWrite(PWM_LEFT, left_pwm);
+  analogWrite(PWM_RIGH, right_pwm);
+}
 
-  // Điều khiển hướng (Giả sử driver cần IN1/IN2 đối nghịch)
-  // Đảm bảo logic này đúng với mạch điều khiển động cơ của bạn (L298N, TB6612, etc.)
-  if(dir == 1){ // Tiến
-    digitalWrite(in1Pin, HIGH);
-    digitalWrite(in2Pin, LOW);
-  } else if(dir == -1){ // Lùi
-    digitalWrite(in1Pin, LOW);
-    digitalWrite(in2Pin, HIGH);
-  } else { // Dừng (dir = 0)
-    digitalWrite(in1Pin, LOW);
-    digitalWrite(in2Pin, LOW); // Phanh động cơ
+// --- Encoder interrupt service routines ---
+void encoderLeftISR() {
+  // Đọc trạng thái của cả hai chân encoder
+  bool a = digitalRead(ENCODER_LEFT_A);
+  bool b = digitalRead(ENCODER_LEFT_B);
+  
+  // Xác định hướng quay và cập nhật counter
+  if (a == b) {
+    encoder_left_count++;
+  } else {
+    encoder_left_count--;
   }
 }
-// ---------------------------
+
+void encoderRightISR() {
+  // Đọc trạng thái của cả hai chân encoder
+  bool a = digitalRead(ENCODER_RIGHT_A);
+  bool b = digitalRead(ENCODER_RIGHT_B);
+  
+  // Xác định hướng quay và cập nhật counter
+  if (a == b) {
+    encoder_right_count++;
+  } else {
+    encoder_right_count--;
+  }
+}
+
+// --- Cập nhật thông tin động cơ từ encoder và current sensing ---
+void updateMotorStatus() {
+  unsigned long current_time = millis();
+  
+  // Cập nhật vận tốc từ encoder (mỗi 50ms)
+  if (current_time - last_velocity_update >= 50) {
+    float dt = (current_time - last_velocity_update) / 1000.0; // Chuyển sang giây
+    
+    // Tính số pulse đã di chuyển
+    long left_pulses = encoder_left_count - last_encoder_left;
+    long right_pulses = encoder_right_count - last_encoder_right;
+    
+    // Tính vận tốc (m/s)
+    present_velocity_left = (left_pulses * DISTANCE_PER_PULSE) / dt;
+    present_velocity_right = (right_pulses * DISTANCE_PER_PULSE) / dt;
+    
+    // Cập nhật vị trí tích lũy (m)
+    present_position_left += left_pulses * DISTANCE_PER_PULSE;
+    present_position_right += right_pulses * DISTANCE_PER_PULSE;
+    
+    // Lưu giá trị hiện tại
+    last_encoder_left = encoder_left_count;
+    last_encoder_right = encoder_right_count;
+    last_velocity_update = current_time;
+  }
+  
+  // Current sensing hiện tại không sử dụng - set mặc định là 0
+  present_current_left = 0.0;
+  present_current_right = 0.0;
+}
+
+// --- Hàm mới: Cập nhật trạng thái nháy LED ---
+void updateLedStatus() {
+  unsigned long currentTime = millis();
+  unsigned long blinkInterval;
+
+  // Kiểm tra nếu có giao tiếp I2C gần đây
+  if ((currentTime - lastI2CActivityTime) < I2C_TIMEOUT_MS) {
+    // Có giao tiếp I2C, nháy 5Hz (chu kỳ 200ms, mỗi trạng thái 100ms)
+    blinkInterval = 1000 / 5 / 2;
+  } else {
+    // Không có giao tiếp I2C, nháy 1Hz (chu kỳ 1000ms, mỗi trạng thái 500ms)
+    blinkInterval = 1000 / 1 / 2;
+  }
+
+  // Đổi trạng thái LED nếu đã đến lúc
+  if ((currentTime - lastLedToggleTime) >= blinkInterval) {
+    ledState = !ledState;
+    digitalWrite(LED_PIN, ledState);
+    lastLedToggleTime = currentTime;
+  }
+}
