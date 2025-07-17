@@ -1,0 +1,52 @@
+[0.091s] Invoking command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_cartographer': CMAKE_PREFIX_PATH=/home/huy/mnt/usb_ext4/opt/ros/humble /usr/bin/cmake /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/turtlebot3_cartographer -DRMW_IMPLEMENTATION=rmw_cyclonedds_cpp -DCMAKE_TOOLCHAIN_FILE=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/toolchain_aarch64.cmake -DCMAKE_INSTALL_PREFIX=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install
+[0.560s] -- The C compiler identification is GNU 12.2.1
+[0.936s] -- The CXX compiler identification is GNU 12.2.1
+[0.946s] -- Detecting C compiler ABI info
+[1.288s] -- Detecting C compiler ABI info - done
+[1.316s] -- Check for working C compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-gcc - skipped
+[1.316s] -- Detecting C compile features
+[1.317s] -- Detecting C compile features - done
+[1.337s] -- Detecting CXX compiler ABI info
+[1.669s] -- Detecting CXX compiler ABI info - done
+[1.748s] -- Check for working CXX compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-g++ - skipped
+[1.748s] -- Detecting CXX compile features
+[1.767s] -- Detecting CXX compile features - done
+[1.769s] -- Found ament_cmake: 1.3.11 (/home/huy/mnt/usb_ext4/opt/ros/humble/share/ament_cmake/cmake)
+[2.224s] -- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+[2.606s] -- Configuring done
+[2.626s] -- Generating done
+[2.633s] [33mCMake Warning:
+[2.633s]   Manually-specified variables were not used by the project:
+[2.633s] 
+[2.633s]     RMW_IMPLEMENTATION
+[2.633s] 
+[2.633s] [0m
+[2.640s] -- Build files have been written to: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_cartographer
+[2.665s] Invoked command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_cartographer' returned '0': CMAKE_PREFIX_PATH=/home/huy/mnt/usb_ext4/opt/ros/humble /usr/bin/cmake /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/turtlebot3_cartographer -DRMW_IMPLEMENTATION=rmw_cyclonedds_cpp -DCMAKE_TOOLCHAIN_FILE=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/toolchain_aarch64.cmake -DCMAKE_INSTALL_PREFIX=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install
+[2.666s] Invoking command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_cartographer': CMAKE_PREFIX_PATH=/home/huy/mnt/usb_ext4/opt/ros/humble /usr/bin/cmake --build /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_cartographer -- -j4 -l4
+[2.816s] Invoked command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_cartographer' returned '0': CMAKE_PREFIX_PATH=/home/huy/mnt/usb_ext4/opt/ros/humble /usr/bin/cmake --build /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_cartographer -- -j4 -l4
+[2.833s] Invoking command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_cartographer': CMAKE_PREFIX_PATH=/home/huy/mnt/usb_ext4/opt/ros/humble /usr/bin/cmake --install /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_cartographer
+[2.858s] -- Install configuration: ""
+[2.858s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_cartographer/config
+[2.858s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_cartographer/config/turtlebot3_lds_2d.lua
+[2.858s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_cartographer/launch
+[2.858s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_cartographer/launch/occupancy_grid.launch.py
+[2.858s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_cartographer/launch/cartographer.launch.py
+[2.858s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_cartographer/rviz
+[2.858s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_cartographer/rviz/tb3_cartographer.rviz
+[2.858s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/ament_index/resource_index/package_run_dependencies/turtlebot3_cartographer
+[2.858s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/ament_index/resource_index/parent_prefix_path/turtlebot3_cartographer
+[2.858s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_cartographer/environment/ament_prefix_path.sh
+[2.858s] -- Installing: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_cartographer/environment/ament_prefix_path.dsv
+[2.865s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_cartographer/environment/path.sh
+[2.865s] -- Installing: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_cartographer/environment/path.dsv
+[2.865s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_cartographer/local_setup.bash
+[2.866s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_cartographer/local_setup.sh
+[2.866s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_cartographer/local_setup.zsh
+[2.866s] -- Installing: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_cartographer/local_setup.dsv
+[2.866s] -- Installing: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_cartographer/package.dsv
+[2.866s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/ament_index/resource_index/packages/turtlebot3_cartographer
+[2.866s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_cartographer/cmake/turtlebot3_cartographerConfig.cmake
+[2.866s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_cartographer/cmake/turtlebot3_cartographerConfig-version.cmake
+[2.866s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_cartographer/package.xml
+[2.877s] Invoked command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_cartographer' returned '0': CMAKE_PREFIX_PATH=/home/huy/mnt/usb_ext4/opt/ros/humble /usr/bin/cmake --install /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_cartographer

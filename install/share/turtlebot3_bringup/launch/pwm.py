@@ -17,7 +17,7 @@ pi_pwm.start(0)				#start PWM of required Duty Cycle
 GPIO.output(controlpin, GPIO.HIGH) # Chuyển pin 13 lên mức HIGH và giữ nguyên
 sleep(0.2)
 # Đặt mức PWM cố định (0-100)
-duty_cycle =10  # Thay đổi giá trị này để điều chỉnh độ sáng (0-100)
+duty_cycle = 7.3  # Thay đổi giá trị này để điều chỉnh độ sáng (0-100)
 pi_pwm.ChangeDutyCycle(duty_cycle)
 
 

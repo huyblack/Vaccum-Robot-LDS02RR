@@ -1,0 +1,62 @@
+[0.003s] Invoking command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_navigation2': CMAKE_PREFIX_PATH=/home/huy/mnt/usb_ext4/opt/ros/humble /usr/bin/cmake /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/turtlebot3_navigation2 -DRMW_IMPLEMENTATION=rmw_cyclonedds_cpp -DCMAKE_TOOLCHAIN_FILE=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/toolchain_aarch64.cmake -DCMAKE_INSTALL_PREFIX=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install
+[1.198s] -- The C compiler identification is GNU 12.2.1
+[1.838s] -- The CXX compiler identification is GNU 12.2.1
+[1.845s] -- Detecting C compiler ABI info
+[2.874s] -- Detecting C compiler ABI info - done
+[2.888s] -- Check for working C compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-gcc - skipped
+[2.888s] -- Detecting C compile features
+[2.889s] -- Detecting C compile features - done
+[2.894s] -- Detecting CXX compiler ABI info
+[3.548s] -- Detecting CXX compiler ABI info - done
+[3.595s] -- Check for working CXX compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-g++ - skipped
+[3.596s] -- Detecting CXX compile features
+[3.598s] -- Detecting CXX compile features - done
+[3.604s] -- Found ament_cmake: 1.3.11 (/home/huy/mnt/usb_ext4/opt/ros/humble/share/ament_cmake/cmake)
+[4.135s] -- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+[4.727s] -- Configuring done
+[4.757s] -- Generating done
+[4.767s] [33mCMake Warning:
+[4.767s]   Manually-specified variables were not used by the project:
+[4.767s] 
+[4.767s]     RMW_IMPLEMENTATION
+[4.767s] 
+[4.770s] [0m
+[4.778s] -- Build files have been written to: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_navigation2
+[5.358s] Invoked command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_navigation2' returned '0': CMAKE_PREFIX_PATH=/home/huy/mnt/usb_ext4/opt/ros/humble /usr/bin/cmake /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/turtlebot3_navigation2 -DRMW_IMPLEMENTATION=rmw_cyclonedds_cpp -DCMAKE_TOOLCHAIN_FILE=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/toolchain_aarch64.cmake -DCMAKE_INSTALL_PREFIX=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install
+[5.368s] Invoking command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_navigation2': CMAKE_PREFIX_PATH=/home/huy/mnt/usb_ext4/opt/ros/humble /usr/bin/cmake --build /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_navigation2 -- -j4 -l4
+[5.615s] Invoked command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_navigation2' returned '0': CMAKE_PREFIX_PATH=/home/huy/mnt/usb_ext4/opt/ros/humble /usr/bin/cmake --build /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_navigation2 -- -j4 -l4
+[5.616s] Invoking command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_navigation2': CMAKE_PREFIX_PATH=/home/huy/mnt/usb_ext4/opt/ros/humble /usr/bin/cmake --install /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_navigation2
+[5.653s] -- Install configuration: ""
+[5.653s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_navigation2/launch
+[5.654s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_navigation2/launch/navigation2.launch.py
+[5.654s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_navigation2/map
+[5.654s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_navigation2/map/map.yaml
+[5.654s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_navigation2/map/map.pgm
+[5.654s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_navigation2/param
+[5.655s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_navigation2/param/burger.yaml
+[5.655s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_navigation2/param/humble
+[5.655s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_navigation2/param/humble/burger.yaml
+[5.655s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_navigation2/param/humble/burger_cam.yaml
+[5.655s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_navigation2/param/humble/waffle_pi.yaml
+[5.662s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_navigation2/param/humble/waffle.yaml
+[5.662s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_navigation2/param/burger_cam.yaml
+[5.662s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_navigation2/param/waffle_pi.yaml
+[5.662s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_navigation2/param/waffle.yaml
+[5.662s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_navigation2/rviz
+[5.663s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_navigation2/rviz/tb3_navigation2.rviz
+[5.663s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/ament_index/resource_index/package_run_dependencies/turtlebot3_navigation2
+[5.663s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/ament_index/resource_index/parent_prefix_path/turtlebot3_navigation2
+[5.663s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_navigation2/environment/ament_prefix_path.sh
+[5.663s] -- Installing: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_navigation2/environment/ament_prefix_path.dsv
+[5.663s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_navigation2/environment/path.sh
+[5.663s] -- Installing: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_navigation2/environment/path.dsv
+[5.671s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_navigation2/local_setup.bash
+[5.672s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_navigation2/local_setup.sh
+[5.672s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_navigation2/local_setup.zsh
+[5.673s] -- Installing: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_navigation2/local_setup.dsv
+[5.676s] -- Installing: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_navigation2/package.dsv
+[5.681s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/ament_index/resource_index/packages/turtlebot3_navigation2
+[5.682s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_navigation2/cmake/turtlebot3_navigation2Config.cmake
+[5.682s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_navigation2/cmake/turtlebot3_navigation2Config-version.cmake
+[5.682s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_navigation2/package.xml
+[5.687s] Invoked command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_navigation2' returned '0': CMAKE_PREFIX_PATH=/home/huy/mnt/usb_ext4/opt/ros/humble /usr/bin/cmake --install /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_navigation2

@@ -137,4 +137,20 @@ def generate_launch_description():
             cmd=['python3', pwm_script],
             output='screen'
         ),
+
+        # Thêm SLAM Toolbox với config tùy chỉnh cho LDS-02
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource([
+                get_package_share_directory('slam_toolbox'), 
+                '/launch/online_async_launch.py'
+            ]),
+            launch_arguments={
+                'slam_params_file': os.path.join(
+                    get_package_share_directory('turtlebot3_bringup'),
+                    'config',
+                    'slam_toolbox_lds02.yaml'
+                ),
+                'use_sim_time': 'false'
+            }.items()
+        ),
     ])

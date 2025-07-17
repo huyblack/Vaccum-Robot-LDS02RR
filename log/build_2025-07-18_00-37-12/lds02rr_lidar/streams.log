@@ -1,0 +1,74 @@
+[0.045s] Invoking command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/lds02rr_lidar': CMAKE_PREFIX_PATH=/home/huy/mnt/usb_ext4/opt/ros/humble /usr/bin/cmake /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/lds02rr_lidar -DRMW_IMPLEMENTATION=rmw_cyclonedds_cpp -DCMAKE_TOOLCHAIN_FILE=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/toolchain_aarch64.cmake -DCMAKE_INSTALL_PREFIX=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install
+[0.279s] -- The C compiler identification is GNU 12.2.1
+[0.574s] -- The CXX compiler identification is GNU 12.2.1
+[0.590s] -- Detecting C compiler ABI info
+[0.822s] -- Detecting C compiler ABI info - done
+[0.839s] -- Check for working C compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-gcc - skipped
+[0.839s] -- Detecting C compile features
+[0.839s] -- Detecting C compile features - done
+[0.846s] -- Detecting CXX compiler ABI info
+[1.159s] -- Detecting CXX compiler ABI info - done
+[1.179s] -- Check for working CXX compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-g++ - skipped
+[1.179s] -- Detecting CXX compile features
+[1.184s] -- Detecting CXX compile features - done
+[1.186s] -- Found ament_cmake: 1.3.11 (/home/huy/mnt/usb_ext4/opt/ros/humble/share/ament_cmake/cmake)
+[1.458s] -- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+[1.739s] -- Found rclcpp: 16.0.12 (/home/huy/mnt/usb_ext4/opt/ros/humble/share/rclcpp/cmake)
+[1.805s] -- Found rosidl_generator_c: 3.1.6 (/home/huy/mnt/usb_ext4/opt/ros/humble/share/rosidl_generator_c/cmake)
+[1.814s] -- Found rosidl_adapter: 3.1.6 (/home/huy/mnt/usb_ext4/opt/ros/humble/share/rosidl_adapter/cmake)
+[1.838s] -- Found rosidl_generator_cpp: 3.1.6 (/home/huy/mnt/usb_ext4/opt/ros/humble/share/rosidl_generator_cpp/cmake)
+[1.874s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[1.907s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[1.985s] -- Found rmw_implementation_cmake: 6.1.2 (/home/huy/mnt/usb_ext4/opt/ros/humble/share/rmw_implementation_cmake/cmake)
+[1.989s] -- Found rmw_cyclonedds_cpp: 1.3.4 (/home/huy/mnt/usb_ext4/opt/ros/humble/share/rmw_cyclonedds_cpp/cmake)
+[2.024s] -- Using RMW implementation 'rmw_cyclonedds_cpp' as default
+[2.038s] -- Looking for pthread.h
+[2.225s] -- Looking for pthread.h - found
+[2.226s] -- Found Threads: TRUE  
+[2.317s] -- Found sensor_msgs: 4.8.0 (/home/huy/mnt/usb_ext4/opt/ros/humble/share/sensor_msgs/cmake)
+[2.395s] -- Found Boost: /home/huy/mnt/usb_ext4/usr/lib/aarch64-linux-gnu/cmake/Boost-1.74.0/BoostConfig.cmake (found version "1.74.0") found components: system 
+[2.399s] -- Found ament_lint_auto: 0.12.12 (/home/huy/mnt/usb_ext4/opt/ros/humble/share/ament_lint_auto/cmake)
+[2.559s] -- Added test 'copyright' to check source files copyright and LICENSE
+[2.563s] -- Added test 'cppcheck' to perform static code analysis on C / C++ code
+[2.563s] -- Configured cppcheck include dirs: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/lds02rr_lidar/include
+[2.563s] -- Configured cppcheck exclude dirs and/or files: 
+[2.566s] -- Added test 'cpplint' to check C / C++ code against the Google style
+[2.566s] -- Configured cpplint exclude dirs and/or files: 
+[2.568s] -- Added test 'flake8' to check Python code syntax and style conventions
+[2.568s] -- Added test 'lint_cmake' to check CMake code style
+[2.568s] -- Added test 'pep257' to check Python code against some of the docstring style conventions in PEP 257
+[2.569s] -- Added test 'uncrustify' to check C / C++ code style
+[2.570s] -- Configured uncrustify additional arguments: 
+[2.573s] -- Added test 'xmllint' to check XML markup files
+[2.576s] -- Configuring done
+[2.598s] -- Generating done
+[2.612s] -- Build files have been written to: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/lds02rr_lidar
+[2.626s] Invoked command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/lds02rr_lidar' returned '0': CMAKE_PREFIX_PATH=/home/huy/mnt/usb_ext4/opt/ros/humble /usr/bin/cmake /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/lds02rr_lidar -DRMW_IMPLEMENTATION=rmw_cyclonedds_cpp -DCMAKE_TOOLCHAIN_FILE=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/toolchain_aarch64.cmake -DCMAKE_INSTALL_PREFIX=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install
+[2.634s] Invoking command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/lds02rr_lidar': CMAKE_PREFIX_PATH=/home/huy/mnt/usb_ext4/opt/ros/humble /usr/bin/cmake --build /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/lds02rr_lidar -- -j4 -l4
+[2.725s] [35m[1mConsolidate compiler generated dependencies of target lds02rr_node[0m
+[2.788s] [100%] Built target lds02rr_node
+[2.809s] Invoked command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/lds02rr_lidar' returned '0': CMAKE_PREFIX_PATH=/home/huy/mnt/usb_ext4/opt/ros/humble /usr/bin/cmake --build /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/lds02rr_lidar -- -j4 -l4
+[2.817s] Invoking command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/lds02rr_lidar': CMAKE_PREFIX_PATH=/home/huy/mnt/usb_ext4/opt/ros/humble /usr/bin/cmake --install /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/lds02rr_lidar
+[2.835s] -- Install configuration: ""
+[2.835s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/lds02rr_lidar/launch
+[2.835s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/lds02rr_lidar/launch/lds02rr.launch.py
+[2.836s] -- Installing: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/lds02rr_lidar/lds02rr_node
+[2.836s] -- Set runtime path of "/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/lds02rr_lidar/lds02rr_node" to ""
+[2.836s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/ament_index/resource_index/package_run_dependencies/lds02rr_lidar
+[2.836s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/ament_index/resource_index/parent_prefix_path/lds02rr_lidar
+[2.837s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/lds02rr_lidar/environment/ament_prefix_path.sh
+[2.838s] -- Installing: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/lds02rr_lidar/environment/ament_prefix_path.dsv
+[2.838s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/lds02rr_lidar/environment/path.sh
+[2.838s] -- Installing: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/lds02rr_lidar/environment/path.dsv
+[2.839s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/lds02rr_lidar/local_setup.bash
+[2.840s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/lds02rr_lidar/local_setup.sh
+[2.842s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/lds02rr_lidar/local_setup.zsh
+[2.842s] -- Installing: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/lds02rr_lidar/local_setup.dsv
+[2.842s] -- Installing: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/lds02rr_lidar/package.dsv
+[2.846s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/ament_index/resource_index/packages/lds02rr_lidar
+[2.846s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/lds02rr_lidar/cmake/ament_cmake_export_dependencies-extras.cmake
+[2.846s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/lds02rr_lidar/cmake/ament_cmake_export_include_directories-extras.cmake
+[2.846s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/lds02rr_lidar/cmake/lds02rr_lidarConfig.cmake
+[2.846s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/lds02rr_lidar/cmake/lds02rr_lidarConfig-version.cmake
+[2.846s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/lds02rr_lidar/package.xml
+[2.850s] Invoked command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/lds02rr_lidar' returned '0': CMAKE_PREFIX_PATH=/home/huy/mnt/usb_ext4/opt/ros/humble /usr/bin/cmake --install /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/lds02rr_lidar

@@ -10,6 +10,7 @@
 /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_bringup/param/waffle.yaml
 /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_bringup/script/99-turtlebot3-cdc.rules
 /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_bringup/script/create_udev_rules
+/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_bringup/config/slam_toolbox_lds02.yaml
 /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/ament_index/resource_index/package_run_dependencies/turtlebot3_bringup
 /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/ament_index/resource_index/parent_prefix_path/turtlebot3_bringup
 /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_bringup/environment/ament_prefix_path.sh
