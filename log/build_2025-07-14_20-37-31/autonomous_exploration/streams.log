@@ -1,0 +1,42 @@
+[1.921s] Invoking command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/FrontierExploration/autonomous_exploration': PYTHONPATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/autonomous_exploration/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/autonomous_exploration build --build-base /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/autonomous_exploration/build install --record /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/autonomous_exploration/install.log --single-version-externally-managed install_data
+[2.783s] running egg_info
+[2.784s] creating ../../build/autonomous_exploration/autonomous_exploration.egg-info
+[2.788s] writing ../../build/autonomous_exploration/autonomous_exploration.egg-info/PKG-INFO
+[2.789s] writing dependency_links to ../../build/autonomous_exploration/autonomous_exploration.egg-info/dependency_links.txt
+[2.793s] writing entry points to ../../build/autonomous_exploration/autonomous_exploration.egg-info/entry_points.txt
+[2.794s] writing requirements to ../../build/autonomous_exploration/autonomous_exploration.egg-info/requires.txt
+[2.795s] writing top-level names to ../../build/autonomous_exploration/autonomous_exploration.egg-info/top_level.txt
+[2.795s] writing manifest file '../../build/autonomous_exploration/autonomous_exploration.egg-info/SOURCES.txt'
+[2.795s] reading manifest file '../../build/autonomous_exploration/autonomous_exploration.egg-info/SOURCES.txt'
+[2.795s] writing manifest file '../../build/autonomous_exploration/autonomous_exploration.egg-info/SOURCES.txt'
+[2.796s] running build
+[2.796s] running build_py
+[2.796s] creating /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/autonomous_exploration/build
+[2.797s] creating /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/autonomous_exploration/build/lib
+[2.798s] creating /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/autonomous_exploration/build/lib/autonomous_exploration
+[2.801s] copying autonomous_exploration/web_bridge.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/autonomous_exploration/build/lib/autonomous_exploration
+[2.801s] copying autonomous_exploration/control.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/autonomous_exploration/build/lib/autonomous_exploration
+[2.801s] copying autonomous_exploration/__init__.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/autonomous_exploration/build/lib/autonomous_exploration
+[2.801s] copying autonomous_exploration/rviz_gui.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/autonomous_exploration/build/lib/autonomous_exploration
+[2.802s] running install
+[2.802s] running install_lib
+[2.803s] creating /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/autonomous_exploration
+[2.803s] copying /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/autonomous_exploration/build/lib/autonomous_exploration/web_bridge.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/autonomous_exploration
+[2.803s] copying /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/autonomous_exploration/build/lib/autonomous_exploration/control.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/autonomous_exploration
+[2.803s] copying /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/autonomous_exploration/build/lib/autonomous_exploration/__init__.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/autonomous_exploration
+[2.803s] copying /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/autonomous_exploration/build/lib/autonomous_exploration/rviz_gui.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/autonomous_exploration
+[2.803s] byte-compiling /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/autonomous_exploration/web_bridge.py to web_bridge.cpython-310.pyc
+[2.808s] byte-compiling /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/autonomous_exploration/control.py to control.cpython-310.pyc
+[2.813s] byte-compiling /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/autonomous_exploration/__init__.py to __init__.cpython-310.pyc
+[2.813s] byte-compiling /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/autonomous_exploration/rviz_gui.py to rviz_gui.cpython-310.pyc
+[2.816s] running install_data
+[2.816s] copying resource/autonomous_exploration -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/ament_index/resource_index/packages
+[2.817s] copying package.xml -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/autonomous_exploration
+[2.817s] creating /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/autonomous_exploration/config
+[2.818s] copying config/params.yaml -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/autonomous_exploration/config
+[2.821s] running install_egg_info
+[2.823s] Copying ../../build/autonomous_exploration/autonomous_exploration.egg-info to /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/autonomous_exploration-0.0.0-py3.10.egg-info
+[2.828s] running install_scripts
+[2.857s] Installing control script to /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/autonomous_exploration
+[2.858s] writing list of installed files to '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/autonomous_exploration/install.log'
+[2.950s] Invoked command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/FrontierExploration/autonomous_exploration' returned '0': PYTHONPATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/autonomous_exploration/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/autonomous_exploration build --build-base /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/autonomous_exploration/build install --record /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/autonomous_exploration/install.log --single-version-externally-managed install_data

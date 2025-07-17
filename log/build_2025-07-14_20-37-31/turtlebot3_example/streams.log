@@ -1,0 +1,82 @@
+[2.492s] Invoking command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/turtlebot3_example': PYTHONPATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../build/turtlebot3_example build --build-base /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build install --record /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/install.log --single-version-externally-managed install_data
+[2.976s] running egg_info
+[2.976s] creating ../../../build/turtlebot3_example/turtlebot3_example.egg-info
+[2.989s] writing ../../../build/turtlebot3_example/turtlebot3_example.egg-info/PKG-INFO
+[2.990s] writing dependency_links to ../../../build/turtlebot3_example/turtlebot3_example.egg-info/dependency_links.txt
+[2.990s] writing entry points to ../../../build/turtlebot3_example/turtlebot3_example.egg-info/entry_points.txt
+[2.990s] writing requirements to ../../../build/turtlebot3_example/turtlebot3_example.egg-info/requires.txt
+[2.991s] writing top-level names to ../../../build/turtlebot3_example/turtlebot3_example.egg-info/top_level.txt
+[2.991s] writing manifest file '../../../build/turtlebot3_example/turtlebot3_example.egg-info/SOURCES.txt'
+[2.997s] reading manifest file '../../../build/turtlebot3_example/turtlebot3_example.egg-info/SOURCES.txt'
+[2.998s] writing manifest file '../../../build/turtlebot3_example/turtlebot3_example.egg-info/SOURCES.txt'
+[2.998s] running build
+[2.998s] running build_py
+[2.998s] creating /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build
+[3.001s] creating /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build/lib
+[3.005s] creating /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build/lib/turtlebot3_example
+[3.008s] copying turtlebot3_example/__init__.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build/lib/turtlebot3_example
+[3.009s] creating /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build/lib/turtlebot3_example/turtlebot3_patrol
+[3.011s] copying turtlebot3_example/turtlebot3_patrol/turtlebot3_patrol_server.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build/lib/turtlebot3_example/turtlebot3_patrol
+[3.014s] copying turtlebot3_example/turtlebot3_patrol/__init__.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build/lib/turtlebot3_example/turtlebot3_patrol
+[3.019s] copying turtlebot3_example/turtlebot3_patrol/turtlebot3_patrol_client.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build/lib/turtlebot3_example/turtlebot3_patrol
+[3.019s] creating /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build/lib/turtlebot3_example/turtlebot3_interactive_marker
+[3.022s] copying turtlebot3_example/turtlebot3_interactive_marker/turtlebot3_interactive_marker.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build/lib/turtlebot3_example/turtlebot3_interactive_marker
+[3.026s] copying turtlebot3_example/turtlebot3_interactive_marker/__init__.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build/lib/turtlebot3_example/turtlebot3_interactive_marker
+[3.026s] creating /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build/lib/turtlebot3_example/turtlebot3_absolute_move
+[3.029s] copying turtlebot3_example/turtlebot3_absolute_move/__init__.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build/lib/turtlebot3_example/turtlebot3_absolute_move
+[3.030s] copying turtlebot3_example/turtlebot3_absolute_move/turtlebot3_absolute_move.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build/lib/turtlebot3_example/turtlebot3_absolute_move
+[3.040s] creating /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build/lib/turtlebot3_example/turtlebot3_relative_move
+[3.040s] copying turtlebot3_example/turtlebot3_relative_move/turtlebot3_relative_move.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build/lib/turtlebot3_example/turtlebot3_relative_move
+[3.042s] copying turtlebot3_example/turtlebot3_relative_move/__init__.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build/lib/turtlebot3_example/turtlebot3_relative_move
+[3.043s] creating /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build/lib/turtlebot3_example/turtlebot3_obstacle_detection
+[3.052s] copying turtlebot3_example/turtlebot3_obstacle_detection/turtlebot3_obstacle_detection.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build/lib/turtlebot3_example/turtlebot3_obstacle_detection
+[3.052s] copying turtlebot3_example/turtlebot3_obstacle_detection/__init__.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build/lib/turtlebot3_example/turtlebot3_obstacle_detection
+[3.052s] running install
+[3.052s] running install_lib
+[3.052s] creating /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/turtlebot3_example
+[3.052s] creating /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/turtlebot3_example/turtlebot3_patrol
+[3.052s] copying /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build/lib/turtlebot3_example/turtlebot3_patrol/turtlebot3_patrol_server.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/turtlebot3_example/turtlebot3_patrol
+[3.055s] copying /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build/lib/turtlebot3_example/turtlebot3_patrol/__init__.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/turtlebot3_example/turtlebot3_patrol
+[3.055s] copying /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build/lib/turtlebot3_example/turtlebot3_patrol/turtlebot3_patrol_client.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/turtlebot3_example/turtlebot3_patrol
+[3.055s] creating /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/turtlebot3_example/turtlebot3_interactive_marker
+[3.058s] copying /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build/lib/turtlebot3_example/turtlebot3_interactive_marker/turtlebot3_interactive_marker.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/turtlebot3_example/turtlebot3_interactive_marker
+[3.058s] copying /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build/lib/turtlebot3_example/turtlebot3_interactive_marker/__init__.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/turtlebot3_example/turtlebot3_interactive_marker
+[3.059s] copying /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build/lib/turtlebot3_example/__init__.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/turtlebot3_example
+[3.059s] creating /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/turtlebot3_example/turtlebot3_absolute_move
+[3.059s] copying /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build/lib/turtlebot3_example/turtlebot3_absolute_move/__init__.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/turtlebot3_example/turtlebot3_absolute_move
+[3.062s] copying /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build/lib/turtlebot3_example/turtlebot3_absolute_move/turtlebot3_absolute_move.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/turtlebot3_example/turtlebot3_absolute_move
+[3.062s] creating /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/turtlebot3_example/turtlebot3_relative_move
+[3.062s] copying /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build/lib/turtlebot3_example/turtlebot3_relative_move/turtlebot3_relative_move.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/turtlebot3_example/turtlebot3_relative_move
+[3.063s] copying /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build/lib/turtlebot3_example/turtlebot3_relative_move/__init__.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/turtlebot3_example/turtlebot3_relative_move
+[3.064s] creating /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/turtlebot3_example/turtlebot3_obstacle_detection
+[3.066s] copying /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build/lib/turtlebot3_example/turtlebot3_obstacle_detection/turtlebot3_obstacle_detection.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/turtlebot3_example/turtlebot3_obstacle_detection
+[3.073s] copying /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build/lib/turtlebot3_example/turtlebot3_obstacle_detection/__init__.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/turtlebot3_example/turtlebot3_obstacle_detection
+[3.073s] byte-compiling /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/turtlebot3_example/turtlebot3_patrol/turtlebot3_patrol_server.py to turtlebot3_patrol_server.cpython-310.pyc
+[3.073s] byte-compiling /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/turtlebot3_example/turtlebot3_patrol/__init__.py to __init__.cpython-310.pyc
+[3.074s] byte-compiling /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/turtlebot3_example/turtlebot3_patrol/turtlebot3_patrol_client.py to turtlebot3_patrol_client.cpython-310.pyc
+[3.075s] byte-compiling /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/turtlebot3_example/turtlebot3_interactive_marker/turtlebot3_interactive_marker.py to turtlebot3_interactive_marker.cpython-310.pyc
+[3.078s] byte-compiling /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/turtlebot3_example/turtlebot3_interactive_marker/__init__.py to __init__.cpython-310.pyc
+[3.078s] byte-compiling /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/turtlebot3_example/__init__.py to __init__.cpython-310.pyc
+[3.082s] byte-compiling /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/turtlebot3_example/turtlebot3_absolute_move/__init__.py to __init__.cpython-310.pyc
+[3.082s] byte-compiling /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/turtlebot3_example/turtlebot3_absolute_move/turtlebot3_absolute_move.py to turtlebot3_absolute_move.cpython-310.pyc
+[3.082s] byte-compiling /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/turtlebot3_example/turtlebot3_relative_move/turtlebot3_relative_move.py to turtlebot3_relative_move.cpython-310.pyc
+[3.086s] byte-compiling /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/turtlebot3_example/turtlebot3_relative_move/__init__.py to __init__.cpython-310.pyc
+[3.086s] byte-compiling /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/turtlebot3_example/turtlebot3_obstacle_detection/turtlebot3_obstacle_detection.py to turtlebot3_obstacle_detection.cpython-310.pyc
+[3.088s] byte-compiling /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/turtlebot3_example/turtlebot3_obstacle_detection/__init__.py to __init__.cpython-310.pyc
+[3.090s] running install_data
+[3.090s] creating /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/ament_index
+[3.092s] creating /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/ament_index/resource_index
+[3.093s] creating /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/ament_index/resource_index/packages
+[3.094s] copying resource/turtlebot3_example -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/ament_index/resource_index/packages
+[3.095s] copying package.xml -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_example
+[3.095s] running install_egg_info
+[3.099s] Copying ../../../build/turtlebot3_example/turtlebot3_example.egg-info to /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/turtlebot3_example-2.2.9-py3.10.egg-info
+[3.104s] running install_scripts
+[3.132s] Installing turtlebot3_absolute_move script to /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/turtlebot3_example
+[3.152s] Installing turtlebot3_interactive_marker script to /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/turtlebot3_example
+[3.152s] Installing turtlebot3_obstacle_detection script to /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/turtlebot3_example
+[3.152s] Installing turtlebot3_patrol_client script to /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/turtlebot3_example
+[3.152s] Installing turtlebot3_patrol_server script to /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/turtlebot3_example
+[3.153s] Installing turtlebot3_relative_move script to /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/turtlebot3_example
+[3.153s] writing list of installed files to '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/install.log'
+[3.201s] Invoked command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/turtlebot3_example' returned '0': PYTHONPATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../build/turtlebot3_example build --build-base /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build install --record /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/install.log --single-version-externally-managed install_data

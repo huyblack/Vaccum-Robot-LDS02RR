@@ -6,18 +6,27 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.withTransform
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.example.ros2visualizer.model.ConnectionState
 import com.example.ros2visualizer.model.MapModel
@@ -137,32 +146,69 @@ fun ControlPanel(
     }
 }
 
-
 @Composable
 fun MapCanvas(mapModel: MapModel?, odomModel: OdomModel?) {
-    Canvas(modifier = Modifier.fillMaxSize()) {
+    // Các biến state để lưu trữ trạng thái pan và zoom
+    var scale by remember { mutableFloatStateOf(1f) }
+    var offset by remember { mutableStateOf(Offset.Zero) }
+    var canvasSize by remember { mutableStateOf(IntSize.Zero) }
+
+    // Biến cờ để chỉ thực hiện tính toán ban đầu một lần
+    var isInitialCalculationDone by remember { mutableStateOf(false) }
+
+    // Tự động tính toán để căn giữa và phóng to bản đồ khi nó xuất hiện lần đầu.
+    // Effect này sẽ chạy khi mapModel hoặc kích thước canvas thay đổi.
+    LaunchedEffect(mapModel, canvasSize) {
+        if (mapModel != null && !isInitialCalculationDone && canvasSize != IntSize.Zero) {
+            val mapWidth = mapModel.width.toFloat()
+            val mapHeight = mapModel.height.toFloat()
+
+            if (mapWidth <= 0f || mapHeight <= 0f) return@LaunchedEffect
+
+            val scaleX = canvasSize.width / mapWidth
+            val scaleY = canvasSize.height / mapHeight
+            val calculatedScale = min(scaleX, scaleY) * 0.9f // Để lại chút lề
+
+            val scaledWidth = mapWidth * calculatedScale
+            val scaledHeight = mapHeight * calculatedScale
+            val calculatedOffsetX = (canvasSize.width - scaledWidth) / 2f
+            val calculatedOffsetY = (canvasSize.height - scaledHeight) / 2f
+
+            scale = calculatedScale
+            offset = Offset(calculatedOffsetX, calculatedOffsetY)
+            isInitialCalculationDone = true
+        }
+    }
+
+    Canvas(
+        modifier = Modifier
+            .fillMaxSize()
+            .onGloballyPositioned { coordinates ->
+                // Lấy kích thước của Canvas khi nó được vẽ
+                canvasSize = coordinates.size
+            }
+            .pointerInput(Unit) {
+                detectTransformGestures { _, pan, zoom, _ ->
+                    // Khi người dùng tương tác, đánh dấu là đã tương tác để không reset view
+                    isInitialCalculationDone = true
+                    // Cập nhật scale và offset dựa trên cử chỉ của người dùng
+                    scale = (scale * zoom).coerceIn(0.1f, 50f) // Tăng giới hạn zoom tối đa
+                    offset += pan
+                }
+            }
+    ) {
         // 1. Vẽ nền
         drawRect(color = Color.DarkGray)
 
         val currentMap = mapModel ?: return@Canvas
         if (currentMap.width == 0 || currentMap.height == 0 || currentMap.resolution <= 0) return@Canvas
 
-        // 2. Tính toán tỉ lệ và vị trí để căn giữa bản đồ
-        val scaleX = size.width / currentMap.width
-        val scaleY = size.height / currentMap.height
-        val scaleFactor = min(scaleX, scaleY)
-
-        val scaledWidth = currentMap.width * scaleFactor
-        val scaledHeight = currentMap.height * scaleFactor
-        val offsetX = (size.width - scaledWidth) / 2f
-        val offsetY = (size.height - scaledHeight) / 2f
-
-        // 3. Áp dụng các biến đổi (di chuyển và co giãn) lên canvas
+        // 2. Áp dụng các biến đổi (di chuyển và co giãn) lên canvas
         withTransform({
-            translate(left = offsetX, top = offsetY)
-            scale(scaleX = scaleFactor, scaleY = scaleFactor, pivot = Offset.Zero)
+            translate(left = offset.x, top = offset.y)
+            scale(scale, scale, pivot = Offset.Zero)
         }) {
-            // 4. Vẽ từng ô của bản đồ
+            // 3. Vẽ từng ô của bản đồ
             for (y in 0 until currentMap.height) {
                 for (x in 0 until currentMap.width) {
                     val index = y * currentMap.width + x
@@ -181,17 +227,20 @@ fun MapCanvas(mapModel: MapModel?, odomModel: OdomModel?) {
                 }
             }
 
-            // 5. Vẽ robot
+            // 4. Vẽ robot
             odomModel?.let { odom ->
                 // Chuyển đổi tọa độ thế giới (mét) của robot sang tọa độ lưới của bản đồ (pixel)
-                val robotGridX = (odom.x - currentMap.originX) / currentMap.resolution
-                val robotGridY = currentMap.height - ((odom.y - currentMap.originY) / currentMap.resolution)
+                val robotGridX = ((odom.x - currentMap.originX) / currentMap.resolution).toFloat()
+                val robotGridY =
+                    (currentMap.height - ((odom.y - currentMap.originY) / currentMap.resolution)).toFloat()
 
                 val robotCenter = Offset(robotGridX, robotGridY)
 
-                // TĂNG KÍCH THƯỚC ROBOT TẠI ĐÂY
-                val robotRadius = 10f / scaleFactor // Tăng bán kính robot
-                val lineLength = 16f / scaleFactor  // Tăng độ dài đường chỉ hướng
+                // Kích thước của robot sẽ được điều chỉnh ngược lại với mức zoom
+                // để robot trông có vẻ có kích thước không đổi trên màn hình.
+                val robotRadius = 10f / scale
+                val lineLength = 16f / scale
+                val strokeWidth = 4f / scale
 
                 // Vẽ thân robot (vòng tròn màu đỏ)
                 drawCircle(
@@ -202,13 +251,13 @@ fun MapCanvas(mapModel: MapModel?, odomModel: OdomModel?) {
 
                 // Vẽ đường chỉ hướng của robot (màu trắng)
                 val screenAngleRad = -odom.theta
-                val endX = robotCenter.x + lineLength * cos(screenAngleRad)
-                val endY = robotCenter.y + lineLength * sin(screenAngleRad)
+                val endX = robotCenter.x + lineLength * cos(screenAngleRad).toFloat()
+                val endY = robotCenter.y + lineLength * sin(screenAngleRad).toFloat()
                 drawLine(
                     color = Color.White,
                     start = robotCenter,
                     end = Offset(endX, endY),
-                    strokeWidth = 4f / scaleFactor // Tăng độ dày đường chỉ hướng
+                    strokeWidth = strokeWidth
                 )
             }
         }

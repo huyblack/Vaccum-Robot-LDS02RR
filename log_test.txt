@@ -1,123 +1,491 @@
-[cartographer_node-1] [INFO] [1749137093.174644450] [cartographer logger]: I0605 22:24:53.000000 17856 collated_trajectory_builder.cc:81] odom rate: 20.00 Hz 5.00e-02 s +/- 7.68e-05 s (pulsed at 95.50% real time)
+header:
+  stamp:
+    sec: 7323
+    nanosec: 357000000
+  frame_id: imu_link
+orientation:
+  x: 0.002855266633661506
+  y: 0.0002633050945813847
+  z: -0.9940421234999185
+  w: 0.10895886760906959
+orientation_covariance:
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+angular_velocity:
+  x: 0.0002070391592236502
+  y: 0.0004891584005258541
+  z: 0.00030459888848280415
+angular_velocity_covariance:
+- 4.0e-08
+- 0.0
+- 0.0
+- 0.0
+- 4.0e-08
+- 0.0
+- 0.0
+- 0.0
+- 4.0e-08
+linear_acceleration:
+  x: -0.04491779346334993
+  y: -0.01943715652574172
+  z: 9.663789425987598
+linear_acceleration_covariance:
+- 0.00028900000000000003
+- 0.0
+- 0.0
+- 0.0
+- 0.00028900000000000003
+- 0.0
+- 0.0
+- 0.0
+- 0.00028900000000000003
+---
+header:
+  stamp:
+    sec: 7323
+    nanosec: 362000000
+  frame_id: imu_link
+orientation:
+  x: 0.0028550908705619253
+  y: 0.0002632858528271742
+  z: -0.994042123998823
+  w: 0.10895886770974379
+orientation_covariance:
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+angular_velocity:
+  x: 0.0001693433878301358
+  y: 0.00046426000114129656
+  z: 4.530316603149919e-05
+angular_velocity_covariance:
+- 4.0e-08
+- 0.0
+- 0.0
+- 0.0
+- 4.0e-08
+- 0.0
+- 0.0
+- 0.0
+- 4.0e-08
+linear_acceleration:
+  x: -0.05789856875321407
+  y: -0.0200660250308568
+  z: 9.74897195322895
+linear_acceleration_covariance:
+- 0.00028900000000000003
+- 0.0
+- 0.0
+- 0.0
+- 0.00028900000000000003
+- 0.0
+- 0.0
+- 0.0
+- 0.00028900000000000003
+---
+header:
+  stamp:
+    sec: 7323
+    nanosec: 367000000
+  frame_id: imu_link
+orientation:
+  x: 0.0028552179768213657
+  y: 0.0002632997719600698
+  z: -0.9940421236283992
+  w: 0.10895886772483267
+orientation_covariance:
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+angular_velocity:
+  x: -0.00017709970510839437
+  y: 0.0006721053215317178
+  z: -0.00023751782393227516
+angular_velocity_covariance:
+- 4.0e-08
+- 0.0
+- 0.0
+- 0.0
+- 4.0e-08
+- 0.0
+- 0.0
+- 0.0
+- 4.0e-08
+linear_acceleration:
+  x: -0.05062014473843462
+  y: 0.01433645875008686
+  z: 10.254087506340927
+linear_acceleration_covariance:
+- 0.00028900000000000003
+- 0.0
+- 0.0
+- 0.0
+- 0.00028900000000000003
+- 0.0
+- 0.0
+- 0.0
+- 0.00028900000000000003
+---
+header:
+  stamp:
+    sec: 7323
+    nanosec: 372000000
+  frame_id: imu_link
+orientation:
+  x: 0.0028552816080815047
+  y: 0.0002633068110206775
+  z: -0.9940421234378056
+  w: 0.10895886777917803
+orientation_covariance:
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+angular_velocity:
+  x: -0.00012328711479442822
+  y: 0.00028705823259348633
+  z: 4.706896235943437e-06
+angular_velocity_covariance:
+- 4.0e-08
+- 0.0
+- 0.0
+- 0.0
+- 4.0e-08
+- 0.0
+- 0.0
+- 0.0
+- 4.0e-08
+linear_acceleration:
+  x: -0.03863445110199165
+  y: 0.02297907871426377
+  z: 9.281946844167326
+linear_acceleration_covariance:
+- 0.00028900000000000003
+- 0.0
+- 0.0
+- 0.0
+- 0.00028900000000000003
+- 0.0
+- 0.0
+- 0.0
+- 0.00028900000000000003
+---
+header:
+  stamp:
+    sec: 7323
+    nanosec: 377000000
+  frame_id: imu_link
+orientation:
+  x: 0.002855193074356635
+  y: 0.0002632970877783327
+  z: -0.9940421236889699
+  w: 0.10895886783128003
+orientation_covariance:
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+angular_velocity:
+  x: -0.00016466911657546284
+  y: 0.0007265229646457206
+  z: 5.5380685350936005e-05
+angular_velocity_covariance:
+- 4.0e-08
+- 0.0
+- 0.0
+- 0.0
+- 4.0e-08
+- 0.0
+- 0.0
+- 0.0
+- 4.0e-08
+linear_acceleration:
+  x: -0.04657095904980416
+  y: 0.01399911316568411
+  z: 10.406785469214118
+linear_acceleration_covariance:
+- 0.00028900000000000003
+- 0.0
+- 0.0
+- 0.0
+- 0.00028900000000000003
+- 0.0
+- 0.0
+- 0.0
+- 0.00028900000000000003
+---
+header:
+  stamp:
+    sec: 7323
+    nanosec: 382000000
+  frame_id: imu_link
+orientation:
+  x: 0.0028555509221825912
+  y: 0.00026333635798131134
+  z: -0.9940421226560828
+  w: 0.10895886778175892
+orientation_covariance:
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+angular_velocity:
+  x: 0.0001396086064334786
+  y: 0.0007801267116790022
+  z: 6.907012061685876e-05
+angular_velocity_covariance:
+- 4.0e-08
+- 0.0
+- 0.0
+- 0.0
+- 4.0e-08
+- 0.0
+- 0.0
+- 0.0
+- 4.0e-08
+linear_acceleration:
+  x: -0.045370851179153106
+  y: 0.016956025556878175
+  z: 9.547174938728
+linear_acceleration_covariance:
+- 0.00028900000000000003
+- 0.0
+- 0.0
+- 0.0
+- 0.00028900000000000003
+- 0.0
+- 0.0
+- 0.0
+- 0.00028900000000000003
+---
+header:
+  stamp:
+    sec: 7323
+    nanosec: 387000000
+  frame_id: imu_link
+orientation:
+  x: 0.0028553802643977886
+  y: 0.00026331768233919307
+  z: -0.9940421231401898
+  w: 0.10895886788273641
+orientation_covariance:
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+angular_velocity:
+  x: -0.0004428352424046225
+  y: 0.0008136073778415246
+  z: -0.00018064807089982637
+angular_velocity_covariance:
+- 4.0e-08
+- 0.0
+- 0.0
+- 0.0
+- 4.0e-08
+- 0.0
+- 0.0
+- 0.0
+- 4.0e-08
+linear_acceleration:
+  x: -0.03559248308335726
+  y: 0.035217262562227465
+  z: 9.86158701802429
+linear_acceleration_covariance:
+- 0.00028900000000000003
+- 0.0
+- 0.0
+- 0.0
+- 0.00028900000000000003
+- 0.0
+- 0.0
+- 0.0
+- 0.00028900000000000003
+---
+header:
+  stamp:
+    sec: 7323
+    nanosec: 392000000
+  frame_id: imu_link
+orientation:
+  x: 0.002855589567802652
+  y: 0.00026334063229459487
+  z: -0.994042122534257
+  w: 0.10895886787003944
+orientation_covariance:
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+angular_velocity:
+  x: -0.0001324408531979841
+  y: 0.0008732844668638757
+  z: 4.7032475608094e-05
+angular_velocity_covariance:
+- 4.0e-08
+- 0.0
+- 0.0
+- 0.0
+- 4.0e-08
+- 0.0
+- 0.0
+- 0.0
+- 4.0e-08
+linear_acceleration:
+  x: -0.0354796342905033
+  y: -0.007976046090276459
+  z: 10.20819173246672
+linear_acceleration_covariance:
+- 0.00028900000000000003
+- 0.0
+- 0.0
+- 0.0
+- 0.00028900000000000003
+- 0.0
+- 0.0
+- 0.0
+- 0.00028900000000000003
+---
+header:
+  stamp:
+    sec: 7323
+    nanosec: 397000000
+  frame_id: imu_link
+orientation:
+  x: 0.0028556968037583854
+  y: 0.0002633524644953943
+  z: -0.9940421222186014
+  w: 0.10895886791070993
+orientation_covariance:
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+angular_velocity:
+  x: 0.00046939231455025624
+  y: 0.000691542894288068
+  z: 9.298723802981761e-05
+angular_velocity_covariance:
+- 4.0e-08
+- 0.0
+- 0.0
+- 0.0
+- 4.0e-08
+- 0.0
+- 0.0
+- 0.0
+- 4.0e-08
+linear_acceleration:
+  x: -0.045192110112957394
+  y: 0.027186643276482136
+  z: 9.143130339706548
+linear_acceleration_covariance:
+- 0.00028900000000000003
+- 0.0
+- 0.0
+- 0.0
+- 0.00028900000000000003
+- 0.0
+- 0.0
+- 0.0
+- 0.00028900000000000003
+---
+header:
+  stamp:
+    sec: 7323
+    nanosec: 402000000
+  frame_id: imu_link
+orientation:
+  x: 0.002855689431164286
+  y: 0.000263351649688375
+  z: -0.9940421222359184
+  w: 0.1089588679479226
+orientation_covariance:
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+angular_velocity:
+  x: 0.0002144058444722729
+  y: 0.0010949167006926999
+  z: -0.0001399842479654467
+angular_velocity_covariance:
+- 4.0e-08
+- 0.0
+- 0.0
+- 0.0
+- 4.0e-08
+- 0.0
+- 0.0
+- 0.0
+- 4.0e-08
+linear_acceleration:
+  x: -0.05016073059949323
+  y: 0.025307811905666992
+  z: 10.353771394296926
+linear_acceleration_covariance:
+- 0.00028900000000000003
+- 0.0
+- 0.0
+- 0.0
+- 0.00028900000000000003
+- 0.0
+- 0.0
+- 0.0
+- 0.00028900000000000003
+---
 
-
-[cartographer_node-1] [INFO] [1749137093.174705614] [cartographer logger]: I0605 22:24:53.000000 17856 collated_trajectory_builder.cc:81] scan rate: 1.76 Hz 5.68e-01 s +/- 5.45e-01 s (pulsed at 99.51% real time)
-
-
-huy@huy:~$ ros2 run turtlebot3_teleop teleop_keyboard
-
-Control Your TurtleBot3!
----------------------------
-Moving around:
-        w
-   a    s    d
-        x
-
-w/x : increase/decrease linear velocity (Burger : ~ 0.22, Waffle and Waffle Pi : ~ 0.26)
-a/d : increase/decrease angular velocity (Burger : ~ 2.84, Waffle and Waffle Pi : ~ 1.82)
-
-space key, s : force stop
-
-CTRL-C to quit
-
-currently:	linear velocity 0.01	 angular velocity 0.0 
-currently:	linear velocity 0.02	 angular velocity 0.0 
-currently:	linear velocity 0.03	 angular velocity 0.0 
-currently:	linear velocity 0.03	 angular velocity -0.1 
-currently:	linear velocity 0.03	 angular velocity 0.0 
-currently:	linear velocity 0.0	 angular velocity 0.0 
-currently:	linear velocity 0.01	 angular velocity 0.0 
-currently:	linear velocity 0.0	 angular velocity 0.0 
-currently:	linear velocity 0.01	 angular velocity 0.0 
-currently:	linear velocity 0.0	 angular velocity 0.0 
-currently:	linear velocity 0.01	 angular velocity 0.0 
-currently:	linear velocity 0.0	 angular velocity 0.0 
-currently:	linear velocity 0.0	 angular velocity 0.0 
-currently:	linear velocity 0.0	 angular velocity 0.0 
-currently:	linear velocity 0.01	 angular velocity 0.0 
-currently:	linear velocity 0.02	 angular velocity 0.0 
-
-
-
-
-huy@huy:~$ ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
-[INFO] [launch]: All log files can be found below /home/huy/.ros/log/2025-06-07-00-14-40-387842-huy-12131
-[INFO] [launch]: Default logging verbosity is set to INFO
-urdf_file_name : turtlebot3_burger.urdf
-urdf_file_name : turtlebot3_burger.urdf
-[INFO] [gzserver-1]: process started with pid [12135]
-[INFO] [gzclient-2]: process started with pid [12137]
-[INFO] [robot_state_publisher-3]: process started with pid [12139]
-[INFO] [spawn_entity.py-4]: process started with pid [12141]
-[robot_state_publisher-3] [INFO] [1749230081.701857356] [robot_state_publisher]: got segment base_footprint
-[robot_state_publisher-3] [INFO] [1749230081.702015650] [robot_state_publisher]: got segment base_link
-[robot_state_publisher-3] [INFO] [1749230081.702028975] [robot_state_publisher]: got segment base_scan
-[robot_state_publisher-3] [INFO] [1749230081.702035824] [robot_state_publisher]: got segment caster_back_link
-[robot_state_publisher-3] [INFO] [1749230081.702042139] [robot_state_publisher]: got segment imu_link
-[robot_state_publisher-3] [INFO] [1749230081.702048058] [robot_state_publisher]: got segment wheel_left_link
-[robot_state_publisher-3] [INFO] [1749230081.702054133] [robot_state_publisher]: got segment wheel_right_link
-[ERROR] [gzserver-1]: process has died [pid 12135, exit code 255, cmd 'gzserver /opt/ros/humble/share/turtlebot3_gazebo/worlds/turtlebot3_world.world -slibgazebo_ros_init.so -slibgazebo_ros_factory.so -slibgazebo_ros_force_system.so'].
-[spawn_entity.py-4] [INFO] [1749230082.192636612] [spawn_entity]: Spawn Entity started
-[spawn_entity.py-4] [INFO] [1749230082.193042209] [spawn_entity]: Loading entity XML from file /opt/ros/humble/share/turtlebot3_gazebo/models/turtlebot3_burger/model.sdf
-[spawn_entity.py-4] [INFO] [1749230082.193880647] [spawn_entity]: Waiting for service /spawn_entity, timeout = 30
-[spawn_entity.py-4] [INFO] [1749230082.194295908] [spawn_entity]: Waiting for service /spawn_entity
-[spawn_entity.py-4] [INFO] [1749230082.199383795] [spawn_entity]: Calling service /spawn_entity
-[spawn_entity.py-4] [INFO] [1749230082.230777069] [spawn_entity]: Spawn status: Entity [burger] already exists.
-[spawn_entity.py-4] [ERROR] [1749230082.231265867] [spawn_entity]: Spawn service failed. Exiting.
-[ERROR] [spawn_entity.py-4]: process has died [pid 12141, exit code 1, cmd '/opt/ros/humble/lib/gazebo_ros/spawn_entity.py -entity burger -file /opt/ros/humble/share/turtlebot3_gazebo/models/turtlebot3_burger/model.sdf -x -2.0 -y -0.5 -z 0.01 --ros-args'].
-
-
-
-
-
-
-huy@huy:~$ ros2 launch gazebo_ros gazebo.launch.py headless:=true
-[INFO] [launch]: All log files can be found below /home/huy/.ros/log/2025-06-07-00-27-44-923628-huy-14161
-[INFO] [launch]: Default logging verbosity is set to INFO
-[INFO] [gzserver-1]: process started with pid [14162]
-[INFO] [gzclient-2]: process started with pid [14164]
-[ERROR] [gzserver-1]: process has died [pid 14162, exit code 255, cmd 'gzserver /opt/ros/humble/share/gazebo_ros/worlds/empty.world -slibgazebo_ros_init.so -slibgazebo_ros_factory.so -slibgazebo_ros_force_system.so'].
-
-
-
-
-
-huy@huy:~$ gzserver --verbose
-Gazebo multi-robot simulator, version 11.10.2
-Copyright (C) 2012 Open Source Robotics Foundation.
-Released under the Apache 2 License.
-http://gazebosim.org
-
-[Err] [Master.cc:96] EXCEPTION: Unable to start server[bind: Address already in use]. There is probably another Gazebo process running.
-
-[Err] [Master.cc:96] EXCEPTION: Unable to start server[bind: Address already in use]. There is probably another Gazebo process running.
-
-
-
-
-
-
-huy@huy:~$ gzserver --verbose
-Gazebo multi-robot simulator, version 11.10.2
-Copyright (C) 2012 Open Source Robotics Foundation.
-Released under the Apache 2 License.
-http://gazebosim.org
-
-[Err] [Master.cc:96] EXCEPTION: Unable to start server[bind: Address already in use]. There is probably another Gazebo process running.
-
-[Err] [Master.cc:96] EXCEPTION: Unable to start server[bind: Address already in use]. There is probably another Gazebo process running.
-
-huy@huy:~$ killall -9 gzserver
-gzserver: no process found
-huy@huy:~$ killall -9 gzserver
-gzserver: no process found
-huy@huy:~$ gzserver --verbose
-Gazebo multi-robot simulator, version 11.10.2
-Copyright (C) 2012 Open Source Robotics Foundation.
-Released under the Apache 2 License.
-http://gazebosim.org
-
-[Msg] Waiting for master.
-[Msg] Connected to gazebo master @ http://127.0.0.1:11345
-[Msg] Publicized address: 192.168.2.27
-[Msg] Loading world file [/usr/share/gazebo-11/worlds/empty.world]

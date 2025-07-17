@@ -10,6 +10,6 @@ echo "Running fix setup bash..."
 
 # Bước 3: Đồng bộ hóa thư mục install tới Pi
 echo "Syncing install folder to Pi..."
-sshpass -p 'huy' rsync -avz --progress install/ huy@192.168.2.15:/home/huy/ros2_ws/install
+sshpass -p 'huy' rsync -avz --progress install/ huy@192.168.2.38:/home/huy/ros2_ws/install
 
 echo "Process completed successfully!"

@@ -44,7 +44,7 @@
 #include "turtlebot3_node/xiao_ble_i2c_wrapper.hpp"
 #include "turtlebot3_node/odometry.hpp"
 #include "turtlebot3_node/sensors/battery_state.hpp"
-#include "turtlebot3_node/sensors/imu.hpp"
+#include "turtlebot3_node/sensors/mpu6050_imu.hpp"  // Thay thế include imu.hpp
 #include "turtlebot3_node/sensors/joint_state.hpp"
 #include "turtlebot3_node/sensors/sensor_state.hpp"
 #include "turtlebot3_node/sensors/sensors.hpp"

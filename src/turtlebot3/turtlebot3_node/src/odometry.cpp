@@ -98,11 +98,11 @@ Odometry::Odometry(
 
     joint_state_imu_sync_->setInterMessageLowerBound(
       0,
-      rclcpp::Duration(75ms));
+      rclcpp::Duration(30ms));  // Joint State: giảm từ 75ms xuống 30ms
 
     joint_state_imu_sync_->setInterMessageLowerBound(
       1,
-      rclcpp::Duration(15ms));
+      rclcpp::Duration(2ms));   // IMU: giảm từ 5ms xuống 2ms để phù hợp với tần số thực tế
 
     joint_state_imu_sync_->registerCallback(
       std::bind(

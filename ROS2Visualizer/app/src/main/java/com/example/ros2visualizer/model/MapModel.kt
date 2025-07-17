@@ -1,10 +1,10 @@
 package com.example.ros2visualizer.model
 
 data class MapModel(
-    val width: Int,
-    val height: Int,
-    val resolution: Float,
-    val originX: Float,
-    val originY: Float,
-    val data: List<Int>
+    val width: Int = 0,
+    val height: Int = 0,
+    val resolution: Double = 0.0,
+    val originX: Double = 0.0,
+    val originY: Double = 0.0,
+    val data: List<Int> = emptyList()
 )

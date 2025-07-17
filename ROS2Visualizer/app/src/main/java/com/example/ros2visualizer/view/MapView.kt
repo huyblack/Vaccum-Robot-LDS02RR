@@ -112,20 +112,20 @@ class MapView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         // 4. Vẽ robot
         odomModel?.let { odom ->
             // Chuyển đổi tọa độ mét của robot sang tọa độ lưới của bản đồ
-            val robotGridX = odom.x / currentMap.resolution
+            val robotGridX = (odom.x - currentMap.originX) / currentMap.resolution
             // Tọa độ Y trong ROS map và canvas ngược nhau, cần phải đảo ngược
-            val robotGridY = currentMap.height - (odom.y / currentMap.resolution)
+            val robotGridY = currentMap.height - ((odom.y - currentMap.originY) / currentMap.resolution)
 
             // Vẽ thân robot (hình tròn)
             // Bán kính robot được điều chỉnh để không bị quá to/nhỏ khi zoom
             val robotRadius = 4f / scaleFactor
-            canvas.drawCircle(robotGridX, robotGridY, robotRadius, robotPaint)
+            canvas.drawCircle(robotGridX.toFloat(), robotGridY.toFloat(), robotRadius, robotPaint)
 
             // Vẽ hướng của robot (một đường thẳng)
             val lineLength = 6f / scaleFactor
             val endX = robotGridX + lineLength * cos(odom.theta)
             val endY = robotGridY - lineLength * sin(odom.theta) // Y ngược nên dùng dấu trừ
-            canvas.drawLine(robotGridX, robotGridY, endX, endY, robotDirectionPaint)
+            canvas.drawLine(robotGridX.toFloat(), robotGridY.toFloat(), endX.toFloat(), endY.toFloat(), robotDirectionPaint)
         }
 
         // Khôi phục lại trạng thái canvas

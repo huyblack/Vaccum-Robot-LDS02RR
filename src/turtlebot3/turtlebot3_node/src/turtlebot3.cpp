@@ -79,18 +79,8 @@ void TurtleBot3::init_dynamixel_sdk_wrapper(const std::string & usb_port)
 void TurtleBot3::check_device_status()
 {
   if (dxl_sdk_wrapper_->is_connected_to_device()) {
-    std::string sdk_msg;
-    uint8_t reset = 1;
-
-    dxl_sdk_wrapper_->set_data_to_device(
-      extern_control_table.imu_re_calibration.addr,
-      extern_control_table.imu_re_calibration.length,
-      &reset,
-      &sdk_msg);
-
-    RCLCPP_INFO(this->get_logger(), "Start Calibration of Gyro");
-    rclcpp::sleep_for(std::chrono::seconds(5));
-    RCLCPP_INFO(this->get_logger(), "Calibration End");
+    // Không còn hiệu chuẩn IMU vì IMU được đọc trực tiếp
+    RCLCPP_INFO(this->get_logger(), "Kết nối với Xiao BLE thành công - chỉ điều khiển động cơ");
   } else {
     RCLCPP_ERROR(this->get_logger(), "Failed connection with Devices");
     rclcpp::shutdown();
@@ -184,12 +174,19 @@ void TurtleBot3::add_sensors()
       node_handle_,
       "battery_state"));
 
-  sensors_.push_back(
-    new sensors::Imu(
-      node_handle_,
-      "imu",
-      "magnetic_field",
-      "imu_link"));
+  // Thay thế IMU cũ bằng MPU6050Imu mới
+  try {
+    sensors_.push_back(
+      new sensors::MPU6050Imu(
+        node_handle_,
+        "/dev/i2c-1",  // Thiết bị I2C cho MPU6050
+        "imu",
+        "imu_link"));
+    RCLCPP_INFO(this->get_logger(), "MPU6050 IMU sensor added successfully");
+  } catch (const std::exception& e) {
+    RCLCPP_ERROR(this->get_logger(), "Failed to create MPU6050 IMU sensor: %s", e.what());
+    throw;
+  }
 
   sensors_.push_back(
     new sensors::SensorState(
@@ -347,7 +344,7 @@ void TurtleBot3::cmd_vel_callback()
         } data;
 
         data.fdata[0] = msg->linear.x;  // Bỏ nhân với 100
-        data.fdata[1] = 0.0f;
+        data.fdata[1] = msg->linear.y;  // Thêm linear.y
         data.fdata[2] = 0.0f;
         data.fdata[3] = 0.0f;
         data.fdata[4] = 0.0f;
@@ -389,7 +386,7 @@ void TurtleBot3::cmd_vel_callback()
         } data;
 
         data.dword[0] = static_cast<int32_t>(msg->twist.linear.x * 100);
-        data.dword[1] = 0;
+        data.dword[1] = static_cast<int32_t>(msg->twist.linear.y * 100);  // Thêm linear.y
         data.dword[2] = 0;
         data.dword[3] = 0;
         data.dword[4] = 0;

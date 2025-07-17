@@ -1,0 +1,1 @@
+['-DRMW_IMPLEMENTATION=rmw_cyclonedds_cpp', '-DCMAKE_TOOLCHAIN_FILE=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/toolchain_aarch64.cmake']

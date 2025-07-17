@@ -1,0 +1,11 @@
+source;share/lds02rr_lidar/hook/cmake_prefix_path.ps1
+source;share/lds02rr_lidar/hook/cmake_prefix_path.dsv
+source;share/lds02rr_lidar/hook/cmake_prefix_path.sh
+source;share/lds02rr_lidar/hook/pythonpath.ps1
+source;share/lds02rr_lidar/hook/pythonpath.dsv
+source;share/lds02rr_lidar/hook/pythonpath.sh
+source;share/lds02rr_lidar/local_setup.bash
+source;share/lds02rr_lidar/local_setup.dsv
+source;share/lds02rr_lidar/local_setup.ps1
+source;share/lds02rr_lidar/local_setup.sh
+source;share/lds02rr_lidar/local_setup.zsh

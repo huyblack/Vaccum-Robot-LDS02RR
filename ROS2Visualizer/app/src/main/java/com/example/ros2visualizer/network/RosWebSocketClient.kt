@@ -45,11 +45,11 @@ class RosWebSocketClient(private val url: String) {
                 val info = mapContainer.getAsJsonObject("info")
                 val width = info.get("width").asInt
                 val height = info.get("height").asInt
-                val resolution = info.get("resolution").asFloat
+                val resolution = info.get("resolution").asDouble
 
                 val origin = info.getAsJsonObject("origin")
-                val originX = origin.get("x").asFloat
-                val originY = origin.get("y").asFloat
+                val originX = origin.get("x").asDouble
+                val originY = origin.get("y").asDouble
 
                 val data = mapContainer.getAsJsonArray("data").map { it.asInt }
 
@@ -67,9 +67,9 @@ class RosWebSocketClient(private val url: String) {
                 val pose = odomObject.getAsJsonObject("pose")
                 if (pose.has("position") && pose.get("position").isJsonObject && pose.has("orientation_yaw")) {
                     val position = pose.getAsJsonObject("position")
-                    val x = position.get("x").asFloat
-                    val y = position.get("y").asFloat
-                    val theta = pose.get("orientation_yaw").asFloat
+                    val x = position.get("x").asDouble
+                    val y = position.get("y").asDouble
+                    val theta = pose.get("orientation_yaw").asDouble
 
                     _odomData.value = OdomModel(x, y, theta)
                     Log.d("RosData", "Parsed Odom: x=$x, y=$y, theta=$theta")

@@ -47,7 +47,7 @@ add_library(${PROJECT_NAME}_lib
   "src/turtlebot3.cpp"
 
   "src/sensors/battery_state.cpp"
-  "src/sensors/imu.cpp"
+  "src/sensors/mpu6050_imu.cpp"  # Thay thế imu.cpp bằng mpu6050_imu.cpp
   "src/sensors/joint_state.cpp"
   "src/sensors/sensor_state.cpp"
 )

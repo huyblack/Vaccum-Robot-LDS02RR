@@ -14,58 +14,36 @@
 
 #include "turtlebot3_node/xiao_ble_i2c_wrapper.hpp"
 
-#include <thread>
-#include <chrono>
-#include <iostream>
-
 using robotis::turtlebot3::XiaoBLEI2CWrapper;
 
 XiaoBLEI2CWrapper::XiaoBLEI2CWrapper(const Device & device)
 : i2c_fd_(-1), i2c_slave_addr_(device.i2c_addr)
 {
+  // Khởi tạo control table với kích thước đủ lớn (512 bytes)
+  control_table_data_.resize(512, 0);
+
 #ifdef __linux__
   // Mở thiết bị I2C
   i2c_fd_ = open(device.i2c_device.c_str(), O_RDWR);
   if (i2c_fd_ < 0) {
     RCLCPP_ERROR(rclcpp::get_logger("XiaoBLEI2CWrapper"), 
-                "Không thể mở thiết bị I2C: %s", device.i2c_device.c_str());
+                 "Không thể mở thiết bị I2C: %s", device.i2c_device.c_str());
     return;
   }
 
-  // Đặt địa chỉ slave
+  // Đặt địa chỉ slave I2C
   if (ioctl(i2c_fd_, I2C_SLAVE, i2c_slave_addr_) < 0) {
     RCLCPP_ERROR(rclcpp::get_logger("XiaoBLEI2CWrapper"), 
-                "Không thể đặt địa chỉ slave: 0x%02X", i2c_slave_addr_);
+                 "Không thể đặt địa chỉ I2C slave: 0x%02X", i2c_slave_addr_);
     close(i2c_fd_);
     i2c_fd_ = -1;
     return;
   }
-
-
-#else
-  RCLCPP_ERROR(rclcpp::get_logger("XiaoBLEI2CWrapper"), 
-              "I2C chỉ được hỗ trợ trên Linux");
 #endif
 
   RCLCPP_INFO(rclcpp::get_logger("XiaoBLEI2CWrapper"), 
-              "Đã khởi tạo kết nối I2C với Xiao BLE tại địa chỉ 0x%02X", i2c_slave_addr_);
-              
-  // Khởi tạo buffer control table mặc định có dung lượng đủ lớn
-  control_table_data_.resize(512, 0);
-  
-  // Đặt một số giá trị mặc định quan trọng
-  // Model number (đầu tiên được kiểm tra bởi TurtleBot3)
-  control_table_data_[0] = 0x34;  // Giá trị ID cho Xiao BLE
-  control_table_data_[1] = 0x12;
-
-  // Kiểm tra kết nối với thiết bị
-  if (!is_connected_to_device()) {
-    RCLCPP_WARN(rclcpp::get_logger("XiaoBLEI2CWrapper"), 
-                "Không thể kết nối với Xiao BLE - hãy kiểm tra kết nối I2C và địa chỉ thiết bị");
-  } else {
-    RCLCPP_INFO(rclcpp::get_logger("XiaoBLEI2CWrapper"), 
-                "Đã kết nối thành công với Xiao BLE");
-  }
+              "Đã khởi tạo XiaoBLEI2CWrapper cho thiết bị %s, địa chỉ 0x%02X", 
+              device.i2c_device.c_str(), i2c_slave_addr_);
 }
 
 XiaoBLEI2CWrapper::~XiaoBLEI2CWrapper()
@@ -73,114 +51,168 @@ XiaoBLEI2CWrapper::~XiaoBLEI2CWrapper()
 #ifdef __linux__
   if (i2c_fd_ >= 0) {
     close(i2c_fd_);
-    RCLCPP_INFO(rclcpp::get_logger("XiaoBLEI2CWrapper"), "Đã đóng kết nối I2C");
   }
 #endif
-  
+
   if (read_memory_.data != nullptr) {
     delete[] read_memory_.data;
-    read_memory_.data = nullptr;
   }
+}
+
+void XiaoBLEI2CWrapper::init_read_memory(const uint16_t & start_addr, const uint16_t & length)
+{
+  if (read_memory_.data != nullptr) {
+    delete[] read_memory_.data;
+  }
+
+  read_memory_.start_addr = start_addr;
+  read_memory_.length = length;
+  read_memory_.data = new uint8_t[length];
+  memset(read_memory_.data, 0, length);
+}
+
+bool XiaoBLEI2CWrapper::i2c_write(uint8_t* data, size_t length)
+{
+#ifdef __linux__
+  std::lock_guard<std::mutex> lock(i2c_mutex_);
+  if (i2c_fd_ < 0) return false;
+  
+  ssize_t result = write(i2c_fd_, data, length);
+  return (result == static_cast<ssize_t>(length));
+#else
+  return true;  // Giả lập thành công trên môi trường không phải Linux
+#endif
+}
+
+bool XiaoBLEI2CWrapper::i2c_read(uint8_t* data, size_t length)
+{
+#ifdef __linux__
+  std::lock_guard<std::mutex> lock(i2c_mutex_);
+  if (i2c_fd_ < 0) return false;
+  
+  ssize_t result = read(i2c_fd_, data, length);
+  return (result == static_cast<ssize_t>(length));
+#else
+  memset(data, 0, length);  // Giả lập dữ liệu rỗng
+  return true;
+#endif
 }
 
 bool XiaoBLEI2CWrapper::is_connected_to_device()
 {
 #ifdef __linux__
-  std::lock_guard<std::mutex> lock(i2c_mutex_);
+  if (i2c_fd_ < 0) return false;
   
-  // Gửi lệnh ping
+  // Gửi lệnh PING để kiểm tra kết nối
   uint8_t cmd = CMD_PING;
   if (!i2c_write(&cmd, 1)) {
-    RCLCPP_ERROR(rclcpp::get_logger("XiaoBLEI2CWrapper"), "Lỗi gửi lệnh kiểm tra kết nối");
     return false;
   }
   
-  // Đợi một chút cho Xiao xử lý
-  delay_ms(10);  // 10ms
+  delay_ms(10);  // Đợi 10ms
   
-  // Đọc phản hồi
   uint8_t response;
   if (!i2c_read(&response, 1)) {
-    RCLCPP_ERROR(rclcpp::get_logger("XiaoBLEI2CWrapper"), "Lỗi đọc phản hồi kiểm tra kết nối");
     return false;
   }
   
-  return (response == 0xAA);
+  return (response == 0xCC);  // Xiao BLE trả về 0xCC khi PING thành công
 #else
-  // Trong quá trình phát triển hoặc trên Windows, luôn trả về true
+  return true;  // Giả lập kết nối thành công
+#endif
+}
+
+bool XiaoBLEI2CWrapper::control_motors(float linear_x, float angular_z, std::string * msg)
+{
+#ifdef __linux__
+  uint8_t buffer[9];
+  buffer[0] = CMD_SET_MOTOR;
+  memcpy(buffer + 1, &linear_x, 4);
+  memcpy(buffer + 5, &angular_z, 4);
+  
+  if (!i2c_write(buffer, 9)) {
+    if (msg) *msg = "Lỗi gửi lệnh điều khiển động cơ";
+    return false;
+  }
+  
+  delay_ms(5);  // Đợi 5ms
+  
+  uint8_t response;
+  if (!i2c_read(&response, 1)) {
+    if (msg) *msg = "Lỗi đọc phản hồi điều khiển động cơ";
+    return false;
+  }
+  
+  if (response != 1) {
+    if (msg) *msg = "Xiao BLE từ chối lệnh điều khiển động cơ";
+    return false;
+  }
+  
+  if (msg) *msg = "Điều khiển động cơ thành công";
+  return true;
+#else
+  if (msg) *msg = "Giả lập: Điều khiển động cơ thành công";
   return true;
 #endif
 }
 
-void XiaoBLEI2CWrapper::init_read_memory(const uint16_t & start_addr, const uint16_t & length)
+bool XiaoBLEI2CWrapper::set_motor_torque_enable(uint8_t enable, std::string * msg)
 {
-  // Lưu thông tin vùng nhớ để đọc
-  read_memory_.start_addr = start_addr;
-  read_memory_.length = length;
+#ifdef __linux__
+  uint8_t buffer[2];
+  buffer[0] = CMD_MOTOR_TORQUE;
+  buffer[1] = enable;
   
-  // Cấp phát bộ nhớ cho dữ liệu
-  if (read_memory_.data != nullptr) {
-    delete[] read_memory_.data;
+  if (!i2c_write(buffer, 2)) {
+    if (msg) *msg = "Lỗi gửi lệnh bật/tắt motor torque";
+    return false;
   }
-  read_memory_.data = new uint8_t[length];
-  memset(read_memory_.data, 0, length);
   
-  RCLCPP_INFO(rclcpp::get_logger("XiaoBLEI2CWrapper"), 
-              "Đã khởi tạo vùng đọc: Địa chỉ %d, Độ dài %d", start_addr, length);
+  delay_ms(5);  // Đợi 5ms
+  
+  uint8_t response;
+  if (!i2c_read(&response, 1)) {
+    if (msg) *msg = "Lỗi đọc phản hồi motor torque";
+    return false;
+  }
+  
+  if (response != 1) {
+    if (msg) *msg = "Xiao BLE từ chối lệnh motor torque";
+    return false;
+  }
+  
+  if (msg) *msg = enable ? "Đã bật motor torque" : "Đã tắt motor torque";
+  return true;
+#else
+  if (msg) *msg = enable ? "Giả lập: Đã bật motor torque" : "Giả lập: Đã tắt motor torque";
+  return true;
+#endif
 }
 
 void XiaoBLEI2CWrapper::read_data_set()
 {
 #ifdef __linux__
-  std::lock_guard<std::mutex> lock(i2c_mutex_);
-  
-  // Yêu cầu dữ liệu IMU
-  uint8_t cmd = CMD_GET_IMU;
+  // Chỉ đọc trạng thái động cơ (không còn IMU)
+  uint8_t cmd = CMD_GET_STATUS;
   if (!i2c_write(&cmd, 1)) {
-    RCLCPP_ERROR(rclcpp::get_logger("XiaoBLEI2CWrapper"), "Lỗi gửi lệnh đọc IMU");
+    RCLCPP_ERROR(rclcpp::get_logger("XiaoBLEI2CWrapper"), "Lỗi gửi lệnh đọc trạng thái");
     return;
   }
   
   delay_ms(10);  // 10ms
   
-  // Đọc dữ liệu IMU (10 giá trị float = 40 bytes)
-  // 6 giá trị IMU (gyro, accel) + 4 quaternion
-  uint8_t imu_buffer[40];
-  if (!i2c_read(imu_buffer, sizeof(imu_buffer))) {
-    RCLCPP_ERROR(rclcpp::get_logger("XiaoBLEI2CWrapper"), "Lỗi đọc dữ liệu IMU");
+  // Đọc đầy đủ trạng thái động cơ (6 float + 1 byte = 25 bytes)
+  // present_current_left/right, present_velocity_left/right, 
+  // present_position_left/right, motor_torque_enable
+  uint8_t motor_buffer[25];
+  if (!i2c_read(motor_buffer, sizeof(motor_buffer))) {
+    RCLCPP_ERROR(rclcpp::get_logger("XiaoBLEI2CWrapper"), "Lỗi đọc trạng thái động cơ");
     return;
   }
   
   // Cập nhật vào control table
   {
     std::lock_guard<std::mutex> data_lock(read_data_mutex_);
-    
-    // Lưu dữ liệu angular_velocity (gyro) - 12 bytes (3 giá trị float)
-    memcpy(&control_table_data_[60], imu_buffer, 12);
-    
-    // Lưu dữ liệu linear_acceleration (accel) - 12 bytes (3 giá trị float)
-    memcpy(&control_table_data_[72], imu_buffer + 12, 12);
-    
-    // Lưu dữ liệu quaternion (orientation) - 16 bytes (4 giá trị float)
-    memcpy(&control_table_data_[96], imu_buffer + 24, 16);
-    
-    // Đọc trạng thái động cơ
-    cmd = CMD_GET_STATUS;
-    if (!i2c_write(&cmd, 1)) {
-      RCLCPP_ERROR(rclcpp::get_logger("XiaoBLEI2CWrapper"), "Lỗi gửi lệnh đọc trạng thái");
-      return;
-    }
-    
-    delay_ms(10);  // 10ms
-    
-    // Đọc đầy đủ trạng thái động cơ (6 float + 1 byte = 25 bytes)
-    // present_current_left/right, present_velocity_left/right, 
-    // present_position_left/right, motor_torque_enable
-    uint8_t motor_buffer[25];
-    if (!i2c_read(motor_buffer, sizeof(motor_buffer))) {
-      RCLCPP_ERROR(rclcpp::get_logger("XiaoBLEI2CWrapper"), "Lỗi đọc trạng thái động cơ");
-      return;
-    }
     
     // Cập nhật dòng điện động cơ
     memcpy(&control_table_data_[120], motor_buffer, 4);     // present_current_left
@@ -216,23 +248,6 @@ void XiaoBLEI2CWrapper::read_data_set()
       std::chrono::steady_clock::now().time_since_epoch()).count());
   memcpy(&control_table_data_[10], &current_millis, 4);   // millis
   
-  // Mô phỏng dữ liệu IMU
-  // Gyro data
-  float gyro[3] = {0.01f, 0.02f, 0.03f};
-  memcpy(&control_table_data_[60], gyro, 12);  // imu_angular_velocity_x,y,z
-  
-  // Accel data
-  float accel[3] = {0.0f, 0.0f, 9.8f};
-  memcpy(&control_table_data_[72], accel, 12); // imu_linear_acceleration_x,y,z
-  
-  // Đặt magnetic data thành zero (không sử dụng) nhưng vẫn chiếm vị trí trong control table
-  float magnetic[3] = {0.0f, 0.0f, 0.0f};
-  memcpy(&control_table_data_[84], magnetic, 12); // imu_magnetic_x,y,z
-  
-  // Quaternion (không xoay)
-  float quat[4] = {1.0f, 0.0f, 0.0f, 0.0f};  // w, x, y, z
-  memcpy(&control_table_data_[96], quat, 16);  // imu_orientation_w,x,y,z
-  
   // Mô phỏng dữ liệu encoder và vận tốc
   int32_t velocity[2] = {0, 0};
   int32_t position[2] = {0, 0};
@@ -253,21 +268,6 @@ bool XiaoBLEI2CWrapper::set_data_to_device(
   uint8_t * data,
   std::string * msg)
 {
-  // RCLCPP_INFO(rclcpp::get_logger("XiaoBLEI2CWrapper"), 
-  //             "set_data_to_device - addr: %d, length: %d, data[0]: %d", addr, length, data[0]);
-
-  // // In ra dữ liệu nhận được
-  // RCLCPP_INFO(rclcpp::get_logger("XiaoBLEI2CWrapper"), "Dữ liệu nhận được:");
-  // for(int i = 0; i < length; i++) {
-  //   RCLCPP_INFO(rclcpp::get_logger("XiaoBLEI2CWrapper"), 
-  //               "data[%d] = 0x%02X", i, data[i]);
-  // }
-  
-  // float test_float;
-  // memcpy(&test_float, data, 4);
-  // RCLCPP_INFO(rclcpp::get_logger("XiaoBLEI2CWrapper"), 
-  //             "Giá trị float kiểm tra: %f", test_float);
-  
   // Cập nhật control table local
   {
     std::lock_guard<std::mutex> lock(write_data_mutex_);
@@ -277,14 +277,8 @@ bool XiaoBLEI2CWrapper::set_data_to_device(
   }
   
 #ifdef __linux__
-  std::lock_guard<std::mutex> lock(i2c_mutex_);
-  
   // Xử lý các lệnh đặc biệt
-  if (addr == 59 && length == 1 && data[0] == 1) {
-    // Hiệu chuẩn IMU
-    return calibrate_imu(msg);
-  }
-  else if (addr == 149 && length == 1) {
+  if (addr == 149 && length == 1) {
     // Motor torque enable/disable
     return set_motor_torque_enable(data[0], msg);
   }
@@ -299,10 +293,6 @@ bool XiaoBLEI2CWrapper::set_data_to_device(
       std::lock_guard<std::mutex> data_lock(read_data_mutex_);
       memcpy(&angular_z, &control_table_data_[170], 4);
     }
-    
-    RCLCPP_INFO(rclcpp::get_logger("XiaoBLEI2CWrapper"), 
-                "Giá trị đọc được - linear_x: %f, angular_z: %f", 
-                linear_x, angular_z);
     
     return control_motors(linear_x, angular_z, msg);
   }
@@ -325,256 +315,6 @@ bool XiaoBLEI2CWrapper::set_data_to_device(
   return true;
 #else
   if (msg) *msg = "Giả lập: Lệnh được xử lý thành công";
-  return true;
-#endif
-}
-
-bool XiaoBLEI2CWrapper::calibrate_imu(std::string * msg)
-{
-#ifdef __linux__
-  uint8_t cmd = CMD_CALIBRATE_IMU;
-  if (!i2c_write(&cmd, 1)) {
-    if (msg) *msg = "Lỗi gửi lệnh hiệu chuẩn IMU";
-    return false;
-  }
-  
-  // Đợi quá trình hiệu chuẩn hoàn tất
-  delay_ms(3000);  // Đợi 3 giây để hoàn tất hiệu chuẩn
-  
-  uint8_t response;
-  if (!i2c_read(&response, 1)) {
-    if (msg) *msg = "Lỗi đọc phản hồi hiệu chuẩn IMU";
-    return false;
-  }
-  
-  if (response != 1) {
-    if (msg) *msg = "Hiệu chuẩn IMU thất bại";
-    return false;
-  }
-  
-  if (msg) *msg = "Hiệu chuẩn IMU thành công";
-  return true;
-#else
-  if (msg) *msg = "Giả lập: Hiệu chuẩn IMU thành công";
-  return true;
-#endif
-}
-
-bool XiaoBLEI2CWrapper::set_motor_torque_enable(uint8_t enable, std::string * msg)
-{
-#ifdef __linux__
-  RCLCPP_INFO(rclcpp::get_logger("XiaoBLEI2CWrapper"), 
-              "Gửi lệnh %s motor torque", enable ? "enable" : "disable");
-              
-  uint8_t buffer[2];
-  buffer[0] = CMD_MOTOR_TORQUE;  // Sử dụng lệnh riêng cho motor torque
-  buffer[1] = enable;
-  
-  if (!i2c_write(buffer, sizeof(buffer))) {
-    if (msg) *msg = "Lỗi gửi lệnh motor torque enable";
-    return false;
-  }
-  
-  delay_ms(10);
-  
-  uint8_t response;
-  if (!i2c_read(&response, 1)) {
-    if (msg) *msg = "Lỗi đọc phản hồi motor torque enable";
-    return false;
-  }
-  
-  RCLCPP_INFO(rclcpp::get_logger("XiaoBLEI2CWrapper"), 
-              "Arduino response: 0x%02X", response);
-              
-  if (response != 1) {
-    if (msg) *msg = "Motor torque enable thất bại - Arduino response: " + std::to_string(response);
-    return false;
-  }
-  
-  if (msg) *msg = enable ? "Motor torque enabled" : "Motor torque disabled";
-  return true;
-#else
-  if (msg) *msg = enable ? "Giả lập: Motor torque enabled" : "Giả lập: Motor torque disabled";
-  return true;
-#endif
-}
-
-bool XiaoBLEI2CWrapper::control_motors(float linear_x, float angular_z, std::string * msg)
-{
-#ifdef __linux__
-  RCLCPP_INFO(rclcpp::get_logger("XiaoBLEI2CWrapper"), 
-              "Gửi lệnh điều khiển động cơ - linear_x: %f, angular_z: %f", 
-              linear_x, angular_z);
-              
-  uint8_t buffer[9];
-  buffer[0] = CMD_SET_MOTOR;
-  
-  // Chuyển đổi float thành bytes
-  union {
-    float f;
-    uint8_t b[4];
-  } linear_union, angular_union;
-  
-  linear_union.f = linear_x;
-  angular_union.f = angular_z;
-  
-  // Copy bytes vào buffer
-  for(int i = 0; i < 4; i++) {
-    buffer[1 + i] = linear_union.b[i];
-    buffer[5 + i] = angular_union.b[i];
-  }
-  
-  // In ra buffer để debug
-  // RCLCPP_INFO(rclcpp::get_logger("XiaoBLEI2CWrapper"), "Buffer I2C:");
-  // for(int i = 0; i < sizeof(buffer); i++) {
-  //   RCLCPP_INFO(rclcpp::get_logger("XiaoBLEI2CWrapper"), 
-  //               "buffer[%d] = 0x%02X", i, buffer[i]);
-  // }
-  
-  if (!i2c_write(buffer, sizeof(buffer))) {
-    if (msg) *msg = "Lỗi gửi lệnh điều khiển động cơ";
-    return false;
-  }
-  
-  // Đợi phản hồi
-  delay_ms(10);
-  
-  uint8_t response;
-  if (!i2c_read(&response, 1)) {
-    if (msg) *msg = "Lỗi đọc phản hồi điều khiển động cơ";
-    return false;
-  }
-  
-  if (response != 1) {
-    if (msg) *msg = "Điều khiển động cơ thất bại";
-    return false;
-  }
-  
-  if (msg) *msg = "Điều khiển động cơ thành công";
-  return true;
-#else
-  // Trong trường hợp mô phỏng, luôn trả về thành công
-  if (msg) *msg = "Giả lập: Điều khiển động cơ thành công";
-  return true;
-#endif
-}
-
-bool XiaoBLEI2CWrapper::read_imu(float &quat_w, float &quat_x, float &quat_y, float &quat_z,
-  float &gyro_x, float &gyro_y, float &gyro_z, 
-  float &accel_x, float &accel_y, float &accel_z, 
-  std::string * msg)
-{
-#ifdef __linux__
-std::lock_guard<std::mutex> lock(i2c_mutex_);
-
-uint8_t cmd = CMD_GET_IMU;
-if (!i2c_write(&cmd, 1)) {
-if (msg) *msg = "Lỗi gửi lệnh đọc IMU";
-return false;
-}
-
-delay_ms(10);
-
-uint8_t buffer[40];  // 10 giá trị float = 40 bytes
-if (!i2c_read(buffer, sizeof(buffer))) {
-if (msg) *msg = "Lỗi đọc dữ liệu IMU";
-return false;
-}
-
-  // Chuyển đổi dữ liệu theo thứ tự Gyro → Accel → Quaternion
-  // Đọc gyro từ 3 float đầu tiên
-  memcpy(&gyro_x, buffer, 4);
-  memcpy(&gyro_y, buffer + 4, 4);
-  memcpy(&gyro_z, buffer + 8, 4);
-
-  // Đọc accel từ 3 float tiếp theo
-  memcpy(&accel_x, buffer + 12, 4);
-  memcpy(&accel_y, buffer + 16, 4);
-  memcpy(&accel_z, buffer + 20, 4);
-
-  // Đọc quaternion từ 4 float cuối
-  memcpy(&quat_w, buffer + 24, 4);
-  memcpy(&quat_x, buffer + 28, 4);
-  memcpy(&quat_y, buffer + 32, 4);
-  memcpy(&quat_z, buffer + 36, 4);
-
-  // Cập nhật control table với các địa chỉ đúng
-  {
-    std::lock_guard<std::mutex> data_lock(read_data_mutex_);
-    
-    // Lưu dữ liệu gyro (địa chỉ 60, 64, 68)
-    memcpy(&control_table_data_[60], buffer, 12);
-    
-    // Lưu dữ liệu accel (địa chỉ 72, 76, 80)
-    memcpy(&control_table_data_[72], buffer + 12, 12);
-    
-    // Lưu dữ liệu quaternion (địa chỉ 96, 100, 104, 108)
-    memcpy(&control_table_data_[96], buffer + 24, 16);
-  }
-
-if (msg) *msg = "Đọc IMU thành công";
-return true;
-#else
-// Giả lập dữ liệu quaternion
-quat_w = 1.0f;
-quat_x = 0.0f;
-quat_y = 0.0f;
-quat_z = 0.0f;
-
-// Giả lập dữ liệu IMU
-gyro_x = 0.01f;
-gyro_y = 0.02f;
-gyro_z = 0.03f;
-accel_x = 0.0f;
-accel_y = 0.0f;
-accel_z = 9.8f;
-
-if (msg) *msg = "Giả lập: Đọc IMU thành công";
-return true;
-#endif
-}
-
-bool XiaoBLEI2CWrapper::i2c_write(uint8_t* data, size_t length)
-{
-#ifdef __linux__
-  if (i2c_fd_ < 0) {
-    RCLCPP_ERROR(rclcpp::get_logger("XiaoBLEI2CWrapper"), "Thiết bị I2C chưa được mở");
-    return false;
-  }
-  
-  if (write(i2c_fd_, data, length) != static_cast<ssize_t>(length)) {
-    RCLCPP_ERROR(rclcpp::get_logger("XiaoBLEI2CWrapper"), "Lỗi ghi dữ liệu I2C");
-    return false;
-  }
-  
-  return true;
-#else
-  return true;  // Luôn thành công trong môi trường mô phỏng
-#endif
-}
-
-bool XiaoBLEI2CWrapper::i2c_read(uint8_t* data, size_t length)
-{
-#ifdef __linux__
-  if (i2c_fd_ < 0) {
-    RCLCPP_ERROR(rclcpp::get_logger("XiaoBLEI2CWrapper"), "Thiết bị I2C chưa được mở");
-    return false;
-  }
-  
-  if (read(i2c_fd_, data, length) != static_cast<ssize_t>(length)) {
-    RCLCPP_ERROR(rclcpp::get_logger("XiaoBLEI2CWrapper"), "Lỗi đọc dữ liệu I2C");
-    return false;
-  }
-  
-  return true;
-#else
-  // Giả lập dữ liệu trong môi trường mô phỏng
-  if (length == 1) {
-    data[0] = 0xAA;  // Giá trị phản hồi PING
-  } else {
-    // Điền giá trị giả lập khác nếu cần
-    memset(data, 0, length);
-  }
   return true;
 #endif
 }

@@ -1,0 +1,9 @@
+source;share/autonomous_exploration/hook/cmake_prefix_path.ps1
+source;share/autonomous_exploration/hook/cmake_prefix_path.dsv
+source;share/autonomous_exploration/hook/cmake_prefix_path.sh
+source;share/autonomous_exploration/hook/pythonpath.ps1
+source;share/autonomous_exploration/hook/pythonpath.dsv
+source;share/autonomous_exploration/hook/pythonpath.sh
+source;share/autonomous_exploration/hook/ament_prefix_path.ps1
+source;share/autonomous_exploration/hook/ament_prefix_path.dsv
+source;share/autonomous_exploration/hook/ament_prefix_path.sh

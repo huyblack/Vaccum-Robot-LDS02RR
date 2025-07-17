@@ -1,11 +1,27 @@
+// Copyright 2023
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 #ifndef TURTLEBOT3_NODE__XIAO_BLE_I2C_WRAPPER_HPP_
 #define TURTLEBOT3_NODE__XIAO_BLE_I2C_WRAPPER_HPP_
 
+#ifdef __linux__
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
 #include <linux/i2c-dev.h>
 #include <linux/i2c.h>
+#endif
 
 #include <string>
 #include <vector>
@@ -13,14 +29,13 @@
 #include <memory>
 #include <cstring>
 #include <chrono>
+#include <thread>
 
 #include <rclcpp/rclcpp.hpp>
 
-// Định nghĩa các lệnh I2C
+// Định nghĩa các lệnh I2C (đã loại bỏ IMU)
 #define CMD_PING           0x01  // Kiểm tra kết nối
-#define CMD_CALIBRATE_IMU  0x02  // Hiệu chuẩn IMU
 #define CMD_SET_MOTOR      0x03  // Điều khiển động cơ
-#define CMD_GET_IMU        0x04  // Đọc dữ liệu IMU
 #define CMD_GET_STATUS     0x05  // Đọc trạng thái
 #define CMD_MOTOR_TORQUE   0x06  // Bật/tắt motor torque
 
@@ -86,26 +101,18 @@ public:
   // Khởi tạo vùng nhớ đọc
   void init_read_memory(const uint16_t & start_addr, const uint16_t & length);
   
-  // Cập nhật dữ liệu từ Xiao BLE
+  // Cập nhật dữ liệu từ Xiao BLE (chỉ motor status)
   void read_data_set();
 
   // Kiểm tra kết nối với thiết bị
   bool is_connected_to_device();
-  
-  // Hiệu chuẩn IMU
-  bool calibrate_imu(std::string * msg = nullptr);
   
   // Điều khiển động cơ với vận tốc tuyến tính và góc
   bool control_motors(float linear_x, float angular_z, std::string * msg = nullptr);
   
   // Bật/tắt motor torque
   bool set_motor_torque_enable(uint8_t enable, std::string * msg = nullptr);
-  
-  // Đọc dữ liệu IMU từ thiết bị
-  bool read_imu(float &quat_w, float &quat_x, float &quat_y, float &quat_z,
-    float &gyro_x, float &gyro_y, float &gyro_z, 
-    float &accel_x, float &accel_y, float &accel_z, 
-    std::string * msg);
+
 private:
   // Ghi dữ liệu qua I2C
   bool i2c_write(uint8_t* data, size_t length);
