@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤖 TurtleBot3 SLAM Monitor - Improved</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            align-items: start;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+        .panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        .status {
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-weight: bold;
+            text-align: center;
+        }
+        .connected { background: rgba(76, 175, 80, 0.8); }
+        .disconnected { background: rgba(244, 67, 54, 0.8); }
+        .reconnecting { background: rgba(255, 193, 7, 0.8); color: black; }
+        .map-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+        #mapCanvas {
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: #2c3e50;
+            margin: 10px auto;
+            display: block;
+        }
+        .compass {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.7);
+            border: 3px solid #3498db;
+            position: relative;
+            margin: 10px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .compass-needle {
+            width: 4px;
+            height: 35px;
+            background: linear-gradient(to top, #e74c3c 0%, #f39c12 100%);
+            transform-origin: bottom center;
+            border-radius: 2px;
+            transition: transform 0.3s ease;
+        }
+        .compass-labels {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        .compass-label {
+            position: absolute;
+            font-size: 12px;
+            font-weight: bold;
+            color: #ecf0f1;
+        }
+        .robot-trail {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+        }
+        .timestamp {
+            font-size: 0.9em;
+            opacity: 0.8;
+            text-align: center;
+            margin-top: 10px;
+        }
+        h1, h2 {
+            text-align: center;
+            margin: 0 0 20px 0;
+        }
+        .reconnect-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px auto;
+            display: block;
+        }
+        .reconnect-btn:hover {
+            background: #2980b9;
+        }
+
+        /* Control Panel Styles */
+        .control-panel {
+            background: #2c3e50;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #e74c3c;
+        }
+
+        .control-group {
+            margin: 15px 0;
+            padding: 10px;
+            background: #34495e;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .control-label {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .control-title {
+            font-weight: bold;
+            color: #ecf0f1;
+        }
+
+        .control-desc {
+            font-size: 11px;
+            color: #bdc3c7;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #7f8c8d;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: #27ae60;
+        }
+
+        .toggle-switch.danger.active {
+            background: #e74c3c;
+        }
+
+        .toggle-switch::before {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 12px;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch.active::before {
+            transform: translateX(30px);
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-left: 10px;
+        }
+
+        .status-offline { background: #7f8c8d; }
+        .status-online { background: #27ae60; }
+        .status-error { background: #e74c3c; }
+        .status-warning { background: #f39c12; }
+
+        /* Manual Control Styles */
+        .manual-control-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            max-width: 200px;
+            margin: 15px auto;
+        }
+
+        .control-btn {
+            width: 60px;
+            height: 60px;
+            border: none;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .control-btn:active, .control-btn.pressed {
+            transform: translateY(0);
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .control-btn:disabled {
+            background: #7f8c8d;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .control-btn.center {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .control-btn.center:active, .control-btn.center.pressed {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+        }
+
+        /* Stop button specific styling */
+        .stop-btn {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%) !important;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4) !important;
+        }
+
+        .stop-btn:hover {
+            background: linear-gradient(135deg, #c0392b 0%, #a93226 100%) !important;
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.6) !important;
+        }
+
+        .velocity-display {
+            text-align: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Safety Alert Animation */
+        @keyframes flash-warning {
+            0%, 100% { border-left-color: #e74c3c; }
+            50% { border-left-color: #f39c12; }
+        }
+        .log {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            padding: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🤖 TurtleBot3 SLAM Real-time Monitor</h1>
+    
+    <div class="container">
+        <!-- Connection Status Panel -->
+        <div class="panel">
+            <h2>🔗 Connection Status</h2>
+            <div id="status" class="status disconnected">❌ Disconnected</div>
+            <button id="reconnectBtn" class="reconnect-btn" onclick="manualReconnect()">🔄 Reconnect</button>
+            
+            <h3>📊 Statistics</h3>
+            <div class="data-row">
+                <span>Map Updates:</span>
+                <span id="mapCount">0</span>
+            </div>
+            <div class="data-row">
+                <span>Odom Updates:</span>
+                <span id="odomCount">0</span>
+            </div>
+            <div class="data-row">
+                <span>Connection Time:</span>
+                <span id="connectionTime">-</span>
+            </div>
+            
+            <div class="log" id="logContainer">
+                <div>📋 Connection Log:</div>
+            </div>
+        </div>
+
+        <!-- Map Visualization Panel -->
+        <div class="panel">
+            <h2>🗺️ SLAM Map</h2>
+            <div class="map-container">
+                <canvas id="mapCanvas" width="400" height="300"></canvas>
+                <div id="mapInfo">Waiting for map data...</div>
+            </div>
+            
+            <!-- Robot Direction Compass -->
+            <h3>🧭 Robot Direction</h3>
+            <div class="compass" id="compass">
+                <div class="compass-labels">
+                    <div class="compass-label" style="top: 5px; left: 50%; transform: translateX(-50%);">N</div>
+                    <div class="compass-label" style="right: 10px; top: 50%; transform: translateY(-50%);">E</div>
+                    <div class="compass-label" style="bottom: 5px; left: 50%; transform: translateX(-50%);">S</div>
+                    <div class="compass-label" style="left: 10px; top: 50%; transform: translateY(-50%);">W</div>
+                </div>
+                <div class="compass-needle" id="compassNeedle"></div>
+            </div>
+            <div style="text-align: center; margin-top: 10px;">
+                <div id="compassDegrees">0.0°</div>
+                <button class="reconnect-btn" onclick="centerMapOnRobot()" style="margin-top: 10px; font-size: 12px; padding: 5px 10px;">📍 Center Map</button>
+            </div>
+        </div>
+
+        <!-- Robot Data Panel -->
+        <div class="panel">
+            <h2>🤖 Robot Status</h2>
+            <div id="odomData">
+                <h3>📍 Position (meters)</h3>
+                <div class="data-row">
+                    <span>X:</span>
+                    <span id="posX">0.000</span>
+                </div>
+                <div class="data-row">
+                    <span>Y:</span>
+                    <span id="posY">0.000</span>
+                </div>
+                <div class="data-row">
+                    <span>Distance from Origin:</span>
+                    <span id="distanceFromOrigin">0.000m</span>
+                </div>
+                
+                <h3>🧭 Orientation</h3>
+                <div class="data-row">
+                    <span>Yaw (°):</span>
+                    <span id="yawDegrees">0.0</span>
+                </div>
+                <div class="data-row">
+                    <span>Direction:</span>
+                    <span id="cardinalDirection">North</span>
+                </div>
+                
+                <h3>📊 Motion Data</h3>
+                <div class="data-row">
+                    <span>Linear Velocity:</span>
+                    <span id="linearVel">0.000 m/s</span>
+                </div>
+                <div class="data-row">
+                    <span>Angular Velocity:</span>
+                    <span id="angularVel">0.000 rad/s</span>
+                </div>
+            </div>
+            <div class="timestamp" id="lastUpdate">Last update: Never</div>
+        </div>
+
+        <!-- Robot Control Panel -->
+        <div class="panel control-panel">
+            <h2>🎮 Robot Control</h2>
+            
+            <div class="control-group">
+                <div class="control-label">
+                    <div class="control-title">🗺️ Frontier Exploration</div>
+                    <div class="control-desc">Start/stop autonomous SLAM exploration</div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div class="toggle-switch" id="explorationToggle" onclick="toggleExploration()"></div>
+                    <span class="status-indicator status-offline" id="explorationStatus"></span>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <div class="control-label">
+                    <div class="control-title">🔴 LiDAR Rotation</div>
+                    <div class="control-desc">Control LiDAR rotation only (SLAM runs independently)</div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div class="toggle-switch danger" id="lidarToggle" onclick="toggleLidar()"></div>
+                    <span class="status-indicator status-offline" id="lidarStatus"></span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="control-label">
+                    <div class="control-title">⚡ Motor Power (GPIO27)</div>
+                    <div class="control-desc">Enable/disable motor power supply (GPIO27)</div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div class="toggle-switch" id="motorToggle" onclick="toggleMotor()"></div>
+                    <span class="status-indicator status-offline" id="motorStatus"></span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="control-label">
+                    <div class="control-title">🔧 Motor Control (Pin 25)</div>
+                    <div class="control-desc">Enable/disable motor control via GPIO25</div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div class="toggle-switch" id="motorControlToggle" onclick="toggleMotorControl()"></div>
+                    <span class="status-indicator status-offline" id="motorControlStatus"></span>
+                </div>
+            </div>
+
+            <div style="margin-top: 15px; padding: 10px; background: rgba(231, 76, 60, 0.1); border-radius: 5px; border-left: 3px solid #e74c3c;">
+                <strong>⚠️ Safety Warning:</strong><br>
+                <small>Turning off LiDAR will stop sensor data but SLAM continues running. Robot will auto-stop for safety.</small>
+            </div>
+        </div>
+
+        <!-- Manual Control Panel -->
+        <div class="panel">
+            <h2>🎮 Manual Control (Toggle Mode)</h2>
+            <div class="manual-control-grid">
+                <div></div>
+                <button class="control-btn" 
+                        id="forwardBtn"
+                        onclick="toggleMovement('forward')">
+                    <span style="font-size: 24px;">⬆️</span>
+                </button>
+                <div></div>
+                
+                <button class="control-btn" 
+                        id="leftBtn"
+                        onclick="toggleMovement('left')">
+                    <span style="font-size: 24px;">⬅️</span>
+                </button>
+                <button class="control-btn stop-btn" 
+                        id="stopBtn"
+                        onclick="stopMovement()"
+                        style="background: #e74c3c; color: white; font-weight: bold;">
+                    <span style="font-size: 24px;">⏹️</span>
+                </button>
+                <button class="control-btn" 
+                        id="rightBtn"
+                        onclick="toggleMovement('right')">
+                    <span style="font-size: 24px;">➡️</span>
+                </button>
+                
+                <div></div>
+                <button class="control-btn" 
+                        id="backwardBtn"
+                        onclick="toggleMovement('backward')">
+                    <span style="font-size: 24px;">⬇️</span>
+                </button>
+                <div></div>
+            </div>
+            
+            <div class="velocity-display">
+                <strong>Movement Status:</strong><br>
+                Current: <span id="currentMovement">Stopped</span><br>
+                Linear: <span id="cmdLinearVel">0.000 m/s</span><br>
+                Angular: <span id="cmdAngularVel">0.000 rad/s</span>
+            </div>
+            
+            <div style="margin-top: 10px; padding: 10px; background: rgba(52, 152, 219, 0.1); border-radius: 5px; border-left: 3px solid #3498db;">
+                <strong>🎯 Toggle Control Instructions:</strong><br>
+                <small>• Click direction buttons to START movement at 0.1 m/s<br>
+                • Click STOP to halt all movement<br>
+                • Only one direction active at a time<br>
+                • <strong>Keyboard:</strong> Arrow keys or WASD, Space to stop</small>
+            </div>
+        </div>
+
+        <!-- Map Information Panel -->
+        <div class="panel">
+            <h2>🗂️ Map Information</h2>
+            <div id="mapData">
+                <div class="data-row">
+                    <span>Resolution:</span>
+                    <span id="resolution">-</span>
+                </div>
+                <div class="data-row">
+                    <span>Size:</span>
+                    <span id="mapSize">- x -</span>
+                </div>
+                <div class="data-row">
+                    <span>Origin:</span>
+                    <span id="origin">(--, --)</span>
+                </div>
+                <div class="data-row">
+                    <span>Data Size:</span>
+                    <span id="dataSize">-</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let ws = null;
+        let mapCount = 0;
+        let odomCount = 0;
+        let connectionStartTime = null;
+        let reconnectAttempts = 0;
+        let maxReconnectAttempts = 10;
+        let reconnectDelay = 1000; // Start with 1 second
+        let reconnectTimer = null;
+
+        // WebSocket connection
+        function connect() {
+            try {
+                // Use the Pi's IP - change this to your Pi's actual IP
+                ws = new WebSocket('ws://192.168.2.38:8765');
+                
+                ws.onopen = function(event) {
+                    connectionStartTime = new Date();
+                    reconnectAttempts = 0;
+                    reconnectDelay = 1000;
+                    updateStatus('connected', '✅ Connected to TurtleBot3');
+                    addLog('🔗 Connected successfully');
+                    if (reconnectTimer) {
+                        clearTimeout(reconnectTimer);
+                        reconnectTimer = null;
+                    }
+                    
+                    // Send initial ping và setup heartbeat
+                    setTimeout(() => {
+                        if (ws && ws.readyState === WebSocket.OPEN) {
+                            ws.send(JSON.stringify({action: 'ping'}));
+                        }
+                    }, 1000);
+                    
+                    // Setup heartbeat every 30 seconds để maintain connection
+                    if (window.heartbeatInterval) {
+                        clearInterval(window.heartbeatInterval);
+                    }
+                    window.heartbeatInterval = setInterval(() => {
+                        if (ws && ws.readyState === WebSocket.OPEN) {
+                            ws.send(JSON.stringify({action: 'ping'}));
+                        }
+                    }, 30000);
+                };
+                
+                ws.onmessage = function(event) {
+                    try {
+                        const data = JSON.parse(event.data);
+                        if (data.type === 'map') {
+                            mapCount++;
+                            updateMapData(data);
+                            document.getElementById('mapCount').textContent = mapCount;
+                        } else if (data.type === 'odom') {
+                            odomCount++;
+                            updateOdomData(data);
+                            document.getElementById('odomCount').textContent = odomCount;
+                        } else if (data.type === 'pong') {
+                            // Server responded to ping - connection is healthy
+                            // Don't log every pong to avoid spam, just track silently
+                            window.lastPongTime = Date.now();
+                        } else if (data.type === 'control_response') {
+                            // Handle control command response
+                            handleControlResponse(data);
+                        } else if (data.type === 'safety_alert') {
+                            // Handle safety alerts
+                            handleSafetyAlert(data);
+                        }
+                        updateConnectionTime();
+                    } catch (e) {
+                        addLog('❌ Error parsing message: ' + e.message);
+                    }
+                };
+                
+                ws.onclose = function(event) {
+                    addLog(`🔌 Connection closed (Code: ${event.code})`);
+                    updateStatus('disconnected', '❌ Disconnected');
+                    connectionStartTime = null;
+                    
+                    // Cleanup heartbeat interval
+                    if (window.heartbeatInterval) {
+                        clearInterval(window.heartbeatInterval);
+                        window.heartbeatInterval = null;
+                    }
+                    
+                    if (reconnectAttempts < maxReconnectAttempts) {
+                        scheduleReconnect();
+                    } else {
+                        addLog('🚫 Max reconnection attempts reached');
+                    }
+                };
+                
+                ws.onerror = function(error) {
+                    addLog('⚠️ WebSocket error occurred');
+                    updateStatus('disconnected', '❌ Connection Error');
+                };
+            } catch (e) {
+                addLog('❌ Failed to create WebSocket: ' + e.message);
+                scheduleReconnect();
+            }
+        }
+
+        function scheduleReconnect() {
+            if (reconnectTimer) return; // Already scheduled
+            
+            reconnectAttempts++;
+            updateStatus('reconnecting', `🔄 Reconnecting... (${reconnectAttempts}/${maxReconnectAttempts})`);
+            addLog(`🔄 Reconnect attempt ${reconnectAttempts} in ${reconnectDelay/1000}s`);
+            
+            reconnectTimer = setTimeout(() => {
+                reconnectTimer = null;
+                connect();
+            }, reconnectDelay);
+            
+            // Exponential backoff
+            reconnectDelay = Math.min(reconnectDelay * 1.5, 10000);
+        }
+
+        function manualReconnect() {
+            if (ws) {
+                ws.close();
+            }
+            reconnectAttempts = 0;
+            reconnectDelay = 1000;
+            if (reconnectTimer) {
+                clearTimeout(reconnectTimer);
+                reconnectTimer = null;
+            }
+            addLog('🔄 Manual reconnection initiated');
+            connect();
+        }
+
+        function updateStatus(type, message) {
+            const statusElement = document.getElementById('status');
+            statusElement.className = `status ${type}`;
+            statusElement.textContent = message;
+        }
+
+        function addLog(message) {
+            const logContainer = document.getElementById('logContainer');
+            const time = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.textContent = `[${time}] ${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+            
+            // Keep only last 20 entries
+            while (logContainer.children.length > 21) { // +1 for header
+                logContainer.removeChild(logContainer.children[1]);
+            }
+        }
+
+        function updateConnectionTime() {
+            if (connectionStartTime) {
+                const now = new Date();
+                const diff = Math.floor((now - connectionStartTime) / 1000);
+                const minutes = Math.floor(diff / 60);
+                const seconds = diff % 60;
+                document.getElementById('connectionTime').textContent = 
+                    `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }
+        }
+
+        let robotPosition = {x: 0, y: 0, yaw: 0};
+        let robotTrail = [];
+        
+        function updateOdomData(data) {
+            if (data.pose) {
+                const x = data.pose.position.x;
+                const y = data.pose.position.y;
+                const yaw = data.pose.orientation_yaw;
+                const yawDegrees = (yaw * 180 / Math.PI);
+                
+                // Update position displays
+                document.getElementById('posX').textContent = x.toFixed(3);
+                document.getElementById('posY').textContent = y.toFixed(3);
+                document.getElementById('yawDegrees').textContent = yawDegrees.toFixed(1);
+                
+                // Calculate distance from origin
+                const distance = Math.sqrt(x*x + y*y);
+                document.getElementById('distanceFromOrigin').textContent = distance.toFixed(3) + 'm';
+                
+                // Calculate cardinal direction
+                const cardinalDir = getCardinalDirection(yawDegrees);
+                document.getElementById('cardinalDirection').textContent = cardinalDir;
+                
+                // Update compass
+                updateCompass(yawDegrees);
+                
+                // Store position for map drawing
+                robotPosition = {x: x, y: y, yaw: yaw};
+                
+                // Add to trail (keep last 50 points)
+                robotTrail.push({x: x, y: y});
+                if (robotTrail.length > 50) {
+                    robotTrail.shift();
+                }
+            }
+            
+            // Update velocity data if available
+            if (data.twist) {
+                const linearVel = Math.sqrt(
+                    data.twist.linear.x*data.twist.linear.x + 
+                    data.twist.linear.y*data.twist.linear.y
+                );
+                const angularVel = data.twist.angular.z;
+                
+                document.getElementById('linearVel').textContent = linearVel.toFixed(3) + ' m/s';
+                document.getElementById('angularVel').textContent = angularVel.toFixed(3) + ' rad/s';
+            }
+            
+            document.getElementById('lastUpdate').textContent = 
+                'Last update: ' + new Date().toLocaleTimeString();
+                
+            // Redraw map with updated robot position
+            if (window.currentMapData) {
+                drawMap(window.currentMapData);
+            }
+        }
+        
+        function getCardinalDirection(degrees) {
+            // Normalize to 0-360
+            degrees = ((degrees % 360) + 360) % 360;
+            
+            if (degrees >= 337.5 || degrees < 22.5) return "North";
+            else if (degrees >= 22.5 && degrees < 67.5) return "Northeast";
+            else if (degrees >= 67.5 && degrees < 112.5) return "East";
+            else if (degrees >= 112.5 && degrees < 157.5) return "Southeast";
+            else if (degrees >= 157.5 && degrees < 202.5) return "South";
+            else if (degrees >= 202.5 && degrees < 247.5) return "Southwest";
+            else if (degrees >= 247.5 && degrees < 292.5) return "West";
+            else if (degrees >= 292.5 && degrees < 337.5) return "Northwest";
+            return "Unknown";
+        }
+        
+        function updateCompass(degrees) {
+            const needle = document.getElementById('compassNeedle');
+            const compassDegrees = document.getElementById('compassDegrees');
+            
+            // Rotate needle (CSS transform)
+            needle.style.transform = `rotate(${degrees}deg)`;
+            
+            // Update degrees display
+            const normalizedDegrees = ((degrees % 360) + 360) % 360;
+            compassDegrees.textContent = normalizedDegrees.toFixed(1) + '°';
+        }
+
+        function updateMapData(data) {
+            if (data.info) {
+                document.getElementById('resolution').textContent = data.info.resolution.toFixed(4);
+                document.getElementById('mapSize').textContent = 
+                    `${data.info.width} x ${data.info.height}`;
+                document.getElementById('origin').textContent = 
+                    `(${data.info.origin.x.toFixed(2)}, ${data.info.origin.y.toFixed(2)})`;
+                document.getElementById('dataSize').textContent = 
+                    data.data_size ? data.data_size.toLocaleString() : 'No data';
+            }
+
+            // Simple map visualization
+            if (data.data && data.info) {
+                window.currentMapData = data; // Store for redrawing with robot position
+                drawMap(data);
+            } else {
+                document.getElementById('mapInfo').textContent = 
+                    data.message || 'Map data too large, showing metadata only';
+            }
+        }
+
+        function drawMap(mapData) {
+            const canvas = document.getElementById('mapCanvas');
+            const ctx = canvas.getContext('2d');
+            const info = mapData.info;
+            
+            // Clear canvas
+            ctx.fillStyle = '#34495e';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            if (!mapData.data || mapData.data.length === 0) {
+                ctx.fillStyle = 'white';
+                ctx.font = '16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('No map data', canvas.width/2, canvas.height/2);
+                return;
+            }
+            
+            // Calculate scaling
+            const scaleX = canvas.width / info.width;
+            const scaleY = canvas.height / info.height;
+            const scale = Math.min(scaleX, scaleY);
+            
+            const offsetX = (canvas.width - info.width * scale) / 2;
+            const offsetY = (canvas.height - info.height * scale) / 2;
+            
+            // Draw map data
+            for (let y = 0; y < info.height; y++) {
+                for (let x = 0; x < info.width; x++) {
+                    const index = y * info.width + x;
+                    const value = mapData.data[index];
+                    
+                    let color;
+                    if (value === -1) color = '#7f8c8d'; // Unknown - gray
+                    else if (value === 0) color = '#ecf0f1'; // Free - white
+                    else color = '#2c3e50'; // Occupied - dark
+                    
+                    ctx.fillStyle = color;
+                    ctx.fillRect(
+                        offsetX + x * scale,
+                        offsetY + (info.height - y - 1) * scale, // Flip Y
+                        Math.ceil(scale),
+                        Math.ceil(scale)
+                    );
+                }
+            }
+            
+            // Draw robot trail
+            if (robotTrail.length > 1) {
+                ctx.strokeStyle = '#f39c12';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                
+                for (let i = 0; i < robotTrail.length; i++) {
+                    const trail = robotTrail[i];
+                    const mapX = (trail.x - info.origin.x) / info.resolution;
+                    const mapY = (trail.y - info.origin.y) / info.resolution;
+                    
+                    const screenX = offsetX + mapX * scale;
+                    const screenY = offsetY + (info.height - mapY - 1) * scale;
+                    
+                    if (i === 0) ctx.moveTo(screenX, screenY);
+                    else ctx.lineTo(screenX, screenY);
+                }
+                ctx.stroke();
+            }
+            
+            // Draw robot position and orientation (always show if position exists)
+            if (robotPosition) {
+                const robotMapX = (robotPosition.x - info.origin.x) / info.resolution;
+                const robotMapY = (robotPosition.y - info.origin.y) / info.resolution;
+                
+                const robotScreenX = offsetX + robotMapX * scale;
+                const robotScreenY = offsetY + (info.height - robotMapY - 1) * scale;
+                
+                // Debug info
+                console.log(`Robot - World: (${robotPosition.x.toFixed(3)}, ${robotPosition.y.toFixed(3)}) -> Map: (${robotMapX.toFixed(1)}, ${robotMapY.toFixed(1)}) -> Screen: (${robotScreenX.toFixed(1)}, ${robotScreenY.toFixed(1)})`);
+                console.log(`Map - Origin: (${info.origin.x}, ${info.origin.y}), Size: ${info.width}x${info.height}, Resolution: ${info.resolution}`);
+                
+                // Check if robot is within canvas bounds
+                const robotInBounds = (robotScreenX >= 0 && robotScreenX <= canvas.width && 
+                                     robotScreenY >= 0 && robotScreenY <= canvas.height);
+                
+                if (robotInBounds) {
+                    // Draw robot body (circle)
+                    ctx.fillStyle = '#e74c3c';
+                    ctx.beginPath();
+                    ctx.arc(robotScreenX, robotScreenY, Math.max(5, scale * 0.8), 0, 2 * Math.PI);
+                    ctx.fill();
+                    
+                    // Draw robot orientation (arrow)
+                    const arrowLength = Math.max(15, scale * 2);
+                    const arrowX = robotScreenX + Math.cos(robotPosition.yaw) * arrowLength;
+                    const arrowY = robotScreenY - Math.sin(robotPosition.yaw) * arrowLength; // Negative for screen coords
+                    
+                    ctx.strokeStyle = '#e74c3c';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.moveTo(robotScreenX, robotScreenY);
+                    ctx.lineTo(arrowX, arrowY);
+                    ctx.stroke();
+                    
+                    // Draw arrowhead
+                    const arrowheadLength = 10;
+                    const arrowheadAngle = 0.5;
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(arrowX, arrowY);
+                    ctx.lineTo(
+                        arrowX - arrowheadLength * Math.cos(robotPosition.yaw - arrowheadAngle),
+                        arrowY + arrowheadLength * Math.sin(robotPosition.yaw - arrowheadAngle)
+                    );
+                    ctx.moveTo(arrowX, arrowY);
+                    ctx.lineTo(
+                        arrowX - arrowheadLength * Math.cos(robotPosition.yaw + arrowheadAngle),
+                        arrowY + arrowheadLength * Math.sin(robotPosition.yaw + arrowheadAngle)
+                    );
+                    ctx.stroke();
+                } else {
+                    // Robot is outside canvas - draw indicator on edge
+                    let edgeX = Math.max(10, Math.min(canvas.width - 10, robotScreenX));
+                    let edgeY = Math.max(10, Math.min(canvas.height - 10, robotScreenY));
+                    
+                    // Draw off-screen indicator
+                    ctx.fillStyle = '#f39c12';
+                    ctx.strokeStyle = '#e67e22';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.arc(edgeX, edgeY, 8, 0, 2 * Math.PI);
+                    ctx.fill();
+                    ctx.stroke();
+                    
+                    // Draw arrow pointing to robot direction
+                    const dirX = robotScreenX > edgeX ? 1 : (robotScreenX < edgeX ? -1 : 0);
+                    const dirY = robotScreenY > edgeY ? 1 : (robotScreenY < edgeY ? -1 : 0);
+                    
+                    ctx.strokeStyle = '#f39c12';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(edgeX, edgeY);
+                    ctx.lineTo(edgeX + dirX * 15, edgeY + dirY * 15);
+                    ctx.stroke();
+                }
+            }
+            
+            document.getElementById('mapInfo').textContent = 
+                `Map: ${info.width}x${info.height} | Robot: (${robotPosition.x.toFixed(2)}, ${robotPosition.y.toFixed(2)}) | Trail: ${robotTrail.length} points`;
+        }
+
+        function centerMapOnRobot() {
+            if (robotPosition && window.currentMapData) {
+                addLog(`🎯 Robot at World: (${robotPosition.x.toFixed(3)}, ${robotPosition.y.toFixed(3)})`);
+                
+                // Create a modified map data with adjusted origin to center robot
+                const mapData = window.currentMapData;
+                const centerX = robotPosition.x - (mapData.info.width * mapData.info.resolution) / 2;
+                const centerY = robotPosition.y - (mapData.info.height * mapData.info.resolution) / 2;
+                
+                addLog(`📍 Centering map - New origin would be: (${centerX.toFixed(3)}, ${centerY.toFixed(3)})`);
+                addLog(`📊 Current map origin: (${mapData.info.origin.x.toFixed(3)}, ${mapData.info.origin.y.toFixed(3)})`);
+                
+                // Force redraw
+                drawMap(mapData);
+            } else {
+                addLog('❌ No robot position or map data available');
+            }
+        }
+
+        // Control Panel Functions - Initial states match robot defaults
+        let lidarEnabled = false;  // Default: LiDAR OFF (no rotation)
+        let motorEnabled = false;  // Default: Motor power OFF
+        let motorControlEnabled = false;  // Default: Motor control OFF
+        let explorationEnabled = false;  // Default: Exploration OFF
+
+        function toggleLidar() {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                lidarEnabled = !lidarEnabled;
+                
+                const command = {
+                    action: 'control_lidar',
+                    enabled: lidarEnabled
+                };
+                
+                ws.send(JSON.stringify(command));
+                updateControlStatus('lidar', lidarEnabled ? 'pending' : 'offline', 
+                                   lidarEnabled ? 'Stopping LiDAR...' : 'Starting LiDAR...');
+                addLog(`🔴 LiDAR ${lidarEnabled ? 'ENABLED' : 'DISABLED'} - ${lidarEnabled ? 'Spinning' : 'Stopped'} (SLAM independent)`);
+            } else {
+                addLog('❌ Not connected - cannot control LiDAR');
+            }
+        }
+
+        function toggleMotor() {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                motorEnabled = !motorEnabled;
+                
+                const command = {
+                    action: 'control_motor',
+                    pin: 27,  // GPIO27 (Pin 13 physical)
+                    enabled: motorEnabled
+                };
+                
+                ws.send(JSON.stringify(command));
+                updateControlStatus('motor', motorEnabled ? 'pending' : 'offline', 
+                                   motorEnabled ? 'Setting GPIO27 HIGH...' : 'Setting GPIO27 LOW...');
+                addLog(`⚡ Motor Power ${motorEnabled ? 'ON' : 'OFF'} - GPIO27 ${motorEnabled ? 'HIGH' : 'LOW'}`);
+            } else {
+                addLog('❌ Not connected - cannot control motor');
+            }
+        }
+
+        function toggleMotorControl() {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                motorControlEnabled = !motorControlEnabled;
+                
+                const command = {
+                    action: 'control_motor',
+                    pin: 25,
+                    enabled: motorControlEnabled
+                };
+                
+                ws.send(JSON.stringify(command));
+                updateControlStatus('motorControl', motorControlEnabled ? 'pending' : 'offline', 
+                                   motorControlEnabled ? 'Setting GPIO25 HIGH...' : 'Setting GPIO25 LOW...');
+                addLog(`🔧 Motor Control ${motorControlEnabled ? 'ON' : 'OFF'} - GPIO25 ${motorControlEnabled ? 'HIGH' : 'LOW'}`);
+            } else {
+                addLog('❌ Not connected - cannot control motor');
+            }
+        }
+
+        function toggleExploration() {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                explorationEnabled = !explorationEnabled;
+                
+                const command = {
+                    action: 'control_exploration',
+                    enabled: explorationEnabled
+                };
+                
+                ws.send(JSON.stringify(command));
+                updateControlStatus('exploration', explorationEnabled ? 'pending' : 'offline', 
+                                   explorationEnabled ? 'Starting Autonomous SLAM...' : 'Stopping Exploration...');
+                addLog(`🗺️ Frontier Exploration ${explorationEnabled ? 'STARTED' : 'STOPPED'} - Robot will explore and map automatically`);
+            } else {
+                addLog('❌ Not connected - cannot control exploration');
+            }
+        }
+
+        function updateControlStatus(type, status, message) {
+            const toggleElement = document.getElementById(`${type}Toggle`);
+            const statusElement = document.getElementById(`${type}Status`);
+            
+            // Update toggle visual state
+            if (type === 'lidar') {
+                toggleElement.classList.toggle('active', lidarEnabled);
+            } else if (type === 'motor') {
+                toggleElement.classList.toggle('active', motorEnabled);
+            } else if (type === 'motorControl') {
+                toggleElement.classList.toggle('active', motorControlEnabled);
+            } else if (type === 'exploration') {
+                toggleElement.classList.toggle('active', explorationEnabled);
+            }
+            
+            // Update status indicator
+            statusElement.className = `status-indicator status-${status}`;
+            statusElement.title = message || '';
+        }
+
+        function handleControlResponse(data) {
+            const { action, success, message, enabled } = data;
+            
+            if (action === 'control_lidar') {
+                if (success) {
+                    lidarEnabled = enabled;
+                    updateControlStatus('lidar', enabled ? 'online' : 'offline', 
+                                       enabled ? 'LiDAR Spinning' : 'LiDAR Stopped');
+                    addLog(`✅ LiDAR ${enabled ? 'started spinning' : 'stopped'} successfully (SLAM independent)`);
+                } else {
+                    // Revert state on failure
+                    lidarEnabled = !lidarEnabled;
+                    updateControlStatus('lidar', 'error', `Failed: ${message}`);
+                    addLog(`❌ LiDAR control failed: ${message}`);
+                }
+            } else if (action === 'control_motor') {
+                if (success) {
+                    // Check which motor control was updated based on pin
+                    if (data.pin === 27) {
+                        motorEnabled = enabled;
+                        updateControlStatus('motor', enabled ? 'online' : 'offline',
+                                           enabled ? 'GPIO27 HIGH' : 'GPIO27 LOW');
+                        addLog(`✅ Motor power ${enabled ? 'enabled' : 'disabled'} successfully`);
+                    } else if (data.pin === 25) {
+                        motorControlEnabled = enabled;
+                        updateControlStatus('motorControl', enabled ? 'online' : 'offline',
+                                           enabled ? 'GPIO25 HIGH' : 'GPIO25 LOW');
+                        addLog(`✅ Motor control ${enabled ? 'enabled' : 'disabled'} successfully`);
+                    }
+                } else {
+                    // Revert state on failure
+                    if (data.pin === 27) {
+                        motorEnabled = !motorEnabled;
+                        updateControlStatus('motor', 'error', `Failed: ${message}`);
+                        addLog(`❌ Motor power control failed: ${message}`);
+                    } else if (data.pin === 25) {
+                        motorControlEnabled = !motorControlEnabled;
+                        updateControlStatus('motorControl', 'error', `Failed: ${message}`);
+                        addLog(`❌ Motor control failed: ${message}`);
+                    }
+                }
+            } else if (action === 'control_exploration') {
+                if (success) {
+                    explorationEnabled = enabled;
+                    updateControlStatus('exploration', enabled ? 'online' : 'offline',
+                                       enabled ? 'Autonomous SLAM Active' : 'Exploration Stopped');
+                    addLog(`✅ Frontier Exploration ${enabled ? 'started' : 'stopped'} successfully`);
+                } else {
+                    // Revert state on failure
+                    explorationEnabled = !explorationEnabled;
+                    updateControlStatus('exploration', 'error', `Failed: ${message}`);
+                    addLog(`❌ Frontier Exploration control failed: ${message}`);
+                }
+            } else if (action === 'send_cmd_vel') {
+                if (success) {
+                    // Update velocity display with actual sent values
+                    currentLinearVelocity = data.linear_x || 0.0;
+                    currentAngularVelocity = data.angular_z || 0.0;
+                    updateVelocityDisplay();
+                    // Don't log every successful cmd_vel to avoid spam
+                } else {
+                    addLog(`❌ Manual control failed: ${message}`);
+                    // Stop movement on failure
+                    stopMovement();
+                }
+            }
+        }
+
+        function handleSafetyAlert(data) {
+            const { message, level, timestamp } = data;
+            
+            // Add to logs with special styling
+            addLog(`🚨 SAFETY ALERT: ${message}`);
+            
+            // Show visual alert on control panel
+            const controlPanel = document.querySelector('.control-panel');
+            if (controlPanel) {
+                // Flash the control panel border
+                controlPanel.style.borderLeft = '4px solid #f39c12';
+                controlPanel.style.animation = 'flash-warning 2s ease-in-out 3';
+                
+                setTimeout(() => {
+                    controlPanel.style.borderLeft = '4px solid #e74c3c';
+                    controlPanel.style.animation = '';
+                }, 6000);
+            }
+            
+            // Update robot status indicators
+            if (message.includes('LiDAR')) {
+                updateControlStatus('lidar', 'error', 'Safety Stop - LiDAR Rotation Disabled');
+            }
+        }
+
+         // Manual Control Functions
+         let currentLinearVelocity = 0.0;
+         let currentAngularVelocity = 0.0;
+         let isMoving = false;
+         let currentDirection = null;
+         
+         // Robot specifications - Max velocity 0.1 m/s, max angular ~1.0 rad/s 
+         const MAX_LINEAR_VELOCITY = 0.1;   // 0.1 m/s as requested
+         const MAX_ANGULAR_VELOCITY = 1.0;  // 1.0 rad/s for reasonable turning
+
+         // Toggle movement - starts or changes direction
+         function toggleMovement(direction) {
+             if (!ws || ws.readyState !== WebSocket.OPEN) {
+                 addLog('❌ Not connected - cannot control robot');
+                 return;
+             }
+
+             // If already moving in this direction, do nothing
+             if (isMoving && currentDirection === direction) {
+                 addLog(`🎮 Already moving ${direction}`);
+                 return;
+             }
+
+             // Clear any previous movement state
+             clearMovementButtons();
+
+             // Set new movement
+             isMoving = true;
+             currentDirection = direction;
+             
+             // Set button visual state
+             const btn = document.getElementById(direction + 'Btn');
+             if (btn) {
+                 btn.classList.add('pressed');
+                 btn.style.background = '#27ae60';
+                 btn.style.color = 'white';
+             }
+
+             // Set velocity based on direction
+             switch(direction) {
+                 case 'forward':
+                     currentLinearVelocity = MAX_LINEAR_VELOCITY;
+                     currentAngularVelocity = 0.0;
+                     break;
+                 case 'backward':
+                     currentLinearVelocity = -MAX_LINEAR_VELOCITY;
+                     currentAngularVelocity = 0.0;
+                     break;
+                 case 'left':
+                     currentLinearVelocity = 0.0;
+                     currentAngularVelocity = MAX_ANGULAR_VELOCITY;
+                     break;
+                 case 'right':
+                     currentLinearVelocity = 0.0;
+                     currentAngularVelocity = -MAX_ANGULAR_VELOCITY;
+                     break;
+             }
+
+             sendVelocityCommand();
+             updateVelocityDisplay();
+             addLog(`🎮 Started moving: ${direction} (${currentLinearVelocity.toFixed(2)} m/s, ${currentAngularVelocity.toFixed(2)} rad/s)`);
+         }
+
+         // Clear visual state from all direction buttons
+         function clearMovementButtons() {
+             ['forward', 'backward', 'left', 'right'].forEach(dir => {
+                 const btn = document.getElementById(dir + 'Btn');
+                 if (btn) {
+                     btn.classList.remove('pressed');
+                     btn.style.background = '';
+                     btn.style.color = '';
+                 }
+             });
+         }
+
+         function stopMovement() {
+             if (!isMoving) {
+                 addLog(`🛑 Already stopped`);
+                 return;
+             }
+
+             isMoving = false;
+             
+             // Clear all movement button states
+             clearMovementButtons();
+
+             // Stop robot
+             currentLinearVelocity = 0.0;
+             currentAngularVelocity = 0.0;
+             currentDirection = null;
+
+             sendVelocityCommand();
+             updateVelocityDisplay();
+             addLog(`🛑 Movement stopped`);
+         }
+
+         function emergencyStop() {
+             stopMovement();
+             addLog(`🚨 EMERGENCY STOP activated`);
+         }
+
+         function sendVelocityCommand() {
+             if (!ws || ws.readyState !== WebSocket.OPEN) return;
+
+             const command = {
+                 action: 'send_cmd_vel',
+                 linear_x: currentLinearVelocity,
+                 angular_z: currentAngularVelocity
+             };
+
+             ws.send(JSON.stringify(command));
+         }
+
+         function updateVelocityDisplay() {
+             document.getElementById('cmdLinearVel').textContent = currentLinearVelocity.toFixed(3) + ' m/s';
+             document.getElementById('cmdAngularVel').textContent = currentAngularVelocity.toFixed(3) + ' rad/s';
+             
+             // Update movement status
+             const statusElement = document.getElementById('currentMovement');
+             if (statusElement) {
+                 if (isMoving && currentDirection) {
+                     statusElement.textContent = `Moving ${currentDirection}`;
+                     statusElement.style.color = '#27ae60';
+                     statusElement.style.fontWeight = 'bold';
+                 } else {
+                     statusElement.textContent = 'Stopped';
+                     statusElement.style.color = '#e74c3c';
+                     statusElement.style.fontWeight = 'normal';
+                 }
+             }
+         }
+
+         // Keyboard support for manual control (Toggle Mode)
+         let keyPressed = false;
+         
+         document.addEventListener('keydown', function(event) {
+             // Prevent key repeat
+             if (keyPressed) return;
+             keyPressed = true;
+
+             switch(event.code) {
+                 case 'ArrowUp':
+                 case 'KeyW':
+                     event.preventDefault();
+                     toggleMovement('forward');
+                     break;
+                 case 'ArrowDown':
+                 case 'KeyS':
+                     event.preventDefault();
+                     toggleMovement('backward');
+                     break;
+                 case 'ArrowLeft':
+                 case 'KeyA':
+                     event.preventDefault();
+                     toggleMovement('left');
+                     break;
+                 case 'ArrowRight':
+                 case 'KeyD':
+                     event.preventDefault();
+                     toggleMovement('right');
+                     break;
+                 case 'Space':
+                     event.preventDefault();
+                     stopMovement();
+                     break;
+             }
+         });
+
+         document.addEventListener('keyup', function(event) {
+             // Reset key pressed flag
+             keyPressed = false;
+         });
+
+         // Prevent context menu on long press (mobile)
+         document.addEventListener('contextmenu', function(event) {
+             if (event.target.classList.contains('control-btn')) {
+                 event.preventDefault();
+             }
+         });
+
+        // Initialize UI state to match robot defaults
+        function initializeControlUI() {
+            // Set initial toggle states
+            updateControlStatus('lidar', 'offline', 'LiDAR Stopped');
+            updateControlStatus('motor', 'offline', 'GPIO27 LOW');
+            
+            // Initialize velocity display
+            updateVelocityDisplay();
+            
+            addLog('🎮 Control panel initialized - LiDAR OFF, Motor OFF, Manual Control Ready');
+        }
+
+        // Start connection when page loads
+        window.onload = function() {
+            addLog('🚀 Starting TurtleBot3 Monitor...');
+            initializeControlUI();
+            connect();
+            
+            // Update connection time every second
+            setInterval(updateConnectionTime, 1000);
+        };
+        
+        // Cleanup when page unloads - stop robot movement for safety
+        window.onbeforeunload = function() {
+            // Stop any ongoing movement
+            if (isMoving) {
+                stopMovement();
+            }
+            
+            // Cleanup heartbeat
+            if (window.heartbeatInterval) {
+                clearInterval(window.heartbeatInterval);
+            }
+            
+            // Close WebSocket gracefully
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.close(1000, "Page unloading");
+            }
+        };
+    </script>
+</body>
+</html> 

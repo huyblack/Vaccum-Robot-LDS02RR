@@ -1,0 +1,21 @@
+[1.609s] Invoking command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/FrontierExploration/autonomous_exploration': PYTHONPATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/autonomous_exploration/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/autonomous_exploration build --build-base /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/autonomous_exploration/build install --record /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/autonomous_exploration/install.log --single-version-externally-managed install_data
+[3.025s] running egg_info
+[3.026s] writing ../../build/autonomous_exploration/autonomous_exploration.egg-info/PKG-INFO
+[3.026s] writing dependency_links to ../../build/autonomous_exploration/autonomous_exploration.egg-info/dependency_links.txt
+[3.026s] writing entry points to ../../build/autonomous_exploration/autonomous_exploration.egg-info/entry_points.txt
+[3.026s] writing requirements to ../../build/autonomous_exploration/autonomous_exploration.egg-info/requires.txt
+[3.029s] writing top-level names to ../../build/autonomous_exploration/autonomous_exploration.egg-info/top_level.txt
+[3.029s] reading manifest file '../../build/autonomous_exploration/autonomous_exploration.egg-info/SOURCES.txt'
+[3.030s] writing manifest file '../../build/autonomous_exploration/autonomous_exploration.egg-info/SOURCES.txt'
+[3.031s] running build
+[3.032s] running build_py
+[3.034s] running install
+[3.034s] running install_lib
+[3.037s] running install_data
+[3.037s] running install_egg_info
+[3.042s] removing '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/autonomous_exploration-0.0.0-py3.10.egg-info' (and everything under it)
+[3.042s] Copying ../../build/autonomous_exploration/autonomous_exploration.egg-info to /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/autonomous_exploration-0.0.0-py3.10.egg-info
+[3.042s] running install_scripts
+[3.080s] Installing control script to /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/autonomous_exploration
+[3.080s] writing list of installed files to '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/autonomous_exploration/install.log'
+[3.122s] Invoked command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/FrontierExploration/autonomous_exploration' returned '0': PYTHONPATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/autonomous_exploration/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/autonomous_exploration build --build-base /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/autonomous_exploration/build install --record /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/autonomous_exploration/install.log --single-version-externally-managed install_data

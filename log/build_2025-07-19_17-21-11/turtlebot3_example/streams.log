@@ -1,0 +1,26 @@
+[1.831s] Invoking command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/turtlebot3_example': PYTHONPATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../build/turtlebot3_example build --build-base /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build install --record /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/install.log --single-version-externally-managed install_data
+[3.076s] running egg_info
+[3.077s] writing ../../../build/turtlebot3_example/turtlebot3_example.egg-info/PKG-INFO
+[3.077s] writing dependency_links to ../../../build/turtlebot3_example/turtlebot3_example.egg-info/dependency_links.txt
+[3.077s] writing entry points to ../../../build/turtlebot3_example/turtlebot3_example.egg-info/entry_points.txt
+[3.077s] writing requirements to ../../../build/turtlebot3_example/turtlebot3_example.egg-info/requires.txt
+[3.077s] writing top-level names to ../../../build/turtlebot3_example/turtlebot3_example.egg-info/top_level.txt
+[3.077s] reading manifest file '../../../build/turtlebot3_example/turtlebot3_example.egg-info/SOURCES.txt'
+[3.082s] writing manifest file '../../../build/turtlebot3_example/turtlebot3_example.egg-info/SOURCES.txt'
+[3.082s] running build
+[3.082s] running build_py
+[3.082s] running install
+[3.082s] running install_lib
+[3.082s] running install_data
+[3.083s] running install_egg_info
+[3.083s] removing '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/turtlebot3_example-2.2.9-py3.10.egg-info' (and everything under it)
+[3.087s] Copying ../../../build/turtlebot3_example/turtlebot3_example.egg-info to /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/turtlebot3_example-2.2.9-py3.10.egg-info
+[3.087s] running install_scripts
+[3.182s] Installing turtlebot3_absolute_move script to /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/turtlebot3_example
+[3.182s] Installing turtlebot3_interactive_marker script to /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/turtlebot3_example
+[3.182s] Installing turtlebot3_obstacle_detection script to /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/turtlebot3_example
+[3.186s] Installing turtlebot3_patrol_client script to /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/turtlebot3_example
+[3.203s] Installing turtlebot3_patrol_server script to /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/turtlebot3_example
+[3.203s] Installing turtlebot3_relative_move script to /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/turtlebot3_example
+[3.215s] writing list of installed files to '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/install.log'
+[3.510s] Invoked command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/turtlebot3_example' returned '0': PYTHONPATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../build/turtlebot3_example build --build-base /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/build install --record /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_example/install.log --single-version-externally-managed install_data

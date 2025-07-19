@@ -25,8 +25,8 @@
 #define CMD_GET_STATUS     0x05
 
 // --- Các thông số của robot ---
-#define WHEEL_DIAMETER     0.066     // Đường kính bánh xe (m)
-#define WHEEL_SEPARATION   0.160     // Khoảng cách giữa 2 bánh xe (m)
+#define WHEEL_DIAMETER     0.070     // Đường kính bánh xe (m) - 3.5cm radius = 7cm diameter
+#define WHEEL_SEPARATION   0.24      // Khoảng cách giữa 2 bánh xe (m)
 #define ENCODER_RESOLUTION 12        // Số xung encoder trên 1 vòng quay
 #define GEAR_RATIO         1        // Tỉ số truyền (nếu có hộp giảm tốc)
 #define MAX_SPEED          0.3       // Tốc độ tối đa (m/s)

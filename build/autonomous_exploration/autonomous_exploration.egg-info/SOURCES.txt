@@ -11,10 +11,8 @@ setup.py
 autonomous_exploration/__init__.py
 autonomous_exploration/control.py
 autonomous_exploration/demo_smart_cleaning.py
-autonomous_exploration/rviz_gui.py
 autonomous_exploration/smart_cleaning_algorithm.py
 autonomous_exploration/vacuum_algorithms.py
-autonomous_exploration/web_bridge.py
 config/params.yaml
 resource/autonomous_exploration
 test/test_copyright.py

@@ -10,13 +10,17 @@
         protocol_version: 2.0
 
       wheels:
-        separation: 0.287
-        radius: 0.033
+        separation: 0.24
+        radius: 0.035
+
+      limits:
+        max_velocity: 0.1     # Max linear velocity (m/s) - Real robot specs
+        max_rpm: 27           # Max motor RPM - Real robot specs
 
       motors:
-        profile_acceleration_constant: 214.577
+        profile_acceleration_constant: 100.0
 
-        # [rev/min2]
+        # [rev/min2] - Reduced for slower robot (Max 27 RPM, 0.1 m/s)
         # ref) http://emanual.robotis.com/docs/en/dxl/x/xl430-w250/#profile-acceleration
         profile_acceleration: 0.0
 

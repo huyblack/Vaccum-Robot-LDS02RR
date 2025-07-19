@@ -20,13 +20,14 @@ import os
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, TimerAction
 from launch.actions import IncludeLaunchDescription, ExecuteProcess
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch.substitutions import ThisLaunchFileDir
 from launch_ros.actions import Node
 from launch_ros.actions import PushRosNamespace
+import launch.conditions
 
 
 def generate_launch_description():
@@ -71,6 +72,7 @@ def generate_launch_description():
         LDS_LAUNCH_FILE = '/lds02rr.launch.py'
 
     use_sim_time = LaunchConfiguration('use_sim_time', default='false')
+    enable_slam = LaunchConfiguration('enable_slam', default='true')
 
     # Lấy đường dẫn đến file pwm.py trong cùng thư mục
     pwm_script = os.path.join(os.path.dirname(__file__), 'pwm.py')
@@ -101,6 +103,11 @@ def generate_launch_description():
             'namespace',
             default_value=namespace,
             description='Namespace for nodes'),
+
+        DeclareLaunchArgument(
+            'enable_slam',
+            default_value='true',
+            description='Enable SLAM Cartographer after robot setup (true/false)'),
 
         PushRosNamespace(namespace),
 
@@ -133,24 +140,70 @@ def generate_launch_description():
             output='screen'),
 
         # Thêm việc chạy pwm.py
+        # ExecuteProcess(
+        #     cmd=['python3', pwm_script],
+        #     output='screen'
+        # ),
+
+        # Thêm Web Bridge để streaming dữ liệu qua WebSocket
         ExecuteProcess(
-            cmd=['python3', pwm_script],
+            cmd=['python3', os.path.join(
+                get_package_share_directory('turtlebot3_bringup'),
+                'launch',
+                'web_bridge_pi.py'
+            )],
             output='screen'
         ),
 
-        # Thêm SLAM Toolbox với config tùy chỉnh cho LDS-02
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([
-                get_package_share_directory('slam_toolbox'), 
-                '/launch/online_async_launch.py'
-            ]),
-            launch_arguments={
-                'slam_params_file': os.path.join(
-                    get_package_share_directory('turtlebot3_bringup'),
-                    'config',
-                    'slam_toolbox_lds02.yaml'
-                ),
-                'use_sim_time': 'false'
-            }.items()
+        # Delay 8 giây rồi khởi động SLAM Cartographer tự động (nếu enable_slam=true)
+        TimerAction(
+            period=8.0,  # Đợi 8 giây cho robot setup xong (sau khi IMU calibration hoàn tất)
+            actions=[
+                # SLAM Cartographer (không RViz để tiết kiệm tài nguyên Pi Zero 2W)
+                IncludeLaunchDescription(
+                    PythonLaunchDescriptionSource([
+                        get_package_share_directory('turtlebot3_cartographer'), 
+                        '/launch/cartographer.launch.py'
+                    ]),
+                    launch_arguments={
+                        'use_sim_time': 'false',
+                        'use_rviz': 'false'  # Tắt RViz để tiết kiệm tài nguyên Pi Zero 2W
+                    }.items(),
+                )
+            ],
+            condition=launch.conditions.IfCondition(enable_slam)
         ),
+
+        # Delay 10 giây rồi khởi động Frontier Exploration Node (sau khi SLAM đã ổn định)
+        TimerAction(
+            period=10.0,  # Đợi 10 giây cho SLAM setup xong
+            actions=[
+                # Frontier Exploration Node (sẵn sàng nhưng chưa active)
+                Node(
+                    package='turtlebot3_bringup',
+                    executable='frontier_exploration_node.py',
+                    name='frontier_exploration',
+                    output='screen',
+                    parameters=[{
+                        'use_sim_time': use_sim_time,
+                        'robot_model': TURTLEBOT3_MODEL,
+                        # Frontier Exploration parameters
+                        'lookahead_distance': 0.5,
+                        'speed': 0.1,
+                        'expansion_size': 3,
+                        'target_error': 0.1,
+                        'robot_r': 0.2,
+                        'auto_start': False  # Không tự động bắt đầu, chờ lệnh từ web
+                    }],
+                    remappings=[
+                        ('/map', '/map'),
+                        ('/odom', '/odom'),
+                        ('/scan', '/scan'),
+                        ('/cmd_vel', '/cmd_vel')
+                    ]
+                )
+            ],
+            condition=launch.conditions.IfCondition(enable_slam)
+        ),
+
     ])

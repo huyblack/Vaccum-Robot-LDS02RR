@@ -128,8 +128,8 @@ void TurtleBot3::add_wheels()
   this->declare_parameter<float>("wheels.separation");
   this->declare_parameter<float>("wheels.radius");
 
-  this->get_parameter_or<float>("wheels.separation", wheels_.separation, 0.160);
-  this->get_parameter_or<float>("wheels.radius", wheels_.radius, 0.033);
+  this->get_parameter_or<float>("wheels.separation", wheels_.separation, 0.24);
+  this->get_parameter_or<float>("wheels.radius", wheels_.radius, 0.035);
 }
 
 void TurtleBot3::add_sensors()

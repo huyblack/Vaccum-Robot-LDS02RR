@@ -24,8 +24,9 @@
 
 using robotis::turtlebot3::sensors::JointState;
 
-static std::array<int32_t, robotis::turtlebot3::sensors::JOINT_NUM> last_diff_position,
-  last_position;
+// Static variables to track position differences for odometry
+static std::array<double, robotis::turtlebot3::sensors::JOINT_NUM> last_position_rad = {0.0, 0.0};
+static std::array<double, robotis::turtlebot3::sensors::JOINT_NUM> cumulative_position_rad = {0.0, 0.0};
 
 JointState::JointState(
   std::shared_ptr<rclcpp::Node> & nh,
@@ -35,13 +36,20 @@ JointState::JointState(
 : Sensors(nh, frame_id)
 {
   pub_ = nh->create_publisher<sensor_msgs::msg::JointState>(topic_name, this->qos_);
-  last_position =
-  {dxl_sdk_wrapper->get_data_from_device<int32_t>(
+  
+  // Initialize with current Arduino position  
+  std::array<float, JOINT_NUM> initial_position_meters =
+  {dxl_sdk_wrapper->get_data_from_device<float>(
       extern_control_table.present_position_left.addr,
       extern_control_table.present_position_left.length),
-    dxl_sdk_wrapper->get_data_from_device<int32_t>(
+    dxl_sdk_wrapper->get_data_from_device<float>(
       extern_control_table.present_position_right.addr,
       extern_control_table.present_position_right.length)};
+      
+  last_position_rad[0] = initial_position_meters[0] / WHEEL_RADIUS;
+  last_position_rad[1] = initial_position_meters[1] / WHEEL_RADIUS;
+  cumulative_position_rad[0] = 0.0;  // Start from 0 for odometry
+  cumulative_position_rad[1] = 0.0;
 
   nh_->get_parameter_or<std::string>(
     "namespace",
@@ -62,29 +70,44 @@ void JointState::publish(
 {
   auto msg = std::make_unique<sensor_msgs::msg::JointState>();
 
-  std::array<int32_t, JOINT_NUM> position =
-  {dxl_sdk_wrapper->get_data_from_device<int32_t>(
+  // FIXED: Read Arduino data as float (since Arduino sends float, not int32_t)
+  std::array<float, JOINT_NUM> position_meters =
+  {dxl_sdk_wrapper->get_data_from_device<float>(
       extern_control_table.present_position_left.addr,
       extern_control_table.present_position_left.length),
-    dxl_sdk_wrapper->get_data_from_device<int32_t>(
+    dxl_sdk_wrapper->get_data_from_device<float>(
       extern_control_table.present_position_right.addr,
       extern_control_table.present_position_right.length)};
 
-  std::array<int32_t, JOINT_NUM> velocity =
-  {dxl_sdk_wrapper->get_data_from_device<int32_t>(
+  std::array<float, JOINT_NUM> velocity_mps =
+  {dxl_sdk_wrapper->get_data_from_device<float>(
       extern_control_table.present_velocity_left.addr,
       extern_control_table.present_velocity_left.length),
-    dxl_sdk_wrapper->get_data_from_device<int32_t>(
+    dxl_sdk_wrapper->get_data_from_device<float>(
       extern_control_table.present_velocity_right.addr,
       extern_control_table.present_velocity_right.length)};
 
-  // std::array<int32_t, JOINT_NUM> current =
-  //   {dxl_sdk_wrapper->get_data_from_device<int32_t>(
-  //     extern_control_table.resent_current_left.addr,
-  //     extern_control_table.resent_current_left.length),
-  //   dxl_sdk_wrapper->get_data_from_device<int32_t>(
-  //     extern_control_table.resent_current_right.addr,
-  //     extern_control_table.resent_current_right.length)};
+  // Convert Arduino position (meters) to radians
+  double current_position_rad[JOINT_NUM];
+  current_position_rad[0] = position_meters[0] / WHEEL_RADIUS;  // Left wheel
+  current_position_rad[1] = position_meters[1] / WHEEL_RADIUS;  // Right wheel
+  
+  // Calculate position differences (what odometry needs)
+  double position_diff_rad[JOINT_NUM];
+  position_diff_rad[0] = current_position_rad[0] - last_position_rad[0];
+  position_diff_rad[1] = current_position_rad[1] - last_position_rad[1];
+  
+  // Update cumulative position for joint_state message
+  cumulative_position_rad[0] += position_diff_rad[0];
+  cumulative_position_rad[1] += position_diff_rad[1];
+  
+  // Store current position for next iteration
+  last_position_rad[0] = current_position_rad[0];
+  last_position_rad[1] = current_position_rad[1];
+  
+  // Convert velocity from m/s to rad/s (for wheel angular velocity)
+  double velocity_rad_per_sec_left = velocity_mps[0] / WHEEL_RADIUS;
+  double velocity_rad_per_sec_right = velocity_mps[1] / WHEEL_RADIUS;
 
   msg->header.frame_id = this->frame_id_;
   msg->header.stamp = now;
@@ -92,19 +115,13 @@ void JointState::publish(
   msg->name.push_back(wheel_left_joint_);
   msg->name.push_back(wheel_right_joint_);
 
-  msg->position.push_back(TICK_TO_RAD * last_diff_position[0]);
-  msg->position.push_back(TICK_TO_RAD * last_diff_position[1]);
+  // Use cumulative position (radians) for joint_state 
+  msg->position.push_back(cumulative_position_rad[0]);
+  msg->position.push_back(cumulative_position_rad[1]);
 
-  msg->velocity.push_back(RPM_TO_MS * velocity[0]);
-  msg->velocity.push_back(RPM_TO_MS * velocity[1]);
-
-  // msg->effort.push_back(current[0]);
-  // msg->effort.push_back(current[1]);
-
-  last_diff_position[0] += (position[0] - last_position[0]);
-  last_diff_position[1] += (position[1] - last_position[1]);
-
-  last_position = position;
+  // Use converted rad/s directly for velocity
+  msg->velocity.push_back(velocity_rad_per_sec_left);
+  msg->velocity.push_back(velocity_rad_per_sec_right);
 
   pub_->publish(std::move(msg));
 }

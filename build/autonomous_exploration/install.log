@@ -1,17 +1,13 @@
 /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/autonomous_exploration/smart_cleaning_algorithm.py
 /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/autonomous_exploration/vacuum_algorithms.py
-/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/autonomous_exploration/web_bridge.py
 /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/autonomous_exploration/control.py
 /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/autonomous_exploration/__init__.py
 /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/autonomous_exploration/demo_smart_cleaning.py
-/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/autonomous_exploration/rviz_gui.py
 /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/autonomous_exploration/__pycache__/smart_cleaning_algorithm.cpython-310.pyc
 /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/autonomous_exploration/__pycache__/vacuum_algorithms.cpython-310.pyc
-/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/autonomous_exploration/__pycache__/web_bridge.cpython-310.pyc
 /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/autonomous_exploration/__pycache__/control.cpython-310.pyc
 /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/autonomous_exploration/__pycache__/__init__.cpython-310.pyc
 /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/autonomous_exploration/__pycache__/demo_smart_cleaning.cpython-310.pyc
-/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/autonomous_exploration/__pycache__/rviz_gui.cpython-310.pyc
 /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/ament_index/resource_index/packages/autonomous_exploration
 /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/autonomous_exploration/package.xml
 /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/autonomous_exploration/config/params.yaml

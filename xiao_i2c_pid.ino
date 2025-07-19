@@ -52,7 +52,7 @@ float present_current_left = 0.0;    // Dòng điện hiện tại (mA)
 float present_current_right = 0.0;
 
 // Encoder parameters
-const float WHEEL_RADIUS = 0.033;    // Bán kính bánh xe (m)
+const float WHEEL_RADIUS = 0.035;    // Bán kính bánh xe (m)
 const int ENCODER_PPR = 600;         // Pulse per revolution của encoder
 const float WHEEL_CIRCUMFERENCE = 2.0 * PI * WHEEL_RADIUS;
 const float DISTANCE_PER_PULSE = WHEEL_CIRCUMFERENCE / ENCODER_PPR;
@@ -380,7 +380,7 @@ void updateIMUData() {
 }
 
 void controlMotors(float linear_x, float angular_z) {
-  float wheel_separation = 0.160;   // Khoảng cách giữa hai bánh xe (m)
+  float wheel_separation = 0.24;    // Khoảng cách giữa hai bánh xe (m)
   
   // Kiểm tra nếu động cơ được enable
   if (!motor_torque_enabled) {
