@@ -1,0 +1,35 @@
+[1.014s] Invoking command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/explorer_bringup': AMENT_PREFIX_PATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install PYTHONPATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/explorer_bringup/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages:/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../build/explorer_bringup build --build-base /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/explorer_bringup/build install --record /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/explorer_bringup/install.log --single-version-externally-managed install_data
+[1.385s] running egg_info
+[1.386s] creating ../../../build/explorer_bringup/explorer_bringup.egg-info
+[1.386s] writing ../../../build/explorer_bringup/explorer_bringup.egg-info/PKG-INFO
+[1.386s] writing dependency_links to ../../../build/explorer_bringup/explorer_bringup.egg-info/dependency_links.txt
+[1.387s] writing entry points to ../../../build/explorer_bringup/explorer_bringup.egg-info/entry_points.txt
+[1.387s] writing requirements to ../../../build/explorer_bringup/explorer_bringup.egg-info/requires.txt
+[1.387s] writing top-level names to ../../../build/explorer_bringup/explorer_bringup.egg-info/top_level.txt
+[1.387s] writing manifest file '../../../build/explorer_bringup/explorer_bringup.egg-info/SOURCES.txt'
+[1.389s] reading manifest file '../../../build/explorer_bringup/explorer_bringup.egg-info/SOURCES.txt'
+[1.390s] writing manifest file '../../../build/explorer_bringup/explorer_bringup.egg-info/SOURCES.txt'
+[1.393s] running build
+[1.394s] running build_py
+[1.394s] creating /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/explorer_bringup/build
+[1.394s] creating /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/explorer_bringup/build/lib
+[1.394s] creating /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/explorer_bringup/build/lib/explorer_bringup
+[1.394s] copying explorer_bringup/__init__.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/explorer_bringup/build/lib/explorer_bringup
+[1.394s] copying explorer_bringup/manager.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/explorer_bringup/build/lib/explorer_bringup
+[1.394s] running install
+[1.394s] running install_lib
+[1.396s] creating /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/explorer_bringup
+[1.396s] copying /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/explorer_bringup/build/lib/explorer_bringup/__init__.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/explorer_bringup
+[1.396s] copying /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/explorer_bringup/build/lib/explorer_bringup/manager.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/explorer_bringup
+[1.398s] byte-compiling /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/explorer_bringup/__init__.py to __init__.cpython-310.pyc
+[1.402s] byte-compiling /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/explorer_bringup/manager.py to manager.cpython-310.pyc
+[1.404s] running install_data
+[1.405s] copying resource/explorer_bringup -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/ament_index/resource_index/packages
+[1.405s] copying package.xml -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/explorer_bringup
+[1.405s] copying launch/explorer.launch.py -> /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/explorer_bringup
+[1.405s] running install_egg_info
+[1.407s] Copying ../../../build/explorer_bringup/explorer_bringup.egg-info to /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/explorer_bringup-0.0.0-py3.10.egg-info
+[1.409s] running install_scripts
+[1.446s] Installing manager script to /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/explorer_bringup
+[1.447s] writing list of installed files to '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/explorer_bringup/install.log'
+[1.485s] Invoked command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/explorer_bringup' returned '0': AMENT_PREFIX_PATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install PYTHONPATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/explorer_bringup/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages:/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../build/explorer_bringup build --build-base /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/explorer_bringup/build install --record /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/explorer_bringup/install.log --single-version-externally-managed install_data

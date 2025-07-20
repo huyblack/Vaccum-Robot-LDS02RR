@@ -89,16 +89,17 @@ class WebBridgePi:
         # --- LiDAR PWM Control ---
         self.lidar_pwm_pin = 18  # GPIO18 (Pin 12 BOARD mode in pwm.py) = GPIO18 BCM mode
         self.lidar_pwm = None
-        self.lidar_enabled = False  # Start with LiDAR DISABLED (no rotation)
+        self.lidar_enabled = True  # Start with LiDAR ENABLED (rotation ON)
         self.lidar_duty_cycle = 7  # Working duty cycle for LiDAR when enabled
         
         # --- Frontier Exploration Control ---
         self.exploration_enabled = False  # Start with exploration DISABLED
         self.exploration_process = None
         
-        # --- ROS Service Clients ---
-        self.start_exploration_client = None
-        self.stop_exploration_client = None
+        # --- ROS Action Clients for Explorer Bringup ---
+        self.wanderer_action_client = None
+        self.discoverer_action_client = None
+        self.exploration_goal_handle = None
         
         # --- Process Control ---
         self.lidar_process = None
@@ -155,11 +156,18 @@ class WebBridgePi:
             self.cmd_vel_publisher = self._node.create_publisher(Twist, '/cmd_vel', 10)
             self._logger.info("✅ cmd_vel publisher initialized for manual control")
             
-            # --- Setup service clients for exploration control ---
-            import std_srvs.srv
-            self.start_exploration_client = self._node.create_client(std_srvs.srv.Trigger, '/start_exploration')
-            self.stop_exploration_client = self._node.create_client(std_srvs.srv.Trigger, '/stop_exploration')
-            self._logger.info("✅ Exploration service clients initialized")
+            # --- Setup action clients for explorer_bringup ---
+            try:
+                from explorer_interfaces.action import Wander, Discover
+                from rclpy.action import ActionClient
+                
+                self.wanderer_action_client = ActionClient(self._node, Wander, 'wander')
+                self.discoverer_action_client = ActionClient(self._node, Discover, 'discover')
+                self._logger.info("✅ Explorer action clients initialized")
+            except ImportError as e:
+                self._logger.warning(f"⚠️ Explorer interfaces not available: {e}")
+                self.wanderer_action_client = None
+                self.discoverer_action_client = None
             
             # --- Khởi động WebSocket Server trong một thread riêng ---
             server_thread = threading.Thread(target=self.start_server_thread, daemon=True)
@@ -352,14 +360,16 @@ class WebBridgePi:
                             }
                             await websocket.send(json.dumps(response))
                         elif data.get('action') == 'control_exploration':
-                            # Handle Frontier Exploration control
+                            # Handle Explorer Bringup control
                             enabled = data.get('enabled', False)
-                            success, message = self.control_exploration(enabled)
+                            algorithm = data.get('algorithm', 'wanderer')
+                            success, message = self.control_exploration(enabled, algorithm)
                             response = {
                                 'type': 'control_response',
                                 'action': 'control_exploration',
                                 'success': success,
                                 'enabled': enabled if success else self.exploration_enabled,
+                                'algorithm': algorithm,
                                 'message': message,
                                 'timestamp': time.time()
                             }
@@ -613,30 +623,30 @@ class WebBridgePi:
             self._logger.error(f"❌ LiDAR control failed: {e}")
             return False, str(e)
 
-    def control_exploration(self, enabled: bool):
-        """Điều khiển Frontier Exploration qua ROS service."""
+    def control_exploration(self, enabled: bool, algorithm: str = 'wanderer'):
+        """Điều khiển Explorer Bringup qua ROS action."""
         if enabled == self.exploration_enabled:
             return True, f"Exploration already {'enabled' if enabled else 'disabled'}"
         
         try:
             if enabled:
-                # Start Frontier Exploration via service
-                self._logger.info("🗺️ Starting Frontier Exploration via service...")
-                success = self._start_exploration_service()
+                # Start Explorer via action
+                self._logger.info(f"🗺️ Starting {algorithm} exploration via action...")
+                success = self._start_exploration_action(algorithm)
                 if success:
                     self.exploration_enabled = True
-                    return True, "Frontier Exploration started successfully"
+                    return True, f"{algorithm.capitalize()} exploration started successfully"
                 else:
-                    return False, "Failed to start Frontier Exploration"
+                    return False, f"Failed to start {algorithm} exploration"
             else:
-                # Stop Frontier Exploration via service
-                self._logger.info("🗺️ Stopping Frontier Exploration via service...")
-                success = self._stop_exploration_service()
+                # Stop Explorer via action
+                self._logger.info("🗺️ Stopping exploration via action...")
+                success = self._stop_exploration_action()
                 if success:
                     self.exploration_enabled = False
-                    return True, "Frontier Exploration stopped successfully"
+                    return True, "Exploration stopped successfully"
                 else:
-                    return False, "Failed to stop Frontier Exploration"
+                    return False, "Failed to stop exploration"
                 
         except Exception as e:
             self._logger.error(f"❌ Exploration control failed: {e}")
@@ -809,10 +819,132 @@ class WebBridgePi:
         except Exception as e:
             self._logger.error(f"❌ Error stopping LiDAR/SLAM: {e}")
 
-    def _start_exploration_service(self):
-        """Start Frontier Exploration via ROS service."""
+    def _start_exploration_action(self, algorithm: str = 'wanderer'):
+        """Start Explorer via ROS action."""
         try:
-            self._logger.info("🗺️ Calling start_exploration service...")
+            if algorithm == 'wanderer' and self.wanderer_action_client:
+                self._logger.info("🗺️ Starting Wanderer exploration...")
+                return self._start_wanderer_action()
+            elif algorithm == 'discoverer' and self.discoverer_action_client:
+                self._logger.info("🗺️ Starting Discoverer exploration...")
+                return self._start_discoverer_action()
+            else:
+                self._logger.error(f"❌ {algorithm} action client not available")
+                return False
+        except Exception as e:
+            self._logger.error(f"❌ Start exploration action failed: {e}")
+            return False
+    
+    def _start_wanderer_action(self):
+        """Start Wanderer exploration action."""
+        try:
+            if not self.wanderer_action_client:
+                return False
+                
+            # Wait for action server
+            if not self.wanderer_action_client.wait_for_server(timeout_sec=5.0):
+                self._logger.error("❌ Wanderer action server not available")
+                return False
+            
+            # Create goal
+            from explorer_interfaces.action import Wander
+            goal = Wander.Goal()
+            goal.map_completed_thres = 0.9  # 90% completion threshold
+            
+            # Send goal
+            self._logger.info("🎯 Sending Wanderer goal (90% map completion)...")
+            self.exploration_goal_handle = self.wanderer_action_client.send_goal_async(goal)
+            
+            # Add callback for result
+            self.exploration_goal_handle.add_done_callback(self._exploration_goal_callback)
+            
+            self._logger.info("✅ Wanderer exploration started")
+            return True
+            
+        except Exception as e:
+            self._logger.error(f"❌ Wanderer action failed: {e}")
+            return False
+    
+    def _start_discoverer_action(self):
+        """Start Discoverer exploration action."""
+        try:
+            if not self.discoverer_action_client:
+                return False
+                
+            # Wait for action server
+            if not self.discoverer_action_client.wait_for_server(timeout_sec=5.0):
+                self._logger.error("❌ Discoverer action server not available")
+                return False
+            
+            # Create goal
+            from explorer_interfaces.action import Discover
+            goal = Discover.Goal()
+            goal.strategy = 1
+            goal.map_completed_thres = 0.97  # 97% completion threshold
+            
+            # Send goal
+            self._logger.info("🎯 Sending Discoverer goal (97% map completion)...")
+            self.exploration_goal_handle = self.discoverer_action_client.send_goal_async(goal)
+            
+            # Add callback for result
+            self.exploration_goal_handle.add_done_callback(self._exploration_goal_callback)
+            
+            self._logger.info("✅ Discoverer exploration started")
+            return True
+            
+        except Exception as e:
+            self._logger.error(f"❌ Discoverer action failed: {e}")
+            return False
+    
+    def _exploration_goal_callback(self, future):
+        """Callback khi exploration goal hoàn thành."""
+        try:
+            goal_handle = future.result()
+            if not goal_handle.accepted:
+                self._logger.warning("⚠️ Exploration goal rejected")
+                self.exploration_enabled = False
+                return
+            
+            self._logger.info("✅ Exploration goal accepted")
+            
+            # Get result
+            result_future = goal_handle.get_result_async()
+            result_future.add_done_callback(self._exploration_result_callback)
+            
+        except Exception as e:
+            self._logger.error(f"❌ Exploration goal callback error: {e}")
+    
+    def _exploration_result_callback(self, future):
+        """Callback khi exploration hoàn thành."""
+        try:
+            result = future.result()
+            status = result.status
+            
+            if status == 4:  # SUCCEEDED
+                self._logger.info("🎉 Exploration completed successfully!")
+                self.exploration_enabled = False
+            else:
+                self._logger.warning(f"⚠️ Exploration ended with status: {status}")
+                self.exploration_enabled = False
+                
+        except Exception as e:
+            self._logger.error(f"❌ Exploration result callback error: {e}")
+    
+    def _stop_exploration_action(self):
+        """Stop Explorer via ROS action."""
+        try:
+            if self.exploration_goal_handle:
+                # Cancel the goal
+                self.exploration_goal_handle.cancel_goal_async()
+                self._logger.info("🛑 Exploration goal cancelled")
+                self.exploration_goal_handle = None
+                return True
+            else:
+                self._logger.warning("⚠️ No active exploration goal to cancel")
+                return True
+        except Exception as e:
+            self._logger.error(f"❌ Stop exploration action failed: {e}")
+            return False
             
             if not self.start_exploration_client:
                 self._logger.error("❌ Start exploration service client not initialized")
@@ -1010,9 +1142,9 @@ class WebBridgePi:
             if self.lidar_process or self.slam_process:
                 self._stop_lidar_slam()
             
-            # Stop Frontier Exploration if running
+            # Stop Explorer if running
             if self.exploration_enabled:
-                self._stop_exploration_service()
+                self._stop_exploration_action()
                 
             self._logger.info("✅ Cleanup completed")
             

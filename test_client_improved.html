@@ -1033,13 +1033,14 @@
                 
                 const command = {
                     action: 'control_exploration',
-                    enabled: explorationEnabled
+                    enabled: explorationEnabled,
+                    algorithm: 'wanderer'  // Use wanderer algorithm
                 };
                 
                 ws.send(JSON.stringify(command));
                 updateControlStatus('exploration', explorationEnabled ? 'pending' : 'offline', 
-                                   explorationEnabled ? 'Starting Autonomous SLAM...' : 'Stopping Exploration...');
-                addLog(`🗺️ Frontier Exploration ${explorationEnabled ? 'STARTED' : 'STOPPED'} - Robot will explore and map automatically`);
+                                   explorationEnabled ? 'Starting Wanderer Exploration...' : 'Stopping Exploration...');
+                addLog(`🗺️ Wanderer Exploration ${explorationEnabled ? 'STARTED' : 'STOPPED'} - Robot will explore until 90% map completion`);
             } else {
                 addLog('❌ Not connected - cannot control exploration');
             }

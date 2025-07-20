@@ -73,6 +73,7 @@ def generate_launch_description():
 
     use_sim_time = LaunchConfiguration('use_sim_time', default='false')
     enable_slam = LaunchConfiguration('enable_slam', default='true')
+    enable_explorer = LaunchConfiguration('enable_explorer', default='true')  # Mặc định enable explorer_bringup
 
     # Lấy đường dẫn đến file pwm.py trong cùng thư mục
     pwm_script = os.path.join(os.path.dirname(__file__), 'pwm.py')
@@ -108,6 +109,11 @@ def generate_launch_description():
             'enable_slam',
             default_value='true',
             description='Enable SLAM Cartographer after robot setup (true/false)'),
+
+        DeclareLaunchArgument(
+            'enable_explorer',
+            default_value='true',
+            description='Enable explorer_bringup integration (true/false)'),
 
         PushRosNamespace(namespace),
 
@@ -155,7 +161,7 @@ def generate_launch_description():
             output='screen'
         ),
 
-        # Delay 8 giây rồi khởi động SLAM Cartographer tự động (nếu enable_slam=true)
+        # Delay 8 giây rồi khởi động SLAM Cartographer tự động (nếu enable_slam=true và không dùng explorer_bringup)
         TimerAction(
             period=8.0,  # Đợi 8 giây cho robot setup xong (sau khi IMU calibration hoàn tất)
             actions=[
@@ -174,36 +180,22 @@ def generate_launch_description():
             condition=launch.conditions.IfCondition(enable_slam)
         ),
 
-        # Delay 10 giây rồi khởi động Frontier Exploration Node (sau khi SLAM đã ổn định)
+        # Delay 10 giây rồi khởi động Explorer Bringup (nếu enable_explorer=true)
         TimerAction(
-            period=10.0,  # Đợi 10 giây cho SLAM setup xong
+            period=10.0,  # Đợi 10 giây cho robot setup xong
             actions=[
-                # Frontier Exploration Node (sẵn sàng nhưng chưa active)
-                Node(
-                    package='turtlebot3_bringup',
-                    executable='frontier_exploration_node.py',
-                    name='frontier_exploration',
-                    output='screen',
-                    parameters=[{
-                        'use_sim_time': use_sim_time,
-                        'robot_model': TURTLEBOT3_MODEL,
-                        # Frontier Exploration parameters
-                        'lookahead_distance': 0.5,
-                        'speed': 0.1,
-                        'expansion_size': 3,
-                        'target_error': 0.1,
-                        'robot_r': 0.2,
-                        'auto_start': False  # Không tự động bắt đầu, chờ lệnh từ web
-                    }],
-                    remappings=[
-                        ('/map', '/map'),
-                        ('/odom', '/odom'),
-                        ('/scan', '/scan'),
-                        ('/cmd_vel', '/cmd_vel')
-                    ]
+                # Explorer Bringup Integration
+                IncludeLaunchDescription(
+                    PythonLaunchDescriptionSource([
+                        get_package_share_directory('explorer_bringup'), 
+                        '/explorer.launch.py'
+                    ]),
+                    launch_arguments={
+                        'use_sim_time': 'false',
+                    }.items(),
                 )
             ],
-            condition=launch.conditions.IfCondition(enable_slam)
+            condition=launch.conditions.IfCondition(enable_explorer)
         ),
 
     ])

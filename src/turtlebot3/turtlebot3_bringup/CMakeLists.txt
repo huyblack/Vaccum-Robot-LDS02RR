@@ -29,7 +29,6 @@ install(
 install(
   PROGRAMS
     launch/web_bridge_pi.py
-    launch/frontier_exploration_node.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

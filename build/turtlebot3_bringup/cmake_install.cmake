@@ -52,10 +52,7 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/turtlebot3_bringup" TYPE PROGRAM FILES
-    "/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/turtlebot3_bringup/launch/web_bridge_pi.py"
-    "/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/turtlebot3_bringup/launch/frontier_exploration_node.py"
-    )
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/turtlebot3_bringup" TYPE PROGRAM FILES "/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/turtlebot3_bringup/launch/web_bridge_pi.py")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)

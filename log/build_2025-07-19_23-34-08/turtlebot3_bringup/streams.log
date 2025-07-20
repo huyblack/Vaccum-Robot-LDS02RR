@@ -1,0 +1,56 @@
+[0.096s] Invoking command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_bringup': AMENT_PREFIX_PATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install:/home/huy/mnt/usb_ext4/opt/ros/humble PYTHONPATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/cmake /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/turtlebot3_bringup -DRMW_IMPLEMENTATION=rmw_cyclonedds_cpp -DCMAKE_TOOLCHAIN_FILE=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/toolchain_aarch64.cmake -DCMAKE_INSTALL_PREFIX=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install
+[0.280s] -- The C compiler identification is GNU 12.2.1
+[0.517s] -- The CXX compiler identification is GNU 12.2.1
+[0.534s] -- Detecting C compiler ABI info
+[0.698s] -- Detecting C compiler ABI info - done
+[0.710s] -- Check for working C compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-gcc - skipped
+[0.710s] -- Detecting C compile features
+[0.715s] -- Detecting C compile features - done
+[0.717s] -- Detecting CXX compiler ABI info
+[0.937s] -- Detecting CXX compiler ABI info - done
+[0.947s] -- Check for working CXX compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-g++ - skipped
+[0.947s] -- Detecting CXX compile features
+[0.948s] -- Detecting CXX compile features - done
+[0.950s] -- Found ament_cmake: 1.3.11 (/home/huy/mnt/usb_ext4/opt/ros/humble/share/ament_cmake/cmake)
+[1.149s] -- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+[1.409s] -- Configuring done
+[1.414s] -- Generating done
+[1.416s] [33mCMake Warning:
+[1.416s]   Manually-specified variables were not used by the project:
+[1.416s] 
+[1.416s]     RMW_IMPLEMENTATION
+[1.416s] 
+[1.416s] [0m
+[1.416s] -- Build files have been written to: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_bringup
+[1.429s] Invoked command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_bringup' returned '0': AMENT_PREFIX_PATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install:/home/huy/mnt/usb_ext4/opt/ros/humble PYTHONPATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/cmake /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/turtlebot3_bringup -DRMW_IMPLEMENTATION=rmw_cyclonedds_cpp -DCMAKE_TOOLCHAIN_FILE=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/toolchain_aarch64.cmake -DCMAKE_INSTALL_PREFIX=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install
+[1.434s] Invoking command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_bringup': AMENT_PREFIX_PATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install:/home/huy/mnt/usb_ext4/opt/ros/humble PYTHONPATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/cmake --build /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_bringup -- -j4 -l4
+[1.498s] Invoked command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_bringup' returned '0': AMENT_PREFIX_PATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install:/home/huy/mnt/usb_ext4/opt/ros/humble PYTHONPATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/cmake --build /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_bringup -- -j4 -l4
+[1.499s] Invoking command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_bringup': AMENT_PREFIX_PATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install:/home/huy/mnt/usb_ext4/opt/ros/humble PYTHONPATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/cmake --install /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_bringup
+[1.509s] -- Install configuration: ""
+[1.509s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_bringup/launch
+[1.513s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_bringup/launch/turtlebot3_state_publisher.launch.py
+[1.513s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_bringup/launch/pwm.py
+[1.513s] -- Installing: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_bringup/launch/robot.launch.py
+[1.513s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_bringup/launch/web_bridge_pi.py
+[1.514s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_bringup/launch/rviz2.launch.py
+[1.514s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_bringup/param
+[1.514s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_bringup/param/burger.yaml
+[1.514s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_bringup/param/humble
+[1.514s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_bringup/param/humble/burger.yaml
+[1.514s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_bringup/param/humble/waffle_pi.yaml
+[1.514s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_bringup/param/humble/waffle.yaml
+[1.514s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_bringup/param/waffle_pi.yaml
+[1.514s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_bringup/param/waffle.yaml
+[1.514s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_bringup/script
+[1.514s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_bringup/script/99-turtlebot3-cdc.rules
+[1.514s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_bringup/script/create_udev_rules
+[1.514s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_bringup/config
+[1.514s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_bringup/config/slam_toolbox_lds02.yaml
+[1.515s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/turtlebot3_bringup/web_bridge_pi.py
+[1.515s] [31mCMake Error at cmake_install.cmake:55 (file):
+[1.515s]   file INSTALL cannot find
+[1.515s]   "/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/turtlebot3_bringup/launch/frontier_exploration_node.py":
+[1.515s]   No such file or directory.
+[1.515s] 
+[1.515s] [0m
+[1.517s] Invoked command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_bringup' returned '1': AMENT_PREFIX_PATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install:/home/huy/mnt/usb_ext4/opt/ros/humble PYTHONPATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/cmake --install /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_bringup

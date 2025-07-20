@@ -1,0 +1,233 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-9f8a1c01741f8f6622fa.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.12"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16,
+						17
+					]
+				},
+				{
+					"build" : "explorer_interfaces__py",
+					"jsonFile" : "directory-explorer_interfaces__py-72d8399b5908f5410661.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.12"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/explorer_interfaces/explorer_interfaces__py",
+					"targetIndexes" : 
+					[
+						4
+					]
+				}
+			],
+			"name" : "",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0,
+						1
+					],
+					"name" : "explorer_interfaces",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16,
+						17
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "ament_cmake_python_build_explorer_interfaces_egg::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ament_cmake_python_build_explorer_interfaces_egg-7e18a6b0c101f42582c2.json",
+					"name" : "ament_cmake_python_build_explorer_interfaces_egg",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ament_cmake_python_copy_explorer_interfaces::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ament_cmake_python_copy_explorer_interfaces-fe66351ddb701bffcbb5.json",
+					"name" : "ament_cmake_python_copy_explorer_interfaces",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "explorer_interfaces::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-explorer_interfaces-8505f294bcf378579c4b.json",
+					"name" : "explorer_interfaces",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "explorer_interfaces__cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-explorer_interfaces__cpp-d6fb46f602477452b4de.json",
+					"name" : "explorer_interfaces__cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "explorer_interfaces__py::@a92002f7ee07baaff190",
+					"jsonFile" : "target-explorer_interfaces__py-5ae3baca7c6252a893aa.json",
+					"name" : "explorer_interfaces__py",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "explorer_interfaces__rosidl_generator_c::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-explorer_interfaces__rosidl_generator_c-46d1d97b7d2006b72b4f.json",
+					"name" : "explorer_interfaces__rosidl_generator_c",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "explorer_interfaces__rosidl_generator_py::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-explorer_interfaces__rosidl_generator_py-a5cda5559587f79498fe.json",
+					"name" : "explorer_interfaces__rosidl_generator_py",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "explorer_interfaces__rosidl_typesupport_c::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-explorer_interfaces__rosidl_typesupport_c-a0b9ffb1de74d79011e6.json",
+					"name" : "explorer_interfaces__rosidl_typesupport_c",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "explorer_interfaces__rosidl_typesupport_c__pyext::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-explorer_interfaces__rosidl_typesupport_c__pyext-bbc93418962ab535d788.json",
+					"name" : "explorer_interfaces__rosidl_typesupport_c__pyext",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "explorer_interfaces__rosidl_typesupport_cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-explorer_interfaces__rosidl_typesupport_cpp-b67d9ad6391b8ba93cd6.json",
+					"name" : "explorer_interfaces__rosidl_typesupport_cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "explorer_interfaces__rosidl_typesupport_fastrtps_c::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-explorer_interfaces__rosidl_typesupport_fastrtps_c-e27aa223eb40d498821b.json",
+					"name" : "explorer_interfaces__rosidl_typesupport_fastrtps_c",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "explorer_interfaces__rosidl_typesupport_fastrtps_c__pyext::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-explorer_interfaces__rosidl_typesupport_fastrtps_c__pyext-edcc06313da5a1e53236.json",
+					"name" : "explorer_interfaces__rosidl_typesupport_fastrtps_c__pyext",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "explorer_interfaces__rosidl_typesupport_fastrtps_cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-explorer_interfaces__rosidl_typesupport_fastrtps_cpp-22ff3c9c92ae7dedd997.json",
+					"name" : "explorer_interfaces__rosidl_typesupport_fastrtps_cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "explorer_interfaces__rosidl_typesupport_introspection_c::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-explorer_interfaces__rosidl_typesupport_introspection_c-e658307ca7c66f37445b.json",
+					"name" : "explorer_interfaces__rosidl_typesupport_introspection_c",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "explorer_interfaces__rosidl_typesupport_introspection_c__pyext::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-explorer_interfaces__rosidl_typesupport_introspection_c__pyext-79530d263be24c87c992.json",
+					"name" : "explorer_interfaces__rosidl_typesupport_introspection_c__pyext",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "explorer_interfaces__rosidl_typesupport_introspection_cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-explorer_interfaces__rosidl_typesupport_introspection_cpp-bde7c9946852fd08fd3d.json",
+					"name" : "explorer_interfaces__rosidl_typesupport_introspection_cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "explorer_interfaces_uninstall::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-explorer_interfaces_uninstall-f4262b3f8f3e2e6ec43a.json",
+					"name" : "explorer_interfaces_uninstall",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "uninstall::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-uninstall-c01421cdd55a0fbfe66c.json",
+					"name" : "uninstall",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/explorer_interfaces",
+		"source" : "/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/explorer_interfaces"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 3
+	}
+}

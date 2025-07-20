@@ -1,0 +1,38 @@
+[0.065s] Invoking command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_node': /usr/bin/cmake /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/turtlebot3_node -DRMW_IMPLEMENTATION=rmw_cyclonedds_cpp -DCMAKE_TOOLCHAIN_FILE=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/toolchain_aarch64.cmake -DCMAKE_INSTALL_PREFIX=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install
+[0.274s] -- The C compiler identification is GNU 12.2.1
+[0.543s] -- The CXX compiler identification is GNU 12.2.1
+[0.575s] -- Detecting C compiler ABI info
+[0.721s] -- Detecting C compiler ABI info - done
+[0.734s] -- Check for working C compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-gcc - skipped
+[0.736s] -- Detecting C compile features
+[0.737s] -- Detecting C compile features - done
+[0.748s] -- Detecting CXX compiler ABI info
+[0.959s] -- Detecting CXX compiler ABI info - done
+[1.229s] -- Check for working CXX compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-g++ - skipped
+[1.229s] -- Detecting CXX compile features
+[1.230s] -- Detecting CXX compile features - done
+[1.230s] -- Found ament_cmake: 1.3.11 (/home/huy/mnt/usb_ext4/opt/ros/humble/share/ament_cmake/cmake)
+[2.055s] -- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+[2.199s] -- Found dynamixel_sdk: 3.8.2 (/home/huy/mnt/usb_ext4/opt/ros/humble/share/dynamixel_sdk/cmake)
+[2.202s] -- Found geometry_msgs: 4.8.0 (/home/huy/mnt/usb_ext4/opt/ros/humble/share/geometry_msgs/cmake)
+[2.251s] -- Found rosidl_generator_c: 3.1.6 (/home/huy/mnt/usb_ext4/opt/ros/humble/share/rosidl_generator_c/cmake)
+[2.257s] -- Found rosidl_adapter: 3.1.6 (/home/huy/mnt/usb_ext4/opt/ros/humble/share/rosidl_adapter/cmake)
+[2.273s] -- Found rosidl_generator_cpp: 3.1.6 (/home/huy/mnt/usb_ext4/opt/ros/humble/share/rosidl_generator_cpp/cmake)
+[2.293s] -- Configuring incomplete, errors occurred!
+[2.293s] See also "/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_node/CMakeFiles/CMakeOutput.log".
+[2.293s] See also "/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_node/CMakeFiles/CMakeError.log".
+[2.293s] [31mCMake Error at /home/huy/mnt/usb_ext4/opt/ros/humble/share/rosidl_typesupport_c/cmake/get_used_typesupports.cmake:35 (message):
+[2.294s]   No 'rosidl_typesupport_c' found
+[2.294s] Call Stack (most recent call first):
+[2.294s]   /home/huy/mnt/usb_ext4/opt/ros/humble/share/rosidl_typesupport_c/cmake/rosidl_typesupport_c-extras.cmake:8 (get_used_typesupports)
+[2.294s]   /home/huy/mnt/usb_ext4/opt/ros/humble/share/rosidl_typesupport_c/cmake/rosidl_typesupport_cConfig.cmake:41 (include)
+[2.294s]   /home/huy/mnt/usb_ext4/opt/ros/humble/share/builtin_interfaces/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)
+[2.294s]   /home/huy/mnt/usb_ext4/opt/ros/humble/share/builtin_interfaces/cmake/builtin_interfacesConfig.cmake:41 (include)
+[2.294s]   /home/huy/mnt/usb_ext4/opt/ros/humble/share/std_msgs/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)
+[2.294s]   /home/huy/mnt/usb_ext4/opt/ros/humble/share/std_msgs/cmake/std_msgsConfig.cmake:41 (include)
+[2.294s]   /home/huy/mnt/usb_ext4/opt/ros/humble/share/geometry_msgs/cmake/ament_cmake_export_dependencies-extras.cmake:21 (find_package)
+[2.294s]   /home/huy/mnt/usb_ext4/opt/ros/humble/share/geometry_msgs/cmake/geometry_msgsConfig.cmake:41 (include)
+[2.294s]   CMakeLists.txt:20 (find_package)
+[2.294s] 
+[2.294s] [0m
+[2.307s] Invoked command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_node' returned '1': /usr/bin/cmake /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/turtlebot3_node -DRMW_IMPLEMENTATION=rmw_cyclonedds_cpp -DCMAKE_TOOLCHAIN_FILE=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/toolchain_aarch64.cmake -DCMAKE_INSTALL_PREFIX=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install

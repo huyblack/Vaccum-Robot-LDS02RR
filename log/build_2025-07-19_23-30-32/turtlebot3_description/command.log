@@ -1,0 +1,1 @@
+Invoking command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_description': /usr/bin/cmake /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/turtlebot3_description -DRMW_IMPLEMENTATION=rmw_cyclonedds_cpp -DCMAKE_TOOLCHAIN_FILE=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/toolchain_aarch64.cmake -DCMAKE_INSTALL_PREFIX=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install

@@ -1,0 +1,23 @@
+-- The C compiler identification is GNU 12.2.1
+-- The CXX compiler identification is GNU 12.2.1
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-gcc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-g++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found ament_cmake: 1.3.11 (/home/huy/mnt/usb_ext4/opt/ros/humble/share/ament_cmake/cmake)
+-- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+-- Configuring done
+[33mCMake Warning:
+  Manually-specified variables were not used by the project:
+
+    RMW_IMPLEMENTATION
+
+[0m
+-- Generating done
+-- Build files have been written to: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_cartographer
