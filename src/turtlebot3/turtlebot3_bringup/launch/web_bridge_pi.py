@@ -4,7 +4,6 @@ import rclpy
 from rclpy.node import Node
 from nav_msgs.msg import OccupancyGrid, Odometry
 from geometry_msgs.msg import Twist
-from std_msgs.msg import Bool
 from sensor_msgs.msg import JointState
 import asyncio
 import websockets
@@ -36,7 +35,7 @@ def euler_from_quaternion(x, y, z, w):
 
 class WebBridgePi:
     """
-    Phiên bản tối ưu cho Raspberry Pi Zero 2W - đã loại bỏ các tính năng không cần thiết.
+    Phiên bản tối ưu cho Raspberry Pi Zero 2W - đã loại bỏ Wall Follower.
     """
     def __init__(self, node: Node):
         global GPIO_AVAILABLE
@@ -118,7 +117,6 @@ class WebBridgePi:
             
             # Setup publishers
             self.cmd_vel_publisher = self._node.create_publisher(Twist, '/cmd_vel', 10)
-            self.wall_follower_enable_publisher = self._node.create_publisher(Bool, '/wall_follower/enable', 10)
             self.joint_states_sanitized_publisher = self._node.create_publisher(JointState, '/joint_states_sanitized', 10)
             
             # Khởi động WebSocket Server
@@ -203,18 +201,6 @@ class WebBridgePi:
                                 'success': success,
                                 'enabled': enabled if success else current_state,
                                 'pin': pin,
-                                'message': message,
-                                'timestamp': time.time()
-                            }
-                            await websocket.send(json.dumps(response))
-                        elif data.get('action') == 'control_wall_follower':
-                            enabled = data.get('enabled', False)
-                            success, message = self.control_wall_follower(enabled)
-                            response = {
-                                'type': 'control_response',
-                                'action': 'control_wall_follower',
-                                'success': success,
-                                'enabled': enabled,
                                 'message': message,
                                 'timestamp': time.time()
                             }
@@ -427,17 +413,6 @@ class WebBridgePi:
                 self._send_stop_command()
                 return True, "LiDAR stopped"
                 
-        except Exception as e:
-            return False, str(e)
-
-    def control_wall_follower(self, enabled: bool):
-        """Điều khiển Wall Follower qua topic /wall_follower/enable."""
-        try:
-            msg = Bool()
-            msg.data = enabled
-            self.wall_follower_enable_publisher.publish(msg)
-            status = "enabled" if enabled else "disabled"
-            return True, f"Wall Follower {status}"
         except Exception as e:
             return False, str(e)
 
