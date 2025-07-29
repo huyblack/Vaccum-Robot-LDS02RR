@@ -1,0 +1,70 @@
+[0.039s] Invoking command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_node': CMAKE_PREFIX_PATH=/home/huy/mnt/usb_ext4/opt/ros/humble /usr/bin/cmake /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/turtlebot3_node -DRMW_IMPLEMENTATION=rmw_cyclonedds_cpp -DCMAKE_TOOLCHAIN_FILE=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/toolchain_aarch64.cmake -DCMAKE_INSTALL_PREFIX=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install
+[0.214s] -- The C compiler identification is GNU 12.2.1
+[0.390s] -- The CXX compiler identification is GNU 12.2.1
+[0.408s] -- Detecting C compiler ABI info
+[0.557s] -- Detecting C compiler ABI info - done
+[0.574s] -- Check for working C compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-gcc - skipped
+[0.575s] -- Detecting C compile features
+[0.576s] -- Detecting C compile features - done
+[0.582s] -- Detecting CXX compiler ABI info
+[0.825s] -- Detecting CXX compiler ABI info - done
+[0.835s] -- Check for working CXX compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-g++ - skipped
+[0.835s] -- Detecting CXX compile features
+[0.835s] -- Detecting CXX compile features - done
+[0.839s] -- Found ament_cmake: 1.3.11 (/home/huy/mnt/usb_ext4/opt/ros/humble/share/ament_cmake/cmake)
+[1.133s] -- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+[1.264s] -- Found dynamixel_sdk: 3.8.2 (/home/huy/mnt/usb_ext4/opt/ros/humble/share/dynamixel_sdk/cmake)
+[1.266s] -- Found geometry_msgs: 4.8.0 (/home/huy/mnt/usb_ext4/opt/ros/humble/share/geometry_msgs/cmake)
+[1.312s] -- Found rosidl_generator_c: 3.1.6 (/home/huy/mnt/usb_ext4/opt/ros/humble/share/rosidl_generator_c/cmake)
+[1.326s] -- Found rosidl_adapter: 3.1.6 (/home/huy/mnt/usb_ext4/opt/ros/humble/share/rosidl_adapter/cmake)
+[1.345s] -- Found rosidl_generator_cpp: 3.1.6 (/home/huy/mnt/usb_ext4/opt/ros/humble/share/rosidl_generator_cpp/cmake)
+[1.374s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[1.400s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[1.488s] -- Found message_filters: 4.3.6 (/home/huy/mnt/usb_ext4/opt/ros/humble/share/message_filters/cmake)
+[1.567s] -- Found rmw_implementation_cmake: 6.1.2 (/home/huy/mnt/usb_ext4/opt/ros/humble/share/rmw_implementation_cmake/cmake)
+[1.569s] -- Found rmw_cyclonedds_cpp: 1.3.4 (/home/huy/mnt/usb_ext4/opt/ros/humble/share/rmw_cyclonedds_cpp/cmake)
+[1.608s] -- Using RMW implementation 'rmw_cyclonedds_cpp' as default
+[1.624s] -- Looking for pthread.h
+[1.819s] -- Looking for pthread.h - found
+[1.823s] -- Found Threads: TRUE  
+[1.898s] -- Found nav_msgs: 4.8.0 (/home/huy/mnt/usb_ext4/opt/ros/humble/share/nav_msgs/cmake)
+[1.927s] -- Found sensor_msgs: 4.8.0 (/home/huy/mnt/usb_ext4/opt/ros/humble/share/sensor_msgs/cmake)
+[1.959s] -- Found std_srvs: 4.8.0 (/home/huy/mnt/usb_ext4/opt/ros/humble/share/std_srvs/cmake)
+[1.976s] -- Found tf2: 0.25.12 (/home/huy/mnt/usb_ext4/opt/ros/humble/share/tf2/cmake)
+[1.990s] -- Found tf2_ros: 0.25.12 (/home/huy/mnt/usb_ext4/opt/ros/humble/share/tf2_ros/cmake)
+[2.096s] -- Found turtlebot3_msgs: 2.3.0 (/home/huy/mnt/usb_ext4/opt/ros/humble/share/turtlebot3_msgs/cmake)
+[2.253s] -- Configuring done
+[2.286s] -- Generating done
+[2.301s] -- Build files have been written to: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_node
+[2.726s] Invoked command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_node' returned '0': CMAKE_PREFIX_PATH=/home/huy/mnt/usb_ext4/opt/ros/humble /usr/bin/cmake /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/turtlebot3_node -DRMW_IMPLEMENTATION=rmw_cyclonedds_cpp -DCMAKE_TOOLCHAIN_FILE=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/toolchain_aarch64.cmake -DCMAKE_INSTALL_PREFIX=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install
+[2.730s] Invoking command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_node': CMAKE_PREFIX_PATH=/home/huy/mnt/usb_ext4/opt/ros/humble /usr/bin/cmake --build /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_node -- -j4 -l4
+[2.833s] [35m[1mConsolidate compiler generated dependencies of target turtlebot3_node_lib[0m
+[3.375s] [ 84%] Built target turtlebot3_node_lib
+[3.427s] [35m[1mConsolidate compiler generated dependencies of target turtlebot3_ros[0m
+[3.497s] [100%] Built target turtlebot3_ros
+[3.550s] Invoked command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_node' returned '0': CMAKE_PREFIX_PATH=/home/huy/mnt/usb_ext4/opt/ros/humble /usr/bin/cmake --build /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_node -- -j4 -l4
+[3.578s] Invoking command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_node': CMAKE_PREFIX_PATH=/home/huy/mnt/usb_ext4/opt/ros/humble /usr/bin/cmake --install /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_node
+[3.597s] -- Install configuration: ""
+[3.597s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_node/param
+[3.598s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_node/param/burger.yaml
+[3.598s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_node/param/waffle_pi.yaml
+[3.598s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_node/param/waffle.yaml
+[3.602s] -- Installing: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/turtlebot3_node/turtlebot3_ros
+[3.669s] -- Set runtime path of "/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/turtlebot3_node/turtlebot3_ros" to ""
+[3.670s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/ament_index/resource_index/package_run_dependencies/turtlebot3_node
+[3.673s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/ament_index/resource_index/parent_prefix_path/turtlebot3_node
+[3.674s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_node/environment/ament_prefix_path.sh
+[3.674s] -- Installing: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_node/environment/ament_prefix_path.dsv
+[3.675s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_node/environment/path.sh
+[3.676s] -- Installing: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_node/environment/path.dsv
+[3.676s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_node/local_setup.bash
+[3.676s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_node/local_setup.sh
+[3.687s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_node/local_setup.zsh
+[3.687s] -- Installing: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_node/local_setup.dsv
+[3.687s] -- Installing: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_node/package.dsv
+[3.687s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/ament_index/resource_index/packages/turtlebot3_node
+[3.688s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_node/cmake/ament_cmake_export_include_directories-extras.cmake
+[3.688s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_node/cmake/turtlebot3_nodeConfig.cmake
+[3.688s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_node/cmake/turtlebot3_nodeConfig-version.cmake
+[3.688s] -- Up-to-date: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/share/turtlebot3_node/package.xml
+[3.711s] Invoked command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_node' returned '0': CMAKE_PREFIX_PATH=/home/huy/mnt/usb_ext4/opt/ros/humble /usr/bin/cmake --install /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_node

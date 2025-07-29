@@ -1,0 +1,280 @@
+Compiling the C compiler identification source file "CMakeCCompilerId.c" failed.
+Compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-gcc 
+Build flags: ;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu
+Id flags: -c;--target=aarch64-linux-gnu 
+
+The output was:
+1
+aarch64-none-linux-gnu-gcc: error: unrecognized command-line option ‘--target=aarch64-linux-gnu’
+
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-g++ 
+Build flags: ;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu
+Id flags: -c;--target=aarch64-linux-gnu 
+
+The output was:
+1
+aarch64-none-linux-gnu-g++: error: unrecognized command-line option ‘--target=aarch64-linux-gnu’
+
+
+Compiling the C compiler identification source file "CMakeCCompilerId.c" failed.
+Compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-gcc 
+Build flags: ;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu
+Id flags: -c;--target=aarch64-linux-gnu 
+
+The output was:
+1
+aarch64-none-linux-gnu-gcc: error: unrecognized command-line option ‘--target=aarch64-linux-gnu’
+
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-g++ 
+Build flags: ;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu
+Id flags: -c;--target=aarch64-linux-gnu 
+
+The output was:
+1
+aarch64-none-linux-gnu-g++: error: unrecognized command-line option ‘--target=aarch64-linux-gnu’
+
+
+Compiling the C compiler identification source file "CMakeCCompilerId.c" failed.
+Compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-gcc 
+Build flags: ;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu
+Id flags: -c;--target=aarch64-linux-gnu 
+
+The output was:
+1
+aarch64-none-linux-gnu-gcc: error: unrecognized command-line option ‘--target=aarch64-linux-gnu’
+
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-g++ 
+Build flags: ;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu
+Id flags: -c;--target=aarch64-linux-gnu 
+
+The output was:
+1
+aarch64-none-linux-gnu-g++: error: unrecognized command-line option ‘--target=aarch64-linux-gnu’
+
+
+Compiling the C compiler identification source file "CMakeCCompilerId.c" failed.
+Compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-gcc 
+Build flags: ;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu
+Id flags: -c;--target=aarch64-linux-gnu 
+
+The output was:
+1
+aarch64-none-linux-gnu-gcc: error: unrecognized command-line option ‘--target=aarch64-linux-gnu’
+
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-g++ 
+Build flags: ;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu
+Id flags: -c;--target=aarch64-linux-gnu 
+
+The output was:
+1
+aarch64-none-linux-gnu-g++: error: unrecognized command-line option ‘--target=aarch64-linux-gnu’
+
+
+Compiling the C compiler identification source file "CMakeCCompilerId.c" failed.
+Compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-gcc 
+Build flags: ;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu
+Id flags: -c;--target=aarch64-linux-gnu 
+
+The output was:
+1
+aarch64-none-linux-gnu-gcc: error: unrecognized command-line option ‘--target=aarch64-linux-gnu’
+
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-g++ 
+Build flags: ;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu
+Id flags: -c;--target=aarch64-linux-gnu 
+
+The output was:
+1
+aarch64-none-linux-gnu-g++: error: unrecognized command-line option ‘--target=aarch64-linux-gnu’
+
+
+Compiling the C compiler identification source file "CMakeCCompilerId.c" failed.
+Compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-gcc 
+Build flags: ;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu
+Id flags: -c;--target=aarch64-linux-gnu 
+
+The output was:
+1
+aarch64-none-linux-gnu-gcc: error: unrecognized command-line option ‘--target=aarch64-linux-gnu’
+
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-g++ 
+Build flags: ;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu
+Id flags: -c;--target=aarch64-linux-gnu 
+
+The output was:
+1
+aarch64-none-linux-gnu-g++: error: unrecognized command-line option ‘--target=aarch64-linux-gnu’
+
+
+Compiling the C compiler identification source file "CMakeCCompilerId.c" failed.
+Compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-gcc 
+Build flags: ;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu
+Id flags: -c;--target=aarch64-linux-gnu 
+
+The output was:
+1
+aarch64-none-linux-gnu-gcc: error: unrecognized command-line option ‘--target=aarch64-linux-gnu’
+
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-g++ 
+Build flags: ;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu
+Id flags: -c;--target=aarch64-linux-gnu 
+
+The output was:
+1
+aarch64-none-linux-gnu-g++: error: unrecognized command-line option ‘--target=aarch64-linux-gnu’
+
+
+Compiling the C compiler identification source file "CMakeCCompilerId.c" failed.
+Compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-gcc 
+Build flags: ;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu
+Id flags: -c;--target=aarch64-linux-gnu 
+
+The output was:
+1
+aarch64-none-linux-gnu-gcc: error: unrecognized command-line option ‘--target=aarch64-linux-gnu’
+
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-g++ 
+Build flags: ;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu
+Id flags: -c;--target=aarch64-linux-gnu 
+
+The output was:
+1
+aarch64-none-linux-gnu-g++: error: unrecognized command-line option ‘--target=aarch64-linux-gnu’
+
+
+Compiling the C compiler identification source file "CMakeCCompilerId.c" failed.
+Compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-gcc 
+Build flags: ;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu
+Id flags: -c;--target=aarch64-linux-gnu 
+
+The output was:
+1
+aarch64-none-linux-gnu-gcc: error: unrecognized command-line option ‘--target=aarch64-linux-gnu’
+
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-g++ 
+Build flags: ;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu
+Id flags: -c;--target=aarch64-linux-gnu 
+
+The output was:
+1
+aarch64-none-linux-gnu-g++: error: unrecognized command-line option ‘--target=aarch64-linux-gnu’
+
+
+Compiling the C compiler identification source file "CMakeCCompilerId.c" failed.
+Compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-gcc 
+Build flags: ;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu
+Id flags: -c;--target=aarch64-linux-gnu 
+
+The output was:
+1
+aarch64-none-linux-gnu-gcc: error: unrecognized command-line option ‘--target=aarch64-linux-gnu’
+
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-g++ 
+Build flags: ;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu
+Id flags: -c;--target=aarch64-linux-gnu 
+
+The output was:
+1
+aarch64-none-linux-gnu-g++: error: unrecognized command-line option ‘--target=aarch64-linux-gnu’
+
+
+Compiling the C compiler identification source file "CMakeCCompilerId.c" failed.
+Compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-gcc 
+Build flags: ;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu
+Id flags: -c;--target=aarch64-linux-gnu 
+
+The output was:
+1
+aarch64-none-linux-gnu-gcc: error: unrecognized command-line option ‘--target=aarch64-linux-gnu’
+
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-g++ 
+Build flags: ;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu
+Id flags: -c;--target=aarch64-linux-gnu 
+
+The output was:
+1
+aarch64-none-linux-gnu-g++: error: unrecognized command-line option ‘--target=aarch64-linux-gnu’
+
+
+Compiling the C compiler identification source file "CMakeCCompilerId.c" failed.
+Compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-gcc 
+Build flags: ;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu
+Id flags: -c;--target=aarch64-linux-gnu 
+
+The output was:
+1
+aarch64-none-linux-gnu-gcc: error: unrecognized command-line option ‘--target=aarch64-linux-gnu’
+
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-g++ 
+Build flags: ;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu
+Id flags: -c;--target=aarch64-linux-gnu 
+
+The output was:
+1
+aarch64-none-linux-gnu-g++: error: unrecognized command-line option ‘--target=aarch64-linux-gnu’
+
+
+Compiling the C compiler identification source file "CMakeCCompilerId.c" failed.
+Compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-gcc 
+Build flags: ;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu
+Id flags: -c;--target=aarch64-linux-gnu 
+
+The output was:
+1
+aarch64-none-linux-gnu-gcc: error: unrecognized command-line option ‘--target=aarch64-linux-gnu’
+
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-g++ 
+Build flags: ;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu
+Id flags: -c;--target=aarch64-linux-gnu 
+
+The output was:
+1
+aarch64-none-linux-gnu-g++: error: unrecognized command-line option ‘--target=aarch64-linux-gnu’
+
+
+Compiling the C compiler identification source file "CMakeCCompilerId.c" failed.
+Compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-gcc 
+Build flags: ;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu
+Id flags: -c;--target=aarch64-linux-gnu 
+
+The output was:
+1
+aarch64-none-linux-gnu-gcc: error: unrecognized command-line option ‘--target=aarch64-linux-gnu’
+
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: /home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-g++ 
+Build flags: ;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu;-I/home/huy/mnt/usb_ext4/usr/include/aarch64-linux-gnu
+Id flags: -c;--target=aarch64-linux-gnu 
+
+The output was:
+1
+aarch64-none-linux-gnu-g++: error: unrecognized command-line option ‘--target=aarch64-linux-gnu’
+
+

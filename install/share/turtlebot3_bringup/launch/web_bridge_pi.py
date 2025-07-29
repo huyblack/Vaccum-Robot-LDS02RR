@@ -4,6 +4,8 @@ import rclpy
 from rclpy.node import Node
 from nav_msgs.msg import OccupancyGrid, Odometry
 from geometry_msgs.msg import Twist
+from std_msgs.msg import Bool # Thêm thư viện cho kiểu Bool
+from sensor_msgs.msg import JointState # Thêm thư viện cho JointState
 import std_srvs.srv
 import asyncio
 import websockets
@@ -54,6 +56,9 @@ class WebBridgePi:
         self._node = node
         self._logger = node.get_logger()
         
+        # --- Biến để lọc NaN ---
+        self.last_valid_joint_positions = {}
+        
         # --- Cấu hình tối ưu cho Pi ---
         self.port = 8765
         self.host = "0.0.0.0"  # Cho phép kết nối từ mạng
@@ -63,7 +68,7 @@ class WebBridgePi:
         # --- Throttling tối ưu cho Pi Zero 2W + Swap 2GB ---
         self.last_map_time = 0
         self.last_odom_time = 0
-        self.map_throttle = 2.0  # Giây - Vừa phải với swap 2GB
+        self.map_throttle = 1.0  # Giây - Vừa phải với swap 2GB
         self.odom_throttle = 0.3  # Giây - Nhanh hơn với swap support
         
         # --- Lưu trữ dữ liệu ---
@@ -91,15 +96,6 @@ class WebBridgePi:
         self.lidar_pwm = None
         self.lidar_enabled = True  # Start with LiDAR ENABLED (rotation ON)
         self.lidar_duty_cycle = 7  # Working duty cycle for LiDAR when enabled
-        
-        # --- Frontier Exploration Control ---
-        self.exploration_enabled = False  # Start with exploration DISABLED
-        self.exploration_process = None
-        
-        # --- ROS Action Clients for Explorer Bringup ---
-        self.wanderer_action_client = None
-        self.discoverer_action_client = None
-        self.exploration_goal_handle = None
         
         # --- Process Control ---
         self.lidar_process = None
@@ -151,24 +147,24 @@ class WebBridgePi:
             # --- Tạo Subscribers ---
             self._node.create_subscription(OccupancyGrid, '/map', self.map_callback, 10)
             self._node.create_subscription(Odometry, '/odom', self.odom_callback, 10)
+            self._node.create_subscription(
+                JointState,
+                '/joint_states',
+                self.joint_states_callback,
+                10)
             
             # --- Setup cmd_vel publisher for manual control ---
             self.cmd_vel_publisher = self._node.create_publisher(Twist, '/cmd_vel', 10)
             self._logger.info("✅ cmd_vel publisher initialized for manual control")
             
-            # --- Setup action clients for explorer_bringup ---
-            try:
-                from explorer_interfaces.action import Wander, Discover
-                from rclpy.action import ActionClient
-                
-                self.wanderer_action_client = ActionClient(self._node, Wander, 'wander')
-                self.discoverer_action_client = ActionClient(self._node, Discover, 'discover')
-                self._logger.info("✅ Explorer action clients initialized")
-            except ImportError as e:
-                self._logger.warning(f"⚠️ Explorer interfaces not available: {e}")
-                self.wanderer_action_client = None
-                self.discoverer_action_client = None
-            
+            # --- Setup wall_follower enable publisher ---
+            self.wall_follower_enable_publisher = self._node.create_publisher(Bool, '/wall_follower/enable', 10)
+            self._logger.info("✅ wall_follower enable publisher initialized")
+
+            # --- Setup cleaned joint_states publisher ---
+            self.joint_states_sanitized_publisher = self._node.create_publisher(JointState, '/joint_states_sanitized', 10)
+            self._logger.info("✅ joint_states_sanitized publisher initialized")
+
             # --- Khởi động WebSocket Server trong một thread riêng ---
             server_thread = threading.Thread(target=self.start_server_thread, daemon=True)
             server_thread.start()
@@ -359,17 +355,15 @@ class WebBridgePi:
                                 'timestamp': time.time()
                             }
                             await websocket.send(json.dumps(response))
-                        elif data.get('action') == 'control_exploration':
-                            # Handle Explorer Bringup control
+                        elif data.get('action') == 'control_wall_follower':
+                            # Handle Wall Follower control
                             enabled = data.get('enabled', False)
-                            algorithm = data.get('algorithm', 'wanderer')
-                            success, message = self.control_exploration(enabled, algorithm)
+                            success, message = self.control_wall_follower(enabled)
                             response = {
                                 'type': 'control_response',
-                                'action': 'control_exploration',
+                                'action': 'control_wall_follower',
                                 'success': success,
-                                'enabled': enabled if success else self.exploration_enabled,
-                                'algorithm': algorithm,
+                                'enabled': enabled,
                                 'message': message,
                                 'timestamp': time.time()
                             }
@@ -387,6 +381,44 @@ class WebBridgePi:
                                 'message': message,
                                 'linear_x': linear_x,
                                 'angular_z': angular_z,
+                                'timestamp': time.time()
+                            }
+                            await websocket.send(json.dumps(response))
+                        elif data.get('action') == 'set_initial_pose':
+                            # Handle setting initial pose for AMCL
+                            pose_data = data.get('pose', {})
+                            success, message = self.set_initial_pose(pose_data)
+                            
+                            response = {
+                                'type': 'control_response',
+                                'action': 'set_initial_pose',
+                                'success': success,
+                                'message': message,
+                                'timestamp': time.time()
+                            }
+                            await websocket.send(json.dumps(response))
+                        elif data.get('action') == 'send_navigation_goal':
+                            # Handle navigation goal
+                            goal_data = data.get('goal', {})
+                            success, message = self.send_navigation_goal(goal_data)
+                            
+                            response = {
+                                'type': 'control_response',
+                                'action': 'send_navigation_goal',
+                                'success': success,
+                                'message': message,
+                                'timestamp': time.time()
+                            }
+                            await websocket.send(json.dumps(response))
+                        elif data.get('action') == 'cancel_navigation':
+                            # Handle cancel navigation
+                            success, message = self.cancel_navigation()
+                            
+                            response = {
+                                'type': 'control_response',
+                                'action': 'cancel_navigation',
+                                'success': success,
+                                'message': message,
                                 'timestamp': time.time()
                             }
                             await websocket.send(json.dumps(response))
@@ -431,13 +463,13 @@ class WebBridgePi:
                     },
                 },
                 'data_size': len(msg.data),
-                'data': list(msg.data) if len(msg.data) < 30000 else None  # Giới hạn 30k với Swap 2GB
+                'data': list(msg.data) if len(msg.data) < 100000 else None  # Tăng giới hạn lên 100k với Swap 2GB
             }
             
             if map_info['data'] is None:
-                map_info['message'] = f"Map quá lớn ({len(msg.data)} cells), chỉ gửi metadata"
+                map_info['message'] = f"Map quá lớn ({len(msg.data)} cells > 100k), chỉ gửi metadata"
                 # Chỉ log khi cần thiết để tiết kiệm CPU
-                if len(msg.data) % 5000 == 0:  # Log mỗi 5k cells
+                if len(msg.data) % 10000 == 0:  # Log mỗi 10k cells
                     self._logger.info(f"📊 Map size: {len(msg.data)} cells")
             
             self.last_map_data = map_info
@@ -486,6 +518,32 @@ class WebBridgePi:
         except Exception as e:
             self._logger.error(f"❌ Lỗi xử lý odom callback: {e}")
         
+    def joint_states_callback(self, msg):
+        """Lắng nghe /joint_states, lọc NaN và xuất bản ra topic đã được làm sạch."""
+        sanitized_msg = JointState()
+        sanitized_msg.header = msg.header
+        sanitized_msg.name = msg.name
+        sanitized_msg.velocity = msg.velocity
+        sanitized_msg.effort = msg.effort
+        
+        new_positions = []
+        is_dirty = False
+        for i, name in enumerate(msg.name):
+            pos = msg.position[i]
+            if math.isnan(pos):
+                is_dirty = True
+                clean_pos = self.last_valid_joint_positions.get(name, 0.0)
+                new_positions.append(clean_pos)
+            else:
+                self.last_valid_joint_positions[name] = pos
+                new_positions.append(pos)
+        
+        if is_dirty:
+            self._logger.warn("NaN detected in /joint_states, publishing sanitized version.")
+        
+        sanitized_msg.position = new_positions
+        self.joint_states_sanitized_publisher.publish(sanitized_msg)
+
     def broadcast(self, message_data):
         """Gửi message tới tất cả các client."""
         if not self.clients:
@@ -527,7 +585,7 @@ class WebBridgePi:
         # Remove disconnected clients
         for client in disconnected_clients:
             self.clients.discard(client)
-            
+        
         if tasks:
             results = await asyncio.gather(*tasks, return_exceptions=True)
             # Log errors but filter out common timeout issues
@@ -623,35 +681,19 @@ class WebBridgePi:
             self._logger.error(f"❌ LiDAR control failed: {e}")
             return False, str(e)
 
-    def control_exploration(self, enabled: bool, algorithm: str = 'wanderer'):
-        """Điều khiển Explorer Bringup qua ROS action."""
-        if enabled == self.exploration_enabled:
-            return True, f"Exploration already {'enabled' if enabled else 'disabled'}"
-        
+    def control_wall_follower(self, enabled: bool):
+        """Điều khiển Wall Follower qua topic /wall_follower/enable."""
         try:
-            if enabled:
-                # Start Explorer via action
-                self._logger.info(f"🗺️ Starting {algorithm} exploration via action...")
-                success = self._start_exploration_action(algorithm)
-                if success:
-                    self.exploration_enabled = True
-                    return True, f"{algorithm.capitalize()} exploration started successfully"
-                else:
-                    return False, f"Failed to start {algorithm} exploration"
-            else:
-                # Stop Explorer via action
-                self._logger.info("🗺️ Stopping exploration via action...")
-                success = self._stop_exploration_action()
-                if success:
-                    self.exploration_enabled = False
-                    return True, "Exploration stopped successfully"
-                else:
-                    return False, "Failed to stop exploration"
-                
+            msg = Bool()
+            msg.data = enabled
+            self.wall_follower_enable_publisher.publish(msg)
+            status = "enabled" if enabled else "disabled"
+            self._logger.info(f"🛣️ Wall Follower {status}")
+            return True, f"Wall Follower {status}"
         except Exception as e:
-            self._logger.error(f"❌ Exploration control failed: {e}")
+            self._logger.error(f"❌ Wall Follower control failed: {e}")
             return False, str(e)
-    
+
     def _start_lidar_slam(self):
         """Start LiDAR và SLAM processes - Optimized for Cartographer."""
         try:
@@ -819,225 +861,6 @@ class WebBridgePi:
         except Exception as e:
             self._logger.error(f"❌ Error stopping LiDAR/SLAM: {e}")
 
-    def _start_exploration_action(self, algorithm: str = 'wanderer'):
-        """Start Explorer via ROS action."""
-        try:
-            if algorithm == 'wanderer' and self.wanderer_action_client:
-                self._logger.info("🗺️ Starting Wanderer exploration...")
-                return self._start_wanderer_action()
-            elif algorithm == 'discoverer' and self.discoverer_action_client:
-                self._logger.info("🗺️ Starting Discoverer exploration...")
-                return self._start_discoverer_action()
-            else:
-                self._logger.error(f"❌ {algorithm} action client not available")
-                return False
-        except Exception as e:
-            self._logger.error(f"❌ Start exploration action failed: {e}")
-            return False
-    
-    def _start_wanderer_action(self):
-        """Start Wanderer exploration action."""
-        try:
-            if not self.wanderer_action_client:
-                return False
-                
-            # Wait for action server
-            if not self.wanderer_action_client.wait_for_server(timeout_sec=5.0):
-                self._logger.error("❌ Wanderer action server not available")
-                return False
-            
-            # Create goal
-            from explorer_interfaces.action import Wander
-            goal = Wander.Goal()
-            goal.map_completed_thres = 0.9  # 90% completion threshold
-            
-            # Send goal
-            self._logger.info("🎯 Sending Wanderer goal (90% map completion)...")
-            self.exploration_goal_handle = self.wanderer_action_client.send_goal_async(goal)
-            
-            # Add callback for result
-            self.exploration_goal_handle.add_done_callback(self._exploration_goal_callback)
-            
-            self._logger.info("✅ Wanderer exploration started")
-            return True
-            
-        except Exception as e:
-            self._logger.error(f"❌ Wanderer action failed: {e}")
-            return False
-    
-    def _start_discoverer_action(self):
-        """Start Discoverer exploration action."""
-        try:
-            if not self.discoverer_action_client:
-                return False
-                
-            # Wait for action server
-            if not self.discoverer_action_client.wait_for_server(timeout_sec=5.0):
-                self._logger.error("❌ Discoverer action server not available")
-                return False
-            
-            # Create goal
-            from explorer_interfaces.action import Discover
-            goal = Discover.Goal()
-            goal.strategy = 1
-            goal.map_completed_thres = 0.97  # 97% completion threshold
-            
-            # Send goal
-            self._logger.info("🎯 Sending Discoverer goal (97% map completion)...")
-            self.exploration_goal_handle = self.discoverer_action_client.send_goal_async(goal)
-            
-            # Add callback for result
-            self.exploration_goal_handle.add_done_callback(self._exploration_goal_callback)
-            
-            self._logger.info("✅ Discoverer exploration started")
-            return True
-            
-        except Exception as e:
-            self._logger.error(f"❌ Discoverer action failed: {e}")
-            return False
-    
-    def _exploration_goal_callback(self, future):
-        """Callback khi exploration goal hoàn thành."""
-        try:
-            goal_handle = future.result()
-            if not goal_handle.accepted:
-                self._logger.warning("⚠️ Exploration goal rejected")
-                self.exploration_enabled = False
-                return
-            
-            self._logger.info("✅ Exploration goal accepted")
-            
-            # Get result
-            result_future = goal_handle.get_result_async()
-            result_future.add_done_callback(self._exploration_result_callback)
-            
-        except Exception as e:
-            self._logger.error(f"❌ Exploration goal callback error: {e}")
-    
-    def _exploration_result_callback(self, future):
-        """Callback khi exploration hoàn thành."""
-        try:
-            result = future.result()
-            status = result.status
-            
-            if status == 4:  # SUCCEEDED
-                self._logger.info("🎉 Exploration completed successfully!")
-                self.exploration_enabled = False
-            else:
-                self._logger.warning(f"⚠️ Exploration ended with status: {status}")
-                self.exploration_enabled = False
-                
-        except Exception as e:
-            self._logger.error(f"❌ Exploration result callback error: {e}")
-    
-    def _stop_exploration_action(self):
-        """Stop Explorer via ROS action."""
-        try:
-            if self.exploration_goal_handle:
-                # Cancel the goal
-                self.exploration_goal_handle.cancel_goal_async()
-                self._logger.info("🛑 Exploration goal cancelled")
-                self.exploration_goal_handle = None
-                return True
-            else:
-                self._logger.warning("⚠️ No active exploration goal to cancel")
-                return True
-        except Exception as e:
-            self._logger.error(f"❌ Stop exploration action failed: {e}")
-            return False
-            
-            if not self.start_exploration_client:
-                self._logger.error("❌ Start exploration service client not initialized")
-                return False
-            
-            # Check if service exists
-            self._logger.info("🔍 Checking if start_exploration service exists...")
-            
-            # Wait for service to be available
-            if not self.start_exploration_client.wait_for_service(timeout_sec=10.0):
-                self._logger.error("❌ Start exploration service not available after 10 seconds")
-                self._logger.error("🔍 Available services:")
-                try:
-                    # List available services for debugging
-                    import subprocess
-                    result = subprocess.run(['ros2', 'service', 'list'], capture_output=True, text=True, timeout=5)
-                    if result.stdout:
-                        services = result.stdout.strip().split('\n')
-                        exploration_services = [s for s in services if 'exploration' in s.lower()]
-                        self._logger.info(f"🔍 Found exploration services: {exploration_services}")
-                    else:
-                        self._logger.error("❌ No services found or ros2 command failed")
-                except Exception as e:
-                    self._logger.error(f"❌ Error listing services: {e}")
-                return False
-            
-            self._logger.info("✅ Start exploration service is available")
-            
-            # Call service
-            request = std_srvs.srv.Trigger.Request()
-            self._logger.info("📤 Sending start_exploration service request...")
-            future = self.start_exploration_client.call_async(request)
-            
-            # Wait for response
-            self._logger.info("⏳ Waiting for service response...")
-            rclpy.spin_until_future_complete(self._node, future, timeout_sec=10.0)
-            
-            if future.done():
-                response = future.result()
-                self._logger.info(f"📥 Service response received: success={response.success}, message='{response.message}'")
-                if response.success:
-                    self._logger.info(f"✅ Frontier Exploration started: {response.message}")
-                    return True
-                else:
-                    self._logger.warning(f"⚠️ Frontier Exploration start failed: {response.message}")
-                    return False
-            else:
-                self._logger.error("❌ Start exploration service call timeout")
-                return False
-                
-        except Exception as e:
-            self._logger.error(f"❌ Start exploration service error: {e}")
-            import traceback
-            self._logger.error(f"🔍 Full traceback: {traceback.format_exc()}")
-            return False
-
-    def _stop_exploration_service(self):
-        """Stop Frontier Exploration via ROS service."""
-        try:
-            self._logger.info("🗺️ Calling stop_exploration service...")
-            
-            if not self.stop_exploration_client:
-                self._logger.error("❌ Stop exploration service client not initialized")
-                return False
-            
-            # Wait for service to be available
-            if not self.stop_exploration_client.wait_for_service(timeout_sec=5.0):
-                self._logger.error("❌ Stop exploration service not available")
-                return False
-            
-            # Call service
-            request = std_srvs.srv.Trigger.Request()
-            future = self.stop_exploration_client.call_async(request)
-            
-            # Wait for response
-            rclpy.spin_until_future_complete(self._node, future, timeout_sec=5.0)
-            
-            if future.done():
-                response = future.result()
-                if response.success:
-                    self._logger.info(f"✅ Frontier Exploration stopped: {response.message}")
-                    return True
-                else:
-                    self._logger.warning(f"⚠️ Frontier Exploration stop failed: {response.message}")
-                    return False
-            else:
-                self._logger.error("❌ Stop exploration service call timeout")
-                return False
-                
-        except Exception as e:
-            self._logger.error(f"❌ Stop exploration service error: {e}")
-            return False
-    
     def _send_stop_command(self):
         """Gửi lệnh dừng robot để safety khi LiDAR tắt."""
         try:
@@ -1118,6 +941,159 @@ class WebBridgePi:
             self._logger.error(f"❌ Failed to publish cmd_vel: {e}")
             return False, f"Failed to send velocity command: {e}"
 
+    def set_initial_pose(self, pose_data):
+        """
+        Set initial pose for AMCL localization.
+        
+        Args:
+            pose_data (dict): Pose data with x, y, z, yaw
+        """
+        try:
+            from geometry_msgs.msg import PoseWithCovarianceStamped
+            import math
+            
+            # Create pose publisher if not exists
+            if not hasattr(self, 'initial_pose_publisher'):
+                self.initial_pose_publisher = self._node.create_publisher(
+                    PoseWithCovarianceStamped, '/initialpose', 10
+                )
+            
+            # Create pose message
+            pose_msg = PoseWithCovarianceStamped()
+            pose_msg.header.frame_id = 'map'
+            pose_msg.header.stamp = self._node.get_clock().now().to_msg()
+            
+            # Set position
+            pose_msg.pose.pose.position.x = float(pose_data.get('x', 0.0))
+            pose_msg.pose.pose.position.y = float(pose_data.get('y', 0.0))
+            pose_msg.pose.pose.position.z = float(pose_data.get('z', 0.0))
+            
+            # Set orientation (convert yaw to quaternion)
+            yaw = float(pose_data.get('yaw', 0.0))
+            pose_msg.pose.pose.orientation.x = 0.0
+            pose_msg.pose.pose.orientation.y = 0.0
+            pose_msg.pose.pose.orientation.z = math.sin(yaw / 2.0)
+            pose_msg.pose.pose.orientation.w = math.cos(yaw / 2.0)
+            
+            # Set covariance (high uncertainty for initial pose)
+            pose_msg.pose.covariance = [0.25, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                       0.0, 0.25, 0.0, 0.0, 0.0, 0.0,
+                                       0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                       0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                       0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                       0.0, 0.0, 0.0, 0.0, 0.0, 0.06853891909122467]
+            
+            # Publish initial pose
+            self.initial_pose_publisher.publish(pose_msg)
+            
+            self._logger.info(f"📍 Set initial pose: ({pose_data.get('x', 0.0):.2f}, {pose_data.get('y', 0.0):.2f}, {pose_data.get('z', 0.0):.2f})")
+            return True, "Initial pose set successfully"
+            
+        except Exception as e:
+            self._logger.error(f"❌ Failed to set initial pose: {e}")
+            return False, f"Failed to set initial pose: {e}"
+
+    def send_navigation_goal(self, goal_data):
+        """
+        Send navigation goal to Nav2.
+        
+        Args:
+            goal_data (dict): Goal data with x, y, z
+        """
+        try:
+            from geometry_msgs.msg import PoseStamped
+            from nav2_msgs.action import NavigateToPose
+            from rclpy.action import ActionClient
+            
+            # Create action client if not exists
+            if not hasattr(self, 'navigation_action_client'):
+                self.navigation_action_client = ActionClient(self._node, NavigateToPose, 'navigate_to_pose')
+            
+            # Wait for action server
+            if not self.navigation_action_client.wait_for_server(timeout_sec=5.0):
+                return False, "Navigation action server not available"
+            
+            # Create goal
+            goal = NavigateToPose.Goal()
+            goal.pose.header.frame_id = 'map'
+            goal.pose.header.stamp = self._node.get_clock().now().to_msg()
+            
+            goal.pose.pose.position.x = float(goal_data.get('x', 0.0))
+            goal.pose.pose.position.y = float(goal_data.get('y', 0.0))
+            goal.pose.pose.position.z = float(goal_data.get('z', 0.0))
+            
+            # Set orientation (facing forward)
+            goal.pose.pose.orientation.x = 0.0
+            goal.pose.pose.orientation.y = 0.0
+            goal.pose.pose.orientation.z = 0.0
+            goal.pose.pose.orientation.w = 1.0
+            
+            # Send goal
+            self._logger.info(f"🎯 Sending navigation goal: ({goal_data.get('x', 0.0):.2f}, {goal_data.get('y', 0.0):.2f}, {goal_data.get('z', 0.0):.2f})")
+            
+            # Store goal handle for cancellation
+            self.navigation_goal_handle = self.navigation_action_client.send_goal_async(goal)
+            self.navigation_goal_handle.add_done_callback(self._navigation_goal_callback)
+            
+            return True, "Navigation goal sent successfully"
+            
+        except Exception as e:
+            self._logger.error(f"❌ Failed to send navigation goal: {e}")
+            return False, f"Failed to send navigation goal: {e}"
+
+    def cancel_navigation(self):
+        """
+        Cancel current navigation goal.
+        """
+        try:
+            if hasattr(self, 'navigation_goal_handle') and self.navigation_goal_handle:
+                # Cancel the goal
+                self.navigation_goal_handle.cancel_goal_async()
+                self._logger.info("❌ Navigation goal cancelled")
+                self.navigation_goal_handle = None
+                return True, "Navigation cancelled successfully"
+            else:
+                return True, "No active navigation goal to cancel"
+                
+        except Exception as e:
+            self._logger.error(f"❌ Failed to cancel navigation: {e}")
+            return False, f"Failed to cancel navigation: {e}"
+
+    def _navigation_goal_callback(self, future):
+        """
+        Callback when navigation goal is completed.
+        """
+        try:
+            goal_handle = future.result()
+            if not goal_handle.accepted:
+                self._logger.warning("⚠️ Navigation goal rejected")
+                return
+            
+            self._logger.info("✅ Navigation goal accepted")
+            
+            # Get result
+            result_future = goal_handle.get_result_async()
+            result_future.add_done_callback(self._navigation_result_callback)
+            
+        except Exception as e:
+            self._logger.error(f"❌ Navigation goal callback error: {e}")
+
+    def _navigation_result_callback(self, future):
+        """
+        Callback when navigation is completed.
+        """
+        try:
+            result = future.result()
+            status = result.status
+            
+            if status == 4:  # SUCCEEDED
+                self._logger.info("🎉 Navigation completed successfully!")
+            else:
+                self._logger.warning(f"⚠️ Navigation ended with status: {status}")
+                
+        except Exception as e:
+            self._logger.error(f"❌ Navigation result callback error: {e}")
+
     def cleanup(self):
         """Cleanup GPIO and processes khi shutdown."""
         try:
@@ -1142,10 +1118,6 @@ class WebBridgePi:
             if self.lidar_process or self.slam_process:
                 self._stop_lidar_slam()
             
-            # Stop Explorer if running
-            if self.exploration_enabled:
-                self._stop_exploration_action()
-                
             self._logger.info("✅ Cleanup completed")
             
         except Exception as e:
@@ -1173,4 +1145,4 @@ def main(args=None):
         rclpy.shutdown()
 
 if __name__ == '__main__':
-    main()
+    main() 

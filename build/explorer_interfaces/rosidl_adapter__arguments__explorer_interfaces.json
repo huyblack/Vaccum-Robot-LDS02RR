@@ -1,7 +1,0 @@
-{
-  "package_name": "explorer_interfaces",
-  "non_idl_tuples": [
-    "/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/explorer_interfaces:action/Wander.action",
-    "/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/explorer_interfaces:action/Discover.action"
-  ]
-}

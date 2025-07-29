@@ -180,22 +180,5 @@ def generate_launch_description():
             condition=launch.conditions.IfCondition(enable_slam)
         ),
 
-        # Delay 10 giây rồi khởi động Explorer Bringup (nếu enable_explorer=true)
-        TimerAction(
-            period=10.0,  # Đợi 10 giây cho robot setup xong
-            actions=[
-                # Explorer Bringup Integration
-                IncludeLaunchDescription(
-                    PythonLaunchDescriptionSource([
-                        get_package_share_directory('explorer_bringup'), 
-                        '/explorer.launch.py'
-                    ]),
-                    launch_arguments={
-                        'use_sim_time': 'false',
-                    }.items(),
-                )
-            ],
-            condition=launch.conditions.IfCondition(enable_explorer)
-        ),
 
     ])

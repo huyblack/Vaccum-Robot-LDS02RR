@@ -1,0 +1,23 @@
+[1.553s] Invoking command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/explorer_wanderer': PYTHONPATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/explorer_wanderer/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../build/explorer_wanderer build --build-base /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/explorer_wanderer/build install --record /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/explorer_wanderer/install.log --single-version-externally-managed install_data
+[2.263s] running egg_info
+[2.263s] writing ../../../build/explorer_wanderer/explorer_wanderer.egg-info/PKG-INFO
+[2.263s] writing dependency_links to ../../../build/explorer_wanderer/explorer_wanderer.egg-info/dependency_links.txt
+[2.264s] writing entry points to ../../../build/explorer_wanderer/explorer_wanderer.egg-info/entry_points.txt
+[2.264s] writing requirements to ../../../build/explorer_wanderer/explorer_wanderer.egg-info/requires.txt
+[2.264s] writing top-level names to ../../../build/explorer_wanderer/explorer_wanderer.egg-info/top_level.txt
+[2.264s] reading manifest file '../../../build/explorer_wanderer/explorer_wanderer.egg-info/SOURCES.txt'
+[2.264s] writing manifest file '../../../build/explorer_wanderer/explorer_wanderer.egg-info/SOURCES.txt'
+[2.264s] running build
+[2.264s] running build_py
+[2.264s] running install
+[2.264s] running install_lib
+[2.267s] running install_data
+[2.267s] running install_egg_info
+[2.267s] removing '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/explorer_wanderer-0.0.0-py3.10.egg-info' (and everything under it)
+[2.268s] Copying ../../../build/explorer_wanderer/explorer_wanderer.egg-info to /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/explorer_wanderer-0.0.0-py3.10.egg-info
+[2.268s] running install_scripts
+[2.350s] Installing discoverer_server script to /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/explorer_wanderer
+[2.351s] Installing wanderer script to /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/explorer_wanderer
+[2.351s] Installing wanderer_server script to /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/explorer_wanderer
+[2.352s] writing list of installed files to '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/explorer_wanderer/install.log'
+[2.517s] Invoked command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/explorer_wanderer' returned '0': PYTHONPATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/explorer_wanderer/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../build/explorer_wanderer build --build-base /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/explorer_wanderer/build install --record /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/explorer_wanderer/install.log --single-version-externally-managed install_data

@@ -1,0 +1,21 @@
+[1.986s] Invoking command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/turtlebot3_teleop': PYTHONPATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_teleop/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../build/turtlebot3_teleop build --build-base /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_teleop/build install --record /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_teleop/install.log --single-version-externally-managed install_data
+[2.471s] running egg_info
+[2.473s] writing ../../../build/turtlebot3_teleop/turtlebot3_teleop.egg-info/PKG-INFO
+[2.474s] writing dependency_links to ../../../build/turtlebot3_teleop/turtlebot3_teleop.egg-info/dependency_links.txt
+[2.474s] writing entry points to ../../../build/turtlebot3_teleop/turtlebot3_teleop.egg-info/entry_points.txt
+[2.475s] writing requirements to ../../../build/turtlebot3_teleop/turtlebot3_teleop.egg-info/requires.txt
+[2.475s] writing top-level names to ../../../build/turtlebot3_teleop/turtlebot3_teleop.egg-info/top_level.txt
+[2.485s] reading manifest file '../../../build/turtlebot3_teleop/turtlebot3_teleop.egg-info/SOURCES.txt'
+[2.486s] writing manifest file '../../../build/turtlebot3_teleop/turtlebot3_teleop.egg-info/SOURCES.txt'
+[2.487s] running build
+[2.487s] running build_py
+[2.488s] running install
+[2.492s] running install_lib
+[2.494s] running install_data
+[2.494s] running install_egg_info
+[2.496s] removing '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/turtlebot3_teleop-2.2.9-py3.10.egg-info' (and everything under it)
+[2.497s] Copying ../../../build/turtlebot3_teleop/turtlebot3_teleop.egg-info to /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages/turtlebot3_teleop-2.2.9-py3.10.egg-info
+[2.501s] running install_scripts
+[2.535s] Installing teleop_keyboard script to /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/turtlebot3_teleop
+[2.537s] writing list of installed files to '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_teleop/install.log'
+[2.592s] Invoked command in '/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/turtlebot3_teleop' returned '0': PYTHONPATH=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_teleop/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../build/turtlebot3_teleop build --build-base /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_teleop/build install --record /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/turtlebot3_teleop/install.log --single-version-externally-managed install_data

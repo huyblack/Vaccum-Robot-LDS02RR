@@ -1,0 +1,8 @@
+[01m[K/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/lds02rr_lidar/src/xv11_laser.cpp:[m[K In member function ‘[01m[Kbool xv_11_driver::XV11Laser::IsValidPacket(uint8_t*, int)[m[K’:
+[01m[K/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/lds02rr_lidar/src/xv11_laser.cpp:59:30:[m[K [01;35m[Kwarning: [m[KISO C++ forbids variable length array ‘[01m[KcalcCRC[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wvla-Wvla]8;;[m[K]
+   59 |                 unsigned int [01;35m[KcalcCRC[m[K[calcCRCLen];
+      |                              [01;35m[K^~~~~~~[m[K
+[01m[K/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/lds02rr_lidar/src/xv11_laser.cpp:[m[K At global scope:
+[01m[K/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/lds02rr_lidar/src/xv11_laser.cpp:38:22:[m[K [01;35m[Kwarning: [m[K‘[01m[Klong unsigned int nowMillis()[m[K’ defined but not used [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-function-Wunused-function]8;;[m[K]
+   38 | static unsigned long [01;35m[KnowMillis[m[K() {
+      |                      [01;35m[K^~~~~~~~~[m[K

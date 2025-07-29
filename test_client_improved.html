@@ -199,6 +199,71 @@
             transition: transform 0.3s;
         }
 
+        /* Navigation Controls */
+        .navigation-controls {
+            background: #2c3e50;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #3498db;
+        }
+
+        .nav-button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+            transition: background 0.3s;
+        }
+
+        .nav-button:hover {
+            background: #2980b9;
+        }
+
+        .nav-button.danger {
+            background: #e74c3c;
+        }
+
+        .nav-button.danger:hover {
+            background: #c0392b;
+        }
+
+        .nav-button.success {
+            background: #27ae60;
+        }
+
+        .nav-button.success:hover {
+            background: #229954;
+        }
+
+        .goal-input {
+            background: #34495e;
+            border: 1px solid #7f8c8d;
+            color: white;
+            padding: 8px;
+            border-radius: 5px;
+            margin: 5px;
+            width: 80px;
+        }
+
+        .goal-input::placeholder {
+            color: #bdc3c7;
+        }
+
+        .map-click-instruction {
+            background: rgba(52, 152, 219, 0.2);
+            border: 1px solid #3498db;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 12px;
+            text-align: center;
+        }
+
         .toggle-switch.active::before {
             transform: translateX(30px);
         }
@@ -405,15 +470,15 @@
             
             <div class="control-group">
                 <div class="control-label">
-                    <div class="control-title">🗺️ Frontier Exploration</div>
-                    <div class="control-desc">Start/stop autonomous SLAM exploration</div>
+                    <div class="control-title">🛣️ Wall Follower</div>
+                    <div class="control-desc">Enable/disable autonomous wall following</div>
                 </div>
                 <div style="display: flex; align-items: center; gap: 10px;">
-                    <div class="toggle-switch" id="explorationToggle" onclick="toggleExploration()"></div>
-                    <span class="status-indicator status-offline" id="explorationStatus"></span>
+                    <div class="toggle-switch" id="wallFollowerToggle" onclick="toggleWallFollower()"></div>
+                    <span class="status-indicator status-offline" id="wallFollowerStatus"></span>
                 </div>
             </div>
-            
+
             <div class="control-group">
                 <div class="control-label">
                     <div class="control-title">🔴 LiDAR Rotation</div>
@@ -721,6 +786,7 @@
                 
                 // Store position for map drawing
                 robotPosition = {x: x, y: y, yaw: yaw};
+                robotPose = data.pose.position; // Also update for navigation
                 
                 // Add to trail (keep last 50 points)
                 robotTrail.push({x: x, y: y});
@@ -790,11 +856,17 @@
 
             // Simple map visualization
             if (data.data && data.info) {
+                console.log('🗺️ Map data received:', data.info.width, 'x', data.info.height, 'resolution:', data.info.resolution);
+                console.log('🗺️ Map data length:', data.data.length);
                 window.currentMapData = data; // Store for redrawing with robot position
+                mapData = data.info; // Also update for navigation
                 drawMap(data);
+                addLog(`🗺️ Map updated: ${data.info.width}x${data.info.height} (${data.data.length} cells)`);
             } else {
+                console.log('❌ No map data or info:', data);
                 document.getElementById('mapInfo').textContent = 
                     data.message || 'Map data too large, showing metadata only';
+                addLog('❌ No map data received');
             }
         }
 
@@ -969,6 +1041,7 @@
         let lidarEnabled = false;  // Default: LiDAR OFF (no rotation)
         let motorEnabled = false;  // Default: Motor power OFF
         let motorControlEnabled = false;  // Default: Motor control OFF
+        let wallFollowerEnabled = false;  // Default: Wall Follower OFF
         let explorationEnabled = false;  // Default: Exploration OFF
 
         function toggleLidar() {
@@ -1027,22 +1100,21 @@
             }
         }
 
-        function toggleExploration() {
+        function toggleWallFollower() {
             if (ws && ws.readyState === WebSocket.OPEN) {
-                explorationEnabled = !explorationEnabled;
+                wallFollowerEnabled = !wallFollowerEnabled;
                 
                 const command = {
-                    action: 'control_exploration',
-                    enabled: explorationEnabled,
-                    algorithm: 'wanderer'  // Use wanderer algorithm
+                    action: 'control_wall_follower',
+                    enabled: wallFollowerEnabled
                 };
                 
                 ws.send(JSON.stringify(command));
-                updateControlStatus('exploration', explorationEnabled ? 'pending' : 'offline', 
-                                   explorationEnabled ? 'Starting Wanderer Exploration...' : 'Stopping Exploration...');
-                addLog(`🗺️ Wanderer Exploration ${explorationEnabled ? 'STARTED' : 'STOPPED'} - Robot will explore until 90% map completion`);
+                updateControlStatus('wallFollower', wallFollowerEnabled ? 'pending' : 'offline', 
+                                   wallFollowerEnabled ? 'Enabling Wall Follower...' : 'Disabling Wall Follower...');
+                addLog(`🛣️ Wall Follower ${wallFollowerEnabled ? 'ENABLED' : 'DISABLED'}`);
             } else {
-                addLog('❌ Not connected - cannot control exploration');
+                addLog('❌ Not connected - cannot control wall follower');
             }
         }
 
@@ -1057,8 +1129,8 @@
                 toggleElement.classList.toggle('active', motorEnabled);
             } else if (type === 'motorControl') {
                 toggleElement.classList.toggle('active', motorControlEnabled);
-            } else if (type === 'exploration') {
-                toggleElement.classList.toggle('active', explorationEnabled);
+            } else if (type === 'wallFollower') {
+                toggleElement.classList.toggle('active', wallFollowerEnabled);
             }
             
             // Update status indicator
@@ -1106,6 +1178,18 @@
                         updateControlStatus('motorControl', 'error', `Failed: ${message}`);
                         addLog(`❌ Motor control failed: ${message}`);
                     }
+                }
+            } else if (action === 'control_wall_follower') {
+                if (success) {
+                    wallFollowerEnabled = enabled;
+                    updateControlStatus('wallFollower', enabled ? 'online' : 'offline',
+                                       enabled ? 'Wall Follower Active' : 'Wall Follower Inactive');
+                    addLog(`✅ Wall Follower ${enabled ? 'enabled' : 'disabled'} successfully`);
+                } else {
+                    // Revert state on failure
+                    wallFollowerEnabled = !wallFollowerEnabled;
+                    updateControlStatus('wallFollower', 'error', `Failed: ${message}`);
+                    addLog(`❌ Wall Follower control failed: ${message}`);
                 }
             } else if (action === 'control_exploration') {
                 if (success) {
@@ -1339,11 +1423,131 @@
              }
          });
 
+        // Navigation Functions
+        let currentNavigationGoal = null;
+        let mapData = null;
+        let robotPose = null;
+
+        function setInitialPose() {
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                addLog('❌ Not connected to robot');
+                return;
+            }
+
+            // Set initial pose at current robot position (0,0,0) if no pose data
+            const pose = robotPose || { x: 0, y: 0, z: 0, yaw: 0 };
+            
+            // Send initial pose command (this would need to be implemented in web_bridge_pi.py)
+            const command = {
+                action: 'set_initial_pose',
+                pose: pose
+            };
+
+            ws.send(JSON.stringify(command));
+            addLog(`📍 Setting initial pose: (${pose.x.toFixed(2)}, ${pose.y.toFixed(2)}, ${pose.z.toFixed(2)})`);
+            document.getElementById('navigationStatus').textContent = 'Setting initial pose...';
+        }
+
+        function sendNavigationGoal() {
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                addLog('❌ Not connected to robot');
+                return;
+            }
+
+            const x = parseFloat(document.getElementById('goalX').value);
+            const y = parseFloat(document.getElementById('goalY').value);
+            const z = parseFloat(document.getElementById('goalZ').value);
+
+            if (isNaN(x) || isNaN(y) || isNaN(z)) {
+                addLog('❌ Please enter valid coordinates');
+                return;
+            }
+
+            const goal = { x, y, z };
+            currentNavigationGoal = goal;
+
+            const command = {
+                action: 'send_navigation_goal',
+                goal: goal
+            };
+
+            ws.send(JSON.stringify(command));
+            addLog(`🎯 Sending navigation goal: (${x.toFixed(2)}, ${y.toFixed(2)}, ${z.toFixed(2)})`);
+            document.getElementById('navigationStatus').textContent = 'Navigating...';
+            document.getElementById('currentGoal').textContent = `(${x.toFixed(2)}, ${y.toFixed(2)}, ${z.toFixed(2)})`;
+        }
+
+        function cancelNavigation() {
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                addLog('❌ Not connected to robot');
+                return;
+            }
+
+            const command = {
+                action: 'cancel_navigation'
+            };
+
+            ws.send(JSON.stringify(command));
+            addLog('❌ Cancelling navigation');
+            document.getElementById('navigationStatus').textContent = 'Cancelled';
+            currentNavigationGoal = null;
+            document.getElementById('currentGoal').textContent = 'None';
+        }
+
+        function emergencyStop() {
+            stopMovement();
+            cancelNavigation();
+            addLog('🚨 EMERGENCY STOP - All movement and navigation cancelled');
+            document.getElementById('navigationStatus').textContent = 'Emergency Stop';
+        }
+
+        // Map click handler for setting navigation goals
+        function setupMapClickHandler() {
+            const mapCanvas = document.getElementById('mapCanvas');
+            if (!mapCanvas) return;
+
+            mapCanvas.addEventListener('click', function(event) {
+                if (!mapData) {
+                    addLog('❌ No map data available');
+                    return;
+                }
+
+                const rect = mapCanvas.getBoundingClientRect();
+                const x = event.clientX - rect.left;
+                const y = event.clientY - rect.top;
+
+                // Convert pixel coordinates to map coordinates
+                const mapX = (x - mapData.origin.x) * mapData.resolution;
+                const mapY = (mapData.height - y - mapData.origin.y) * mapData.resolution;
+
+                // Update input fields
+                document.getElementById('goalX').value = mapX.toFixed(2);
+                document.getElementById('goalY').value = mapY.toFixed(2);
+                document.getElementById('goalZ').value = '0.0';
+
+                addLog(`🎯 Clicked map at: (${mapX.toFixed(2)}, ${mapY.toFixed(2)})`);
+                
+                // Optionally auto-send goal
+                // sendNavigationGoal();
+            });
+
+            addLog('🎯 Map click handler enabled - click to set navigation goals');
+        }
+
+        // Update map data for coordinate conversion
+        function updateMapDataForNavigation(data) {
+            mapData = data.info;
+            // Existing map update code...
+        }
+
+        // Robot pose is now updated in the main updateOdomData function
+
         // Initialize UI state to match robot defaults
         function initializeControlUI() {
             // Set initial toggle states
             updateControlStatus('lidar', 'offline', 'LiDAR Stopped');
             updateControlStatus('motor', 'offline', 'GPIO27 LOW');
+            updateControlStatus('wallFollower', 'offline', 'Wall Follower Inactive');
             
             // Initialize velocity display
             updateVelocityDisplay();
@@ -1355,6 +1559,7 @@
         window.onload = function() {
             addLog('🚀 Starting TurtleBot3 Monitor...');
             initializeControlUI();
+            setupMapClickHandler();
             connect();
             
             // Update connection time every second
