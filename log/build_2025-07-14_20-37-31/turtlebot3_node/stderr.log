@@ -1,4 +1,0 @@
-[01m[K/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/turtlebot3_node/src/turtlebot3.cpp:[m[K In member function ‘[01m[Kvoid robotis::turtlebot3::TurtleBot3::init_dynamixel_sdk_wrapper(const std::string&)[m[K’:
-[01m[K/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/turtlebot3_node/src/turtlebot3.cpp:52:65:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Kusb_port[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
-   52 | void TurtleBot3::init_dynamixel_sdk_wrapper([01;35m[Kconst std::string & usb_port[m[K)
-      |                                             [01;35m[K~~~~~~~~~~~~~~~~~~~~^~~~~~~~[m[K

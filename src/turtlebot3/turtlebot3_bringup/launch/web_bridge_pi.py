@@ -74,6 +74,17 @@ class WebBridgePi:
         self.lidar_enabled = True
         self.lidar_duty_cycle = 7
         
+        # GPIO13 PWM Control - Thêm mới
+        self.gpio13_pwm_pin = 13
+        self.gpio13_pwm = None
+        self.gpio13_enabled = True  # Thay đổi từ False thành True
+        self.gpio13_duty_cycle = 60  # Thay đổi từ 20 thành 60 (normal level)
+        self.gpio13_pwm_levels = {
+            'quiet': 20,      # Yên tĩnh - 20%
+            'normal': 60,     # Bình thường - 60%
+            'high': 100       # Hiệu suất cao - 100%
+        }
+        
         # Setup GPIO
         if GPIO_AVAILABLE:
             try:
@@ -98,6 +109,11 @@ class WebBridgePi:
                 
                 initial_duty = 0 if not self.lidar_enabled else self.lidar_duty_cycle
                 self.lidar_pwm.start(initial_duty)
+                
+                # Setup GPIO13 PWM - Thêm mới
+                GPIO.setup(self.gpio13_pwm_pin, GPIO.OUT)
+                self.gpio13_pwm = GPIO.PWM(self.gpio13_pwm_pin, 100)
+                self.gpio13_pwm.start(60)  # Bắt đầu với duty cycle 60% (normal level)
                 
             except Exception as e:
                 self._logger.error(f"❌ GPIO setup failed: {e}")
@@ -217,6 +233,22 @@ class WebBridgePi:
                                 'message': message,
                                 'linear_x': linear_x,
                                 'angular_z': angular_z,
+                                'timestamp': time.time()
+                            }
+                            await websocket.send(json.dumps(response))
+                        elif data.get('action') == 'control_gpio13_pwm':
+                            level = data.get('level', 'quiet')
+                            enabled = data.get('enabled', True)
+                            success, message = self.control_gpio13_pwm(level, enabled)
+                            
+                            response = {
+                                'type': 'control_response',
+                                'action': 'control_gpio13_pwm',
+                                'success': success,
+                                'enabled': enabled if success else self.gpio13_enabled,
+                                'level': level if success else self.get_gpio13_level_name(),
+                                'duty_cycle': self.gpio13_duty_cycle,
+                                'message': message,
                                 'timestamp': time.time()
                             }
                             await websocket.send(json.dumps(response))
@@ -464,6 +496,44 @@ class WebBridgePi:
         except Exception as e:
             return False, f"Failed to send velocity command: {e}"
 
+    def control_gpio13_pwm(self, level='quiet', enabled=True):
+        """Điều khiển PWM GPIO13 với 3 mức độ."""
+        if not GPIO_AVAILABLE:
+            return False, "GPIO not available"
+        
+        try:
+            if level not in self.gpio13_pwm_levels:
+                return False, f"Invalid level '{level}' - use 'quiet', 'normal', or 'high'"
+            
+            duty_cycle = self.gpio13_pwm_levels[level]
+            
+            if enabled:
+                if not self.gpio13_pwm:
+                    return False, "GPIO13 PWM not available"
+                
+                self.gpio13_pwm.ChangeDutyCycle(duty_cycle)
+                self.gpio13_enabled = True
+                self.gpio13_duty_cycle = duty_cycle
+                return True, f"GPIO13 PWM enabled at {level} level ({duty_cycle}%)"
+            else:
+                if not self.gpio13_pwm:
+                    return False, "GPIO13 PWM not available"
+                
+                self.gpio13_pwm.ChangeDutyCycle(0)
+                self.gpio13_enabled = False
+                self.gpio13_duty_cycle = 0
+                return True, "GPIO13 PWM disabled"
+                
+        except Exception as e:
+            return False, str(e)
+
+    def get_gpio13_level_name(self):
+        """Lấy tên level hiện tại của GPIO13 PWM."""
+        for level_name, duty_cycle in self.gpio13_pwm_levels.items():
+            if duty_cycle == self.gpio13_duty_cycle:
+                return level_name
+        return 'unknown'
+
     def cleanup(self):
         """Cleanup GPIO và processes khi shutdown."""
         try:
@@ -478,6 +548,11 @@ class WebBridgePi:
                 if self.lidar_pwm:
                     self.lidar_pwm.ChangeDutyCycle(0)
                     self.lidar_pwm.stop()
+                
+                # Stop GPIO13 PWM - Thêm mới
+                if self.gpio13_pwm:
+                    self.gpio13_pwm.ChangeDutyCycle(0)
+                    self.gpio13_pwm.stop()
                 
                 GPIO.cleanup()
             

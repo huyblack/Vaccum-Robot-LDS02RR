@@ -218,6 +218,29 @@
         .status-error { background: #e74c3c; }
         .status-warning { background: #f39c12; }
 
+        /* Level Button Styles */
+        .level-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex: 1;
+            text-align: center;
+        }
+
+        .level-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .level-btn.active {
+            box-shadow: 0 0 0 2px white, 0 0 0 4px currentColor;
+        }
+
         /* Manual Control Styles */
         .manual-control-grid {
             display: grid;
@@ -437,6 +460,29 @@
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <div class="toggle-switch" id="motorControlToggle" onclick="toggleMotorControl()"></div>
                     <span class="status-indicator status-offline" id="motorControlStatus"></span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="control-label">
+                    <div class="control-title">⚡ GPIO13 PWM Control</div>
+                    <div class="control-desc">Control PWM output on GPIO13 with 3 power levels</div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div class="toggle-switch" id="gpio13Toggle" onclick="toggleGpio13()"></div>
+                    <span class="status-indicator status-offline" id="gpio13Status"></span>
+                </div>
+            </div>
+
+            <div class="control-group" id="gpio13LevelGroup" style="display: none;">
+                <div class="control-label">
+                    <div class="control-title">🎚️ PWM Level</div>
+                    <div class="control-desc">Select power level for GPIO13 PWM output</div>
+                </div>
+                <div style="display: flex; gap: 5px;">
+                    <button class="level-btn" id="quietBtn" onclick="setGpio13Level('quiet')" style="background: #27ae60;">Quiet (20%)</button>
+                    <button class="level-btn" id="normalBtn" onclick="setGpio13Level('normal')" style="background: #f39c12;">Normal (60%)</button>
+                    <button class="level-btn" id="highBtn" onclick="setGpio13Level('high')" style="background: #e74c3c;">High (100%)</button>
                 </div>
             </div>
 
@@ -966,9 +1012,11 @@
         }
 
         // Control Panel Functions - Initial states match robot defaults
-        let lidarEnabled = false;  // Default: LiDAR OFF (no rotation)
+        let lidarEnabled = true;  // Default: LiDAR ON (changed from false)
         let motorEnabled = false;  // Default: Motor power OFF
         let motorControlEnabled = false;  // Default: Motor control OFF
+        let gpio13Enabled = true;  // Default: GPIO13 PWM ON (changed from false)
+        let gpio13CurrentLevel = 'normal';  // Default: Normal level (changed from quiet)
 
         function toggleLidar() {
             if (ws && ws.readyState === WebSocket.OPEN) {
@@ -1026,6 +1074,72 @@
             }
         }
 
+        function toggleGpio13() {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                gpio13Enabled = !gpio13Enabled;
+                
+                const command = {
+                    action: 'control_gpio13_pwm',
+                    enabled: gpio13Enabled,
+                    level: gpio13CurrentLevel
+                };
+                
+                ws.send(JSON.stringify(command));
+                updateControlStatus('gpio13', gpio13Enabled ? 'pending' : 'offline', 
+                                   gpio13Enabled ? `Enabling GPIO13 PWM at ${gpio13CurrentLevel} level...` : 'Disabling GPIO13 PWM...');
+                addLog(`⚡ GPIO13 PWM ${gpio13Enabled ? 'ENABLED' : 'DISABLED'} at ${gpio13CurrentLevel} level`);
+                
+                // Show/hide level selection
+                const levelGroup = document.getElementById('gpio13LevelGroup');
+                if (levelGroup) {
+                    levelGroup.style.display = gpio13Enabled ? 'flex' : 'none';
+                }
+            } else {
+                addLog('❌ Not connected - cannot control GPIO13');
+            }
+        }
+
+        function setGpio13Level(level) {
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                addLog('❌ Not connected - cannot set GPIO13 level');
+                return;
+            }
+            
+            if (!gpio13Enabled) {
+                addLog('❌ GPIO13 PWM is disabled - enable it first');
+                return;
+            }
+            
+            gpio13CurrentLevel = level;
+            
+            const command = {
+                action: 'control_gpio13_pwm',
+                enabled: true,
+                level: level
+            };
+            
+            ws.send(JSON.stringify(command));
+            updateGpio13LevelButtons(level);
+            addLog(`🎚️ GPIO13 PWM level set to ${level} (${getLevelDutyCycle(level)}%)`);
+        }
+
+        function getLevelDutyCycle(level) {
+            switch (level) {
+                case 'quiet': return 20;
+                case 'normal': return 60;
+                case 'high': return 100;
+                default: return 20;
+            }
+        }
+
+        function updateGpio13LevelButtons(activeLevel) {
+            ['quiet', 'normal', 'high'].forEach(level => {
+                const btn = document.getElementById(level + 'Btn');
+                if (btn) {
+                    btn.classList.toggle('active', level === activeLevel);
+                }
+            });
+        }
 
 
         function updateControlStatus(type, status, message) {
@@ -1039,6 +1153,8 @@
                 toggleElement.classList.toggle('active', motorEnabled);
             } else if (type === 'motorControl') {
                 toggleElement.classList.toggle('active', motorControlEnabled);
+            } else if (type === 'gpio13') {
+                toggleElement.classList.toggle('active', gpio13Enabled);
             }
             
             // Update status indicator
@@ -1099,6 +1215,36 @@
                     addLog(`❌ Manual control failed: ${message}`);
                     // Stop movement on failure
                     stopMovement();
+                }
+            } else if (action === 'control_gpio13_pwm') {
+                if (success) {
+                    gpio13Enabled = data.enabled;
+                    if (data.enabled) {
+                        gpio13CurrentLevel = data.level;
+                        updateGpio13LevelButtons(data.level);
+                        updateControlStatus('gpio13', 'online', `GPIO13 PWM at ${data.level} level (${data.duty_cycle}%)`);
+                        addLog(`✅ GPIO13 PWM enabled at ${data.level} level (${data.duty_cycle}%)`);
+                        
+                        // Show level selection
+                        const levelGroup = document.getElementById('gpio13LevelGroup');
+                        if (levelGroup) {
+                            levelGroup.style.display = 'flex';
+                        }
+                    } else {
+                        updateControlStatus('gpio13', 'offline', 'GPIO13 PWM disabled');
+                        addLog(`✅ GPIO13 PWM disabled`);
+                        
+                        // Hide level selection
+                        const levelGroup = document.getElementById('gpio13LevelGroup');
+                        if (levelGroup) {
+                            levelGroup.style.display = 'none';
+                        }
+                    }
+                } else {
+                    // Revert state on failure
+                    gpio13Enabled = !gpio13Enabled;
+                    updateControlStatus('gpio13', 'error', `Failed: ${message}`);
+                    addLog(`❌ GPIO13 PWM control failed: ${message}`);
                 }
             }
         }
@@ -1345,13 +1491,17 @@
         // Initialize UI state to match robot defaults
         function initializeControlUI() {
             // Set initial toggle states
-            updateControlStatus('lidar', 'offline', 'LiDAR Stopped');
+            updateControlStatus('lidar', 'online', 'LiDAR Spinning'); // Changed from offline
             updateControlStatus('motor', 'offline', 'GPIO27 LOW');
+            updateControlStatus('motorControl', 'offline', 'GPIO25 LOW');
+            updateControlStatus('gpio13', 'online', 'GPIO13 PWM at normal level (60%)'); // Changed from offline
+            document.getElementById('gpio13LevelGroup').style.display = 'flex'; // Show level group by default (changed from none)
+            updateGpio13LevelButtons('normal'); // Set normal button as active
             
             // Initialize velocity display
             updateVelocityDisplay();
             
-            addLog('🎮 Control panel initialized - LiDAR OFF, Motor OFF, Manual Control Ready');
+            addLog('🎮 Control panel initialized - LiDAR ON, Motor OFF, GPIO13 ON (normal), Manual Control Ready');
         }
 
         // Start connection when page loads
