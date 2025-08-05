@@ -22,8 +22,8 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     use_sim_time = LaunchConfiguration('use_sim_time', default='false')
-    resolution = LaunchConfiguration('resolution', default='0.05')
-    publish_period_sec = LaunchConfiguration('publish_period_sec', default='1.0')
+    resolution = LaunchConfiguration('resolution', default='0.02')
+    publish_period_sec = LaunchConfiguration('publish_period_sec', default='0.5')
 
     return LaunchDescription([
         DeclareLaunchArgument(

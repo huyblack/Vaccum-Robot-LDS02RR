@@ -162,47 +162,47 @@ def generate_launch_description():
         ),
 
 
-        # Delay 5 giây rồi khởi động SLAM Cartographer tự động (nếu enable_slam=true)
-        TimerAction(
-            period=8.0,  # Đợi 5 giây cho robot setup xong (sau khi IMU calibration hoàn tất)
-            actions=[
-                # SLAM Cartographer (không RViz để tiết kiệm tài nguyên Pi Zero 2W)
-                IncludeLaunchDescription(
-                    PythonLaunchDescriptionSource([
-                        get_package_share_directory('turtlebot3_cartographer'), 
-                        '/launch/cartographer.launch.py'
-                    ]),
-                    launch_arguments={
-                        'use_sim_time': 'false',
-                        'use_rviz': 'false'  # Tắt RViz để tiết kiệm tài nguyên Pi Zero 2W
-                    }.items(),
-                ),
+        # # Delay 5 giây rồi khởi động SLAM Cartographer tự động (nếu enable_slam=true)
+        # TimerAction(
+        #     period=8.0,  # Đợi 5 giây cho robot setup xong (sau khi IMU calibration hoàn tất)
+        #     actions=[
+        #         # SLAM Cartographer (không RViz để tiết kiệm tài nguyên Pi Zero 2W)
+        #         IncludeLaunchDescription(
+        #             PythonLaunchDescriptionSource([
+        #                 get_package_share_directory('turtlebot3_cartographer'), 
+        #                 '/launch/cartographer.launch.py'
+        #             ]),
+        #             launch_arguments={
+        #                 'use_sim_time': 'false',
+        #                 'use_rviz': 'false'  # Tắt RViz để tiết kiệm tài nguyên Pi Zero 2W
+        #             }.items(),
+        #         ),
 
-                IncludeLaunchDescription(
-                    PythonLaunchDescriptionSource([
-                        get_package_share_directory('turtlebot3_navigation2'), 
-                        '/launch/navigation2.launch.py'
-                    ]),
-                    launch_arguments={
-                        'use_sim_time': 'false',
-                        'use_rviz': 'false'  # Tắt RViz để tiết kiệm tài nguyên Pi Zero 2W
-                    }.items(),
-                ),
+        #         IncludeLaunchDescription(
+        #             PythonLaunchDescriptionSource([
+        #                 get_package_share_directory('turtlebot3_navigation2'), 
+        #                 '/launch/navigation2.launch.py'
+        #             ]),
+        #             launch_arguments={
+        #                 'use_sim_time': 'false',
+        #                 'use_rviz': 'false'  # Tắt RViz để tiết kiệm tài nguyên Pi Zero 2W
+        #             }.items(),
+        #         ),
 
-                ExecuteProcess(
-                    cmd=['ros2', 'launch', 'explorer_bringup', 'explorer.launch.py'],
-                    output='screen',
-                    condition=launch.conditions.IfCondition(enable_explorer)
-                ),
+        #         ExecuteProcess(
+        #             cmd=['ros2', 'launch', 'explorer_bringup', 'explorer.launch.py'],
+        #             output='screen',
+        #             condition=launch.conditions.IfCondition(enable_explorer)
+        #         ),
 
-                ExecuteProcess(
-                    cmd=['ros2', 'run', 'explorer_bringup', 'manager'],
-                    output='screen',
-                    condition=launch.conditions.IfCondition(enable_explorer)
-                ),
+        #         ExecuteProcess(
+        #             cmd=['ros2', 'run', 'explorer_bringup', 'manager'],
+        #             output='screen',
+        #             condition=launch.conditions.IfCondition(enable_explorer)
+        #         ),
 
 
-            ],
-            condition=launch.conditions.IfCondition(enable_slam)
-        ),
+        #     ],
+        #     condition=launch.conditions.IfCondition(enable_slam)
+        # ),
     ])

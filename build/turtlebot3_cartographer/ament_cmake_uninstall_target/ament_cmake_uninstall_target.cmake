@@ -2,7 +2,7 @@
 # ament_cmake_core/cmake/uninstall_target/ament_cmake_uninstall_target.cmake.in
 
 function(ament_cmake_uninstall_target_remove_empty_directories path)
-  set(install_space "/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install")
+  set(install_space "/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/install/turtlebot3_cartographer")
   if(install_space STREQUAL "")
     message(FATAL_ERROR "The CMAKE_INSTALL_PREFIX variable must not be empty")
   endif()

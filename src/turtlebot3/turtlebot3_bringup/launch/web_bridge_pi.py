@@ -55,8 +55,8 @@ class WebBridgePi:
         # Throttling tối ưu
         self.last_map_time = 0
         self.last_odom_time = 0
-        self.map_throttle = 2.0  # Tăng lên 2s để giảm tải
-        self.odom_throttle = 0.5  # Tăng lên 0.5s
+        self.map_throttle = 3.0  # Tăng lên 2s để giảm tải
+        self.odom_throttle = 1.0  # Tăng lên 0.5s
         
         # Lưu trữ dữ liệu
         self.last_map_data = None
@@ -72,7 +72,7 @@ class WebBridgePi:
         self.lidar_pwm_pin = 18
         self.lidar_pwm = None
         self.lidar_enabled = True
-        self.lidar_duty_cycle = 7
+        self.lidar_duty_cycle = 8.5
         
         # GPIO13 PWM Control - Thêm mới
         self.gpio13_pwm_pin = 13

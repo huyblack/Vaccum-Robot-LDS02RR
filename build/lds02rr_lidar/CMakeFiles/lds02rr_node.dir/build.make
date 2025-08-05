@@ -73,29 +73,29 @@ CMakeFiles/lds02rr_node.dir/src/xv_11_driver.cpp.o: CMakeFiles/lds02rr_node.dir/
 CMakeFiles/lds02rr_node.dir/src/xv_11_driver.cpp.o: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/lds02rr_lidar/src/xv_11_driver.cpp
 CMakeFiles/lds02rr_node.dir/src/xv_11_driver.cpp.o: CMakeFiles/lds02rr_node.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/lds02rr_lidar/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/lds02rr_node.dir/src/xv_11_driver.cpp.o"
-	/home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-g++ --sysroot=/home/huy/mnt/usb_ext4 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/lds02rr_node.dir/src/xv_11_driver.cpp.o -MF CMakeFiles/lds02rr_node.dir/src/xv_11_driver.cpp.o.d -o CMakeFiles/lds02rr_node.dir/src/xv_11_driver.cpp.o -c /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/lds02rr_lidar/src/xv_11_driver.cpp
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/lds02rr_node.dir/src/xv_11_driver.cpp.o -MF CMakeFiles/lds02rr_node.dir/src/xv_11_driver.cpp.o.d -o CMakeFiles/lds02rr_node.dir/src/xv_11_driver.cpp.o -c /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/lds02rr_lidar/src/xv_11_driver.cpp
 
 CMakeFiles/lds02rr_node.dir/src/xv_11_driver.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/lds02rr_node.dir/src/xv_11_driver.cpp.i"
-	/home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-g++ --sysroot=/home/huy/mnt/usb_ext4 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/lds02rr_lidar/src/xv_11_driver.cpp > CMakeFiles/lds02rr_node.dir/src/xv_11_driver.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/lds02rr_lidar/src/xv_11_driver.cpp > CMakeFiles/lds02rr_node.dir/src/xv_11_driver.cpp.i
 
 CMakeFiles/lds02rr_node.dir/src/xv_11_driver.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/lds02rr_node.dir/src/xv_11_driver.cpp.s"
-	/home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-g++ --sysroot=/home/huy/mnt/usb_ext4 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/lds02rr_lidar/src/xv_11_driver.cpp -o CMakeFiles/lds02rr_node.dir/src/xv_11_driver.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/lds02rr_lidar/src/xv_11_driver.cpp -o CMakeFiles/lds02rr_node.dir/src/xv_11_driver.cpp.s
 
 CMakeFiles/lds02rr_node.dir/src/xv11_laser.cpp.o: CMakeFiles/lds02rr_node.dir/flags.make
 CMakeFiles/lds02rr_node.dir/src/xv11_laser.cpp.o: /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/lds02rr_lidar/src/xv11_laser.cpp
 CMakeFiles/lds02rr_node.dir/src/xv11_laser.cpp.o: CMakeFiles/lds02rr_node.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/lds02rr_lidar/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/lds02rr_node.dir/src/xv11_laser.cpp.o"
-	/home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-g++ --sysroot=/home/huy/mnt/usb_ext4 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/lds02rr_node.dir/src/xv11_laser.cpp.o -MF CMakeFiles/lds02rr_node.dir/src/xv11_laser.cpp.o.d -o CMakeFiles/lds02rr_node.dir/src/xv11_laser.cpp.o -c /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/lds02rr_lidar/src/xv11_laser.cpp
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/lds02rr_node.dir/src/xv11_laser.cpp.o -MF CMakeFiles/lds02rr_node.dir/src/xv11_laser.cpp.o.d -o CMakeFiles/lds02rr_node.dir/src/xv11_laser.cpp.o -c /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/lds02rr_lidar/src/xv11_laser.cpp
 
 CMakeFiles/lds02rr_node.dir/src/xv11_laser.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/lds02rr_node.dir/src/xv11_laser.cpp.i"
-	/home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-g++ --sysroot=/home/huy/mnt/usb_ext4 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/lds02rr_lidar/src/xv11_laser.cpp > CMakeFiles/lds02rr_node.dir/src/xv11_laser.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/lds02rr_lidar/src/xv11_laser.cpp > CMakeFiles/lds02rr_node.dir/src/xv11_laser.cpp.i
 
 CMakeFiles/lds02rr_node.dir/src/xv11_laser.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/lds02rr_node.dir/src/xv11_laser.cpp.s"
-	/home/huy/mnt/usb_ext4/arm-gnu-toolchain-12.2.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-g++ --sysroot=/home/huy/mnt/usb_ext4 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/lds02rr_lidar/src/xv11_laser.cpp -o CMakeFiles/lds02rr_node.dir/src/xv11_laser.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/huy/nav2_ws/Vaccum-Robot-LDS02RR/src/turtlebot3/lds02rr_lidar/src/xv11_laser.cpp -o CMakeFiles/lds02rr_node.dir/src/xv11_laser.cpp.s
 
 # Object files for target lds02rr_node
 lds02rr_node_OBJECTS = \
@@ -108,86 +108,86 @@ lds02rr_node_EXTERNAL_OBJECTS =
 lds02rr_node: CMakeFiles/lds02rr_node.dir/src/xv_11_driver.cpp.o
 lds02rr_node: CMakeFiles/lds02rr_node.dir/src/xv11_laser.cpp.o
 lds02rr_node: CMakeFiles/lds02rr_node.dir/build.make
-lds02rr_node: /home/huy/mnt/usb_ext4/usr/lib/aarch64-linux-gnu/libboost_system.so.1.74.0
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/librclcpp.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libsensor_msgs__rosidl_typesupport_fastrtps_c.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libsensor_msgs__rosidl_typesupport_fastrtps_cpp.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libsensor_msgs__rosidl_typesupport_introspection_c.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libsensor_msgs__rosidl_typesupport_introspection_cpp.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libsensor_msgs__rosidl_generator_py.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/librmw_cyclonedds_cpp.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/liblibstatistics_collector.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/librcl.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/librmw_implementation.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libament_index_cpp.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/librcl_logging_spdlog.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/librcl_logging_interface.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/librcl_interfaces__rosidl_typesupport_fastrtps_c.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/librcl_interfaces__rosidl_typesupport_introspection_c.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/librcl_interfaces__rosidl_typesupport_fastrtps_cpp.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/librcl_interfaces__rosidl_typesupport_introspection_cpp.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/librcl_interfaces__rosidl_typesupport_cpp.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/librcl_interfaces__rosidl_generator_py.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/librcl_interfaces__rosidl_typesupport_c.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/librcl_interfaces__rosidl_generator_c.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/librcl_yaml_param_parser.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libyaml.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/librosgraph_msgs__rosidl_typesupport_fastrtps_c.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/librosgraph_msgs__rosidl_typesupport_fastrtps_cpp.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/librosgraph_msgs__rosidl_typesupport_introspection_c.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/librosgraph_msgs__rosidl_typesupport_introspection_cpp.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/librosgraph_msgs__rosidl_typesupport_cpp.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/librosgraph_msgs__rosidl_generator_py.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/librosgraph_msgs__rosidl_typesupport_c.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/librosgraph_msgs__rosidl_generator_c.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libstatistics_msgs__rosidl_typesupport_fastrtps_c.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libstatistics_msgs__rosidl_typesupport_fastrtps_cpp.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libstatistics_msgs__rosidl_typesupport_introspection_c.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libstatistics_msgs__rosidl_typesupport_introspection_cpp.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libstatistics_msgs__rosidl_typesupport_cpp.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libstatistics_msgs__rosidl_generator_py.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libstatistics_msgs__rosidl_typesupport_c.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libstatistics_msgs__rosidl_generator_c.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libgeometry_msgs__rosidl_typesupport_fastrtps_c.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libstd_msgs__rosidl_typesupport_fastrtps_c.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libbuiltin_interfaces__rosidl_typesupport_fastrtps_c.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/librosidl_typesupport_fastrtps_c.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libgeometry_msgs__rosidl_typesupport_fastrtps_cpp.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libstd_msgs__rosidl_typesupport_fastrtps_cpp.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libbuiltin_interfaces__rosidl_typesupport_fastrtps_cpp.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/librosidl_typesupport_fastrtps_cpp.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libfastcdr.so.1.0.24
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libgeometry_msgs__rosidl_typesupport_introspection_c.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libstd_msgs__rosidl_typesupport_introspection_c.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libbuiltin_interfaces__rosidl_typesupport_introspection_c.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libgeometry_msgs__rosidl_typesupport_introspection_cpp.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libstd_msgs__rosidl_typesupport_introspection_cpp.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libbuiltin_interfaces__rosidl_typesupport_introspection_cpp.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libsensor_msgs__rosidl_typesupport_c.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libsensor_msgs__rosidl_generator_c.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libgeometry_msgs__rosidl_generator_py.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libstd_msgs__rosidl_generator_py.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libbuiltin_interfaces__rosidl_generator_py.so
-lds02rr_node: /usr/lib/aarch64-linux-gnu/libpython3.10.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libgeometry_msgs__rosidl_typesupport_c.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libstd_msgs__rosidl_typesupport_c.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libbuiltin_interfaces__rosidl_typesupport_c.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libgeometry_msgs__rosidl_generator_c.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libstd_msgs__rosidl_generator_c.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libbuiltin_interfaces__rosidl_generator_c.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libsensor_msgs__rosidl_typesupport_cpp.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libgeometry_msgs__rosidl_typesupport_cpp.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libstd_msgs__rosidl_typesupport_cpp.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libbuiltin_interfaces__rosidl_typesupport_cpp.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/libtracetools.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/librosidl_typesupport_introspection_cpp.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/librosidl_typesupport_introspection_c.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/librmw.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/librosidl_typesupport_cpp.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/librosidl_typesupport_c.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/librcpputils.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/librosidl_runtime_c.so
-lds02rr_node: /home/huy/mnt/usb_ext4/opt/ros/humble/lib/librcutils.so
+lds02rr_node: /usr/lib/x86_64-linux-gnu/libboost_system.so.1.74.0
+lds02rr_node: /opt/ros/humble/lib/librclcpp.so
+lds02rr_node: /opt/ros/humble/lib/libsensor_msgs__rosidl_typesupport_fastrtps_c.so
+lds02rr_node: /opt/ros/humble/lib/libsensor_msgs__rosidl_typesupport_fastrtps_cpp.so
+lds02rr_node: /opt/ros/humble/lib/libsensor_msgs__rosidl_typesupport_introspection_c.so
+lds02rr_node: /opt/ros/humble/lib/libsensor_msgs__rosidl_typesupport_introspection_cpp.so
+lds02rr_node: /opt/ros/humble/lib/libsensor_msgs__rosidl_generator_py.so
+lds02rr_node: /opt/ros/humble/lib/librmw_cyclonedds_cpp.so
+lds02rr_node: /opt/ros/humble/lib/liblibstatistics_collector.so
+lds02rr_node: /opt/ros/humble/lib/librcl.so
+lds02rr_node: /opt/ros/humble/lib/librmw_implementation.so
+lds02rr_node: /opt/ros/humble/lib/libament_index_cpp.so
+lds02rr_node: /opt/ros/humble/lib/librcl_logging_spdlog.so
+lds02rr_node: /opt/ros/humble/lib/librcl_logging_interface.so
+lds02rr_node: /opt/ros/humble/lib/librcl_interfaces__rosidl_typesupport_fastrtps_c.so
+lds02rr_node: /opt/ros/humble/lib/librcl_interfaces__rosidl_typesupport_introspection_c.so
+lds02rr_node: /opt/ros/humble/lib/librcl_interfaces__rosidl_typesupport_fastrtps_cpp.so
+lds02rr_node: /opt/ros/humble/lib/librcl_interfaces__rosidl_typesupport_introspection_cpp.so
+lds02rr_node: /opt/ros/humble/lib/librcl_interfaces__rosidl_typesupport_cpp.so
+lds02rr_node: /opt/ros/humble/lib/librcl_interfaces__rosidl_generator_py.so
+lds02rr_node: /opt/ros/humble/lib/librcl_interfaces__rosidl_typesupport_c.so
+lds02rr_node: /opt/ros/humble/lib/librcl_interfaces__rosidl_generator_c.so
+lds02rr_node: /opt/ros/humble/lib/librcl_yaml_param_parser.so
+lds02rr_node: /opt/ros/humble/lib/libyaml.so
+lds02rr_node: /opt/ros/humble/lib/librosgraph_msgs__rosidl_typesupport_fastrtps_c.so
+lds02rr_node: /opt/ros/humble/lib/librosgraph_msgs__rosidl_typesupport_fastrtps_cpp.so
+lds02rr_node: /opt/ros/humble/lib/librosgraph_msgs__rosidl_typesupport_introspection_c.so
+lds02rr_node: /opt/ros/humble/lib/librosgraph_msgs__rosidl_typesupport_introspection_cpp.so
+lds02rr_node: /opt/ros/humble/lib/librosgraph_msgs__rosidl_typesupport_cpp.so
+lds02rr_node: /opt/ros/humble/lib/librosgraph_msgs__rosidl_generator_py.so
+lds02rr_node: /opt/ros/humble/lib/librosgraph_msgs__rosidl_typesupport_c.so
+lds02rr_node: /opt/ros/humble/lib/librosgraph_msgs__rosidl_generator_c.so
+lds02rr_node: /opt/ros/humble/lib/libstatistics_msgs__rosidl_typesupport_fastrtps_c.so
+lds02rr_node: /opt/ros/humble/lib/libstatistics_msgs__rosidl_typesupport_fastrtps_cpp.so
+lds02rr_node: /opt/ros/humble/lib/libstatistics_msgs__rosidl_typesupport_introspection_c.so
+lds02rr_node: /opt/ros/humble/lib/libstatistics_msgs__rosidl_typesupport_introspection_cpp.so
+lds02rr_node: /opt/ros/humble/lib/libstatistics_msgs__rosidl_typesupport_cpp.so
+lds02rr_node: /opt/ros/humble/lib/libstatistics_msgs__rosidl_generator_py.so
+lds02rr_node: /opt/ros/humble/lib/libstatistics_msgs__rosidl_typesupport_c.so
+lds02rr_node: /opt/ros/humble/lib/libstatistics_msgs__rosidl_generator_c.so
+lds02rr_node: /opt/ros/humble/lib/libgeometry_msgs__rosidl_typesupport_fastrtps_c.so
+lds02rr_node: /opt/ros/humble/lib/libstd_msgs__rosidl_typesupport_fastrtps_c.so
+lds02rr_node: /opt/ros/humble/lib/libbuiltin_interfaces__rosidl_typesupport_fastrtps_c.so
+lds02rr_node: /opt/ros/humble/lib/librosidl_typesupport_fastrtps_c.so
+lds02rr_node: /opt/ros/humble/lib/libgeometry_msgs__rosidl_typesupport_fastrtps_cpp.so
+lds02rr_node: /opt/ros/humble/lib/libstd_msgs__rosidl_typesupport_fastrtps_cpp.so
+lds02rr_node: /opt/ros/humble/lib/libbuiltin_interfaces__rosidl_typesupport_fastrtps_cpp.so
+lds02rr_node: /opt/ros/humble/lib/librosidl_typesupport_fastrtps_cpp.so
+lds02rr_node: /opt/ros/humble/lib/libfastcdr.so.1.0.24
+lds02rr_node: /opt/ros/humble/lib/libgeometry_msgs__rosidl_typesupport_introspection_c.so
+lds02rr_node: /opt/ros/humble/lib/libstd_msgs__rosidl_typesupport_introspection_c.so
+lds02rr_node: /opt/ros/humble/lib/libbuiltin_interfaces__rosidl_typesupport_introspection_c.so
+lds02rr_node: /opt/ros/humble/lib/libgeometry_msgs__rosidl_typesupport_introspection_cpp.so
+lds02rr_node: /opt/ros/humble/lib/libstd_msgs__rosidl_typesupport_introspection_cpp.so
+lds02rr_node: /opt/ros/humble/lib/libbuiltin_interfaces__rosidl_typesupport_introspection_cpp.so
+lds02rr_node: /opt/ros/humble/lib/libsensor_msgs__rosidl_typesupport_c.so
+lds02rr_node: /opt/ros/humble/lib/libsensor_msgs__rosidl_generator_c.so
+lds02rr_node: /opt/ros/humble/lib/libgeometry_msgs__rosidl_generator_py.so
+lds02rr_node: /opt/ros/humble/lib/libstd_msgs__rosidl_generator_py.so
+lds02rr_node: /opt/ros/humble/lib/libbuiltin_interfaces__rosidl_generator_py.so
+lds02rr_node: /usr/lib/x86_64-linux-gnu/libpython3.10.so
+lds02rr_node: /opt/ros/humble/lib/libgeometry_msgs__rosidl_typesupport_c.so
+lds02rr_node: /opt/ros/humble/lib/libstd_msgs__rosidl_typesupport_c.so
+lds02rr_node: /opt/ros/humble/lib/libbuiltin_interfaces__rosidl_typesupport_c.so
+lds02rr_node: /opt/ros/humble/lib/libgeometry_msgs__rosidl_generator_c.so
+lds02rr_node: /opt/ros/humble/lib/libstd_msgs__rosidl_generator_c.so
+lds02rr_node: /opt/ros/humble/lib/libbuiltin_interfaces__rosidl_generator_c.so
+lds02rr_node: /opt/ros/humble/lib/libsensor_msgs__rosidl_typesupport_cpp.so
+lds02rr_node: /opt/ros/humble/lib/libgeometry_msgs__rosidl_typesupport_cpp.so
+lds02rr_node: /opt/ros/humble/lib/libstd_msgs__rosidl_typesupport_cpp.so
+lds02rr_node: /opt/ros/humble/lib/libbuiltin_interfaces__rosidl_typesupport_cpp.so
+lds02rr_node: /opt/ros/humble/lib/libtracetools.so
+lds02rr_node: /opt/ros/humble/lib/librosidl_typesupport_introspection_cpp.so
+lds02rr_node: /opt/ros/humble/lib/librosidl_typesupport_introspection_c.so
+lds02rr_node: /opt/ros/humble/lib/librmw.so
+lds02rr_node: /opt/ros/humble/lib/librosidl_typesupport_cpp.so
+lds02rr_node: /opt/ros/humble/lib/librosidl_typesupport_c.so
+lds02rr_node: /opt/ros/humble/lib/librcpputils.so
+lds02rr_node: /opt/ros/humble/lib/librosidl_runtime_c.so
+lds02rr_node: /opt/ros/humble/lib/librcutils.so
 lds02rr_node: CMakeFiles/lds02rr_node.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/huy/nav2_ws/Vaccum-Robot-LDS02RR/build/lds02rr_lidar/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable lds02rr_node"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/lds02rr_node.dir/link.txt --verbose=$(VERBOSE)
