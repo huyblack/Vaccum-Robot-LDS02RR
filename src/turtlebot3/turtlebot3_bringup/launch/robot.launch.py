@@ -131,6 +131,15 @@ def generate_launch_description():
                               'namespace': namespace}.items(),
         ),
 
+
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            name='static_transform_publisher_lidar',
+            arguments=['0', '0', '0', '0', '0', '3.14159', 'base_link', 'base_scan']
+        ),
+        
+        
         # Cập nhật node turtlebot3_ros để sử dụng XiaoBLEI2CWrapper
         Node(
             package='turtlebot3_node',

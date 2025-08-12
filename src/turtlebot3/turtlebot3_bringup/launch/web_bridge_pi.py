@@ -4,6 +4,7 @@ import rclpy
 from rclpy.node import Node
 from nav_msgs.msg import OccupancyGrid, Odometry
 from geometry_msgs.msg import Twist
+from std_msgs.msg import UInt16
 from sensor_msgs.msg import JointState
 import asyncio
 import websockets
@@ -61,6 +62,7 @@ class WebBridgePi:
         # Lưu trữ dữ liệu
         self.last_map_data = None
         self.last_odom_data = None
+        self.last_rpms_data = None
         
         # GPIO Control
         self.motor_pin = 27
@@ -72,7 +74,7 @@ class WebBridgePi:
         self.lidar_pwm_pin = 18
         self.lidar_pwm = None
         self.lidar_enabled = True
-        self.lidar_duty_cycle = 8.5
+        self.lidar_duty_cycle = 7.5
         
         # GPIO13 PWM Control - Thêm mới
         self.gpio13_pwm_pin = 13
@@ -84,6 +86,10 @@ class WebBridgePi:
             'normal': 60,     # Bình thường - 60%
             'high': 100       # Hiệu suất cao - 100%
         }
+
+        # RPMS throttling
+        self.rpms_throttle = 0.5
+        self.last_rpms_time = 0
         
         # Setup GPIO
         if GPIO_AVAILABLE:
@@ -130,6 +136,7 @@ class WebBridgePi:
             self._node.create_subscription(OccupancyGrid, '/map', self.map_callback, 10)
             self._node.create_subscription(Odometry, '/odom', self.odom_callback, 10)
             self._node.create_subscription(JointState, '/joint_states', self.joint_states_callback, 10)
+            self._node.create_subscription(UInt16, '/rpms', self.rpms_callback, 10)
             
             # Setup publishers
             self.cmd_vel_publisher = self._node.create_publisher(Twist, '/cmd_vel', 10)
@@ -176,6 +183,7 @@ class WebBridgePi:
                 initial_data = {
                     'map': self.last_map_data,
                     'odom': self.last_odom_data,
+                    'rpms': self.last_rpms_data,
                     'timestamp': time.time()
                 }
                 await websocket.send(json.dumps(initial_data))
@@ -248,6 +256,24 @@ class WebBridgePi:
                                 'enabled': enabled if success else self.gpio13_enabled,
                                 'level': level if success else self.get_gpio13_level_name(),
                                 'duty_cycle': self.gpio13_duty_cycle,
+                                'message': message,
+                                'timestamp': time.time()
+                            }
+                            await websocket.send(json.dumps(response))
+                        elif data.get('action') == 'set_lidar_pwm':
+                            try:
+                                duty = float(data.get('duty_cycle', self.lidar_duty_cycle))
+                            except (TypeError, ValueError):
+                                duty = self.lidar_duty_cycle
+
+                            success, message, applied = self.set_lidar_pwm(duty)
+
+                            response = {
+                                'type': 'control_response',
+                                'action': 'set_lidar_pwm',
+                                'success': success,
+                                'duty_cycle': applied,
+                                'enabled': self.lidar_enabled,
                                 'message': message,
                                 'timestamp': time.time()
                             }
@@ -363,6 +389,24 @@ class WebBridgePi:
         sanitized_msg.position = new_positions
         self.joint_states_sanitized_publisher.publish(sanitized_msg)
 
+    def rpms_callback(self, msg: UInt16):
+        """Nhận RPM của LiDAR và broadcast cho client (throttled)."""
+        try:
+            current_time = time.time()
+            if current_time - self.last_rpms_time < self.rpms_throttle:
+                return
+
+            self.last_rpms_time = current_time
+            rpms_info = {
+                'type': 'rpms',
+                'timestamp': current_time,
+                'value': int(msg.data)
+            }
+            self.last_rpms_data = rpms_info
+            self.broadcast(rpms_info)
+        except Exception as e:
+            self._logger.error(f"❌ Lỗi xử lý rpms callback: {e}")
+
     def broadcast(self, message_data):
         """Gửi message tới tất cả các client."""
         if not self.clients:
@@ -447,6 +491,31 @@ class WebBridgePi:
                 
         except Exception as e:
             return False, str(e)
+
+    def set_lidar_pwm(self, duty_cycle: float):
+        """Đặt duty cycle PWM cho LiDAR (0-100). Trả về (success, message, applied_duty)."""
+        if not GPIO_AVAILABLE or not self.lidar_pwm:
+            return False, "GPIO PWM not available", self.lidar_duty_cycle
+
+        try:
+            # Clamp
+            if duty_cycle is None:
+                duty_cycle = self.lidar_duty_cycle
+            duty_cycle = float(duty_cycle)
+            duty_cycle = max(0.0, min(100.0, duty_cycle))
+
+            self.lidar_pwm.ChangeDutyCycle(duty_cycle)
+            self.lidar_duty_cycle = duty_cycle
+            if duty_cycle <= 0.0:
+                self.lidar_enabled = False
+                # Safety stop when disabling rotation via duty=0
+                self._send_stop_command()
+                return True, f"LiDAR PWM set to {duty_cycle:.1f}% (disabled)", duty_cycle
+            else:
+                self.lidar_enabled = True
+                return True, f"LiDAR PWM set to {duty_cycle:.1f}%", duty_cycle
+        except Exception as e:
+            return False, str(e), self.lidar_duty_cycle
 
     def _send_stop_command(self):
         """Gửi lệnh dừng robot để safety khi LiDAR tắt."""

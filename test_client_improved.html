@@ -435,9 +435,16 @@
                     <div class="control-title">🔴 LiDAR Rotation</div>
                     <div class="control-desc">Control LiDAR rotation only (SLAM runs independently)</div>
                 </div>
-                <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
                     <div class="toggle-switch danger" id="lidarToggle" onclick="toggleLidar()"></div>
                     <span class="status-indicator status-offline" id="lidarStatus"></span>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <label for="lidarDutyInput" style="font-size:12px; opacity:0.9;">Duty (%)</label>
+                        <input id="lidarDutyInput" type="number" min="0" max="100" step="0.1" value="8.5" style="width:80px; padding:6px; border-radius:6px; border:none;" />
+                        <button class="reconnect-btn" style="padding:6px 10px; font-size:12px;" onclick="setLidarDutyCycle()">Set</button>
+                        <span style="font-size:12px; opacity:0.9;">Current: <span id="lidarDutyDisplay">8.5%</span></span>
+                        <span style="font-size:12px; opacity:0.9;">RPM: <span id="lidarRpm">-</span></span>
+                    </div>
                 </div>
             </div>
 
@@ -626,6 +633,8 @@
                             odomCount++;
                             updateOdomData(data);
                             document.getElementById('odomCount').textContent = odomCount;
+                        } else if (data.type === 'rpms') {
+                            updateRpmDisplay(data);
                         } else if (data.type === 'pong') {
                             // Server responded to ping - connection is healthy
                             // Don't log every pong to avoid spam, just track silently
@@ -844,6 +853,14 @@
             }
         }
 
+        function updateRpmDisplay(data) {
+            if (!data) return;
+            const rpmEl = document.getElementById('lidarRpm');
+            if (rpmEl && typeof data.value === 'number') {
+                rpmEl.textContent = data.value.toString();
+            }
+        }
+
         function drawMap(mapData) {
             const canvas = document.getElementById('mapCanvas');
             const ctx = canvas.getContext('2d');
@@ -1036,6 +1053,26 @@
             }
         }
 
+        function setLidarDutyCycle() {
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                addLog('❌ Not connected - cannot set LiDAR PWM');
+                return;
+            }
+            const input = document.getElementById('lidarDutyInput');
+            if (!input) return;
+            let duty = parseFloat(input.value);
+            if (isNaN(duty)) duty = 0.0;
+            duty = Math.max(0, Math.min(100, duty));
+
+            const command = {
+                action: 'set_lidar_pwm',
+                duty_cycle: duty
+            };
+            ws.send(JSON.stringify(command));
+            updateControlStatus('lidar', 'pending', `Setting LiDAR PWM to ${duty.toFixed(1)}%...`);
+            addLog(`🔧 Set LiDAR PWM -> ${duty.toFixed(1)}%`);
+        }
+
         function toggleMotor() {
             if (ws && ws.readyState === WebSocket.OPEN) {
                 motorEnabled = !motorEnabled;
@@ -1171,6 +1208,10 @@
                     updateControlStatus('lidar', enabled ? 'online' : 'offline', 
                                        enabled ? 'LiDAR Spinning' : 'LiDAR Stopped');
                     addLog(`✅ LiDAR ${enabled ? 'started spinning' : 'stopped'} successfully (SLAM independent)`);
+                    // Cập nhật hiển thị duty cycle nếu server có trả
+                    if (typeof data.duty_cycle === 'number') {
+                        document.getElementById('lidarDutyDisplay').textContent = `${data.duty_cycle.toFixed(1)}%`;
+                    }
                 } else {
                     // Revert state on failure
                     lidarEnabled = !lidarEnabled;
@@ -1245,6 +1286,18 @@
                     gpio13Enabled = !gpio13Enabled;
                     updateControlStatus('gpio13', 'error', `Failed: ${message}`);
                     addLog(`❌ GPIO13 PWM control failed: ${message}`);
+                }
+            } else if (action === 'set_lidar_pwm') {
+                if (success) {
+                    const duty = data.duty_cycle ?? 0;
+                    document.getElementById('lidarDutyDisplay').textContent = `${duty.toFixed(1)}%`;
+                    const input = document.getElementById('lidarDutyInput');
+                    if (input) input.value = duty.toFixed(1);
+                    updateControlStatus('lidar', data.enabled ? 'online' : 'offline', data.enabled ? `LiDAR PWM ${duty.toFixed(1)}%` : 'LiDAR Stopped');
+                    addLog(`✅ LiDAR PWM set to ${duty.toFixed(1)}%`);
+                } else {
+                    updateControlStatus('lidar', 'error', `Failed: ${message}`);
+                    addLog(`❌ Set LiDAR PWM failed: ${message}`);
                 }
             }
         }

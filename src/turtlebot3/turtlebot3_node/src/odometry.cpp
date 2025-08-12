@@ -30,7 +30,7 @@ Odometry::Odometry(
 : nh_(nh),
   wheels_separation_(wheels_separation),
   wheels_radius_(wheels_radius),
-  use_imu_(true),
+  use_imu_(false),
   publish_tf_(true),
   last_theta_initialized_(true),
   imu_angle_(0.0f)
@@ -47,7 +47,7 @@ Odometry::Odometry(
   nh_->get_parameter_or<bool>(
     "odometry.use_imu",
     use_imu_,
-    true);
+    false);
 
   nh_->get_parameter_or<bool>(
     "odometry.publish_tf",

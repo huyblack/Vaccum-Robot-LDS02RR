@@ -87,6 +87,12 @@ unsigned long lastI2CActivityTime = 0;
 unsigned long lastLedToggleTime = 0;
 bool ledState = LOW;
 
+// Hướng quay động cơ được suy ra từ trạng thái chân điều khiển IN1/IN2
+// +1: quay theo chiều tiến (đẩy robot tiến về phía trước)
+// -1: quay theo chiều lùi
+int8_t left_dir_sign = 1;
+int8_t right_dir_sign = 1;
+
 // --- Buffer và biến trạng thái I2C ---
 volatile uint8_t i2c_recv_buffer[32];
 volatile uint8_t i2c_recv_len = 0;
@@ -332,9 +338,11 @@ void updateMotors() {
   if (pid_output_left >= 0) {
     digitalWrite(IN1_PIN_L, HIGH);
     digitalWrite(IN2_PIN_L, LOW);
+    left_dir_sign = +1;   // HIGH/LOW = tiến
   } else {
     digitalWrite(IN1_PIN_L, LOW);
     digitalWrite(IN2_PIN_L, HIGH);
+    left_dir_sign = -1;   // LOW/HIGH = lùi
   }
   analogWrite(PWM_PIN_L, constrain(left_pwm, 0, 255));
 
@@ -342,9 +350,11 @@ void updateMotors() {
   if (pid_output_right >= 0) {
     digitalWrite(IN1_PIN_R, LOW);
     digitalWrite(IN2_PIN_R, HIGH);
+    right_dir_sign = +1;  // LOW/HIGH = tiến (đã đảo logic với phần cứng)
   } else {
     digitalWrite(IN1_PIN_R, HIGH);
     digitalWrite(IN2_PIN_R, LOW);
+    right_dir_sign = -1;  // HIGH/LOW = lùi
   }
   analogWrite(PWM_PIN_R, constrain(right_pwm, 0, 255));
 }
@@ -387,9 +397,10 @@ void updateMotorStatus() {
     abs_rpm_left = constrain(abs_rpm_left, 0, 30);   // 30 RPM safety margin
     abs_rpm_right = constrain(abs_rpm_right, 0, 30); // 30 RPM safety margin
 
-    // Gán dấu (+/-) cho RPM thực tế dựa vào dấu của output từ PID
-    present_rpm_left = (pid_output_left >= 0) ? abs_rpm_left : -abs_rpm_left;
-    present_rpm_right = (pid_output_right >= 0) ? abs_rpm_right : -abs_rpm_right;
+    // Gán dấu (+/-) cho RPM thực tế dựa vào hướng chân IN1/IN2
+    // Điều này ổn định hơn với encoder 1 kênh so với việc lấy dấu từ PID
+    present_rpm_left = left_dir_sign * abs_rpm_left;
+    present_rpm_right = right_dir_sign * abs_rpm_right;
 
     // --- Tính vận tốc (m/s) với safety bounds ---
     double abs_vel_left = (left_pulses * DISTANCE_PER_PULSE) / dt;
@@ -399,8 +410,8 @@ void updateMotorStatus() {
     abs_vel_left = constrain(abs_vel_left, 0, 0.12);   // 0.12 m/s safety margin
     abs_vel_right = constrain(abs_vel_right, 0, 0.12); // 0.12 m/s safety margin
     
-    present_velocity_left_mps = (pid_output_left >= 0) ? abs_vel_left : -abs_vel_left;
-    present_velocity_right_mps = (pid_output_right >= 0) ? abs_vel_right : -abs_vel_right;
+    present_velocity_left_mps = left_dir_sign * abs_vel_left;
+    present_velocity_right_mps = right_dir_sign * abs_vel_right;
 
     // --- Cập nhật vị trí với bounds checking ---
     double pos_delta_left = present_velocity_left_mps * dt;

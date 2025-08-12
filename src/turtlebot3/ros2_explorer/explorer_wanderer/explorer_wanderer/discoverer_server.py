@@ -75,6 +75,8 @@ class DiscovererServer(Node):
         self.start_time = time.time()
         self.min_exploration_time = 180  # Tăng lên 180 giây (3 phút)
         self.get_logger().info("Discoverer Server is ready")
+        # Đánh dấu đã nhận bản đồ hay chưa (để tránh bắt đầu quá sớm trên robot thực)
+        self._have_map = False
 
     # def watchtower_callback(self, msg):
     #     # If map_progress is higher than the threshold send stop wandering signal
@@ -83,9 +85,20 @@ class DiscovererServer(Node):
 
     def execute_callback(self, request, response):
         self.get_logger().info("Discoverer Server received a service request")
+        # Reset thời gian tính từ lúc nhận request, tránh dùng thời điểm khởi tạo node
+        self.start_time = time.time()
         self.get_logger().info(f"Starting exploration with frontier threshold: {self.frontier_threshold}")
         self.get_logger().info(f"Initial frontier count: {self.frontier_count}")
         self.get_logger().info(f"Minimum exploration time: {self.min_exploration_time} seconds")
+
+        # Đợi ngắn để có ít nhất một bản cập nhật map và danh sách waypoint truy cập được
+        wait_start = time.time()
+        while (not self._have_map or 
+               len(self.navigation_client.cartographer.sorted_accessible_waypoints) == 0) and \
+              (time.time() - wait_start < 10.0):
+            rclpy.spin_once(self.navigation_client.cartographer, timeout_sec=0.5)
+            # Cho ROS xử lý callback map của chính DiscovererServer
+            rclpy.spin_once(self, timeout_sec=0.0)
         
         iteration_count = 0
         max_iterations = 300  # Giảm xuống 300 iterations
@@ -125,15 +138,20 @@ class DiscovererServer(Node):
         self.get_logger().info(f'Discovering Finished (frontier count: {self.frontier_count}, iterations: {iteration_count})')
         self.get_logger().info(f'Total time: {total_time:.1f}s')
         
-        # Trả về response cho service
-        response.success = True
-        response.message = f'Exploration completed in {total_time:.1f}s with {iteration_count} iterations'
+        # Trả về response cho service: chỉ success khi thực sự có ít nhất 1 iteration
+        response.success = iteration_count > 0
+        if response.success:
+            response.message = f'Exploration completed in {total_time:.1f}s with {iteration_count} iterations'
+        else:
+            response.message = f'Exploration failed to start (iterations={iteration_count}).'
         return response
 
     def map_callback(self, msg):
         map_array = np.asarray(msg.data)
         width = msg.info.width
         height = msg.info.height
+        # Đánh dấu đã nhận được ít nhất một bản đồ
+        self._have_map = True
         old_frontier_count = self.frontier_count
         self.frontier_count = count_frontiers(map_array, width, height)
         
@@ -210,8 +228,13 @@ class NavigationClient(Node):
 
         # Kiểm tra có waypoint nào không
         if len(self.cartographer.sorted_accessible_waypoints) == 0:
-            self.get_logger().warn('No accessible waypoints available.')
-            return False
+            # Nếu chưa có map callback, dùng fallback waypoint khởi tạo để robot bắt đầu di chuyển
+            self.get_logger().warn('No accessible waypoints available. Using hardcoded initial waypoints.')
+            self.cartographer.sorted_accessible_waypoints = np.array([[1.5, 0.0], [0.0, 1.5], [-1.5, 0.0], [0.0, -1.5]])
+            # Nếu vẫn không có, dừng lại
+            if len(self.cartographer.sorted_accessible_waypoints) == 0:
+                self.get_logger().warn('No waypoints available. Stopping navigation.')
+                return False
 
         # Lọc ra các waypoint chưa đi qua
         unvisited_waypoints = []

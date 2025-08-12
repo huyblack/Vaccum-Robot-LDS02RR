@@ -1,18 +1,7 @@
-[cartographer_node-1] F0806 00:01:28.840986 22386 lua_parameter_dictionary.cc:410] Check failed: 1 == reference_counts_.count(key) (1 vs. 0) Key 'map_publish_period_sec' was used the wrong number of times.
-[cartographer_node-1] [FATAL] [1754413288.841730740] [cartographer logger]: F0806 00:01:28.000000 22386 lua_parameter_dictionary.cc:410] Check failed: 1 == reference_counts_.count(key) (1 vs. 0) Key 'map_publish_period_sec' was used the wrong number of times.
-[rviz2-3] [INFO] [1754413289.145101588] [rviz2]: Stereo is NOT SUPPORTED
-[rviz2-3] [INFO] [1754413289.145298261] [rviz2]: OpenGl version: 4.5 (GLSL 4.5)
-[rviz2-3] [INFO] [1754413289.214392588] [rviz2]: Stereo is NOT SUPPORTED
-[cartographer_node-1] *** Check failure stack trace: ***
-[cartographer_node-1]     @     0x7155e130bb03  google::LogMessage::Fail()
-[cartographer_node-1]     @     0x7155e13139d1  google::LogMessage::SendToLog()
-[cartographer_node-1]     @     0x7155e130b7c2  google::LogMessage::Flush()
-[cartographer_node-1]     @     0x7155e130d78f  google::LogMessageFatal::~LogMessageFatal()
-[cartographer_node-1]     @     0x652cd5c652b8  (unknown)
-[cartographer_node-1]     @     0x652cd5c65475  (unknown)
-[cartographer_node-1]     @     0x652cd5c4d418  (unknown)
-[cartographer_node-1]     @     0x652cd5bb37b3  (unknown)
-[cartographer_node-1]     @     0x7155e0229d90  (unknown)
-[cartographer_node-1]     @     0x7155e0229e40  __libc_start_main
-[cartographer_node-1]     @     0x652cd5bb6d35  (unknown)
-[ERROR] [cartographer_node-1]: process has died [pid 22386, exit code -
+huy@huy:~/nav2_ws/Vaccum-Robot-LDS02RR$ ros2 run tf2_ros static_transform_publisher 0 0 0 0 0 3.14159 odom base_footprint
+[WARN] [1755012877.022697943] []: Old-style arguments are deprecated; see --help for new-style arguments
+[INFO] [1755012877.030753040] [static_transform_publisher_TDU3mq1olKDbSPSu]: Spinning until stopped - publishing transform
+translation: ('0.000000', '0.000000', '0.000000')
+rotation: ('1.000000', '0.000000', '0.000000', '0.000001')
+from 'odom' to 'base_footprint'
+

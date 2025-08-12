@@ -25,6 +25,8 @@ setup(
     entry_points={
         'console_scripts': [
             'manager= '+package_name+'.manager:main',
+            'vacuum_navigator= '+package_name+'.vacuum_navigator:main',
+            'smart_vacuum= '+package_name+'.smart_vacuum:main',
         ],
     },
 )
