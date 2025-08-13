@@ -69,8 +69,8 @@ def launch_setup(context, *args, **kwargs):
             os.path.join(get_package_share_directory('nav2_bringup'), 'launch', 'bringup_launch.py')
         ),
         launch_arguments={
-            'map': os.path.join(nav2_file_dir, 'map', ''),
-            # 'slam': 'True',
+            'map': os.path.join(nav2_file_dir, 'map', 'map.yaml'),
+            'slam': 'True',
             'use_sim_time': use_sim_time,
             'params_file': os.path.join(nav2_file_dir, 'param', param_file_name)}.items(),
     )
@@ -88,6 +88,14 @@ def launch_setup(context, *args, **kwargs):
         name='discoverer_server',
         output='screen',
     )
+    
+      # Path Coverage Launch
+    path_coverage_cmd = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(get_package_share_directory('path_coverage'), 'launch', 'path_coverage.launch.py')
+        )
+    )
+
 
     # watchtower_cmd = Node(
     #     package='explorer_map_utils',
@@ -103,7 +111,8 @@ def launch_setup(context, *args, **kwargs):
         # robot_state_publisher_cmd,
         # spawn_turtlebot_cmd,
         cartographer_cmd,
-        # nav2_cmd,
+        nav2_cmd,
+        path_coverage_cmd,
         # discoverer_cmd,
     ]
 

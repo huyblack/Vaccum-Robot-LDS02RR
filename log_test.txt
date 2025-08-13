@@ -1,7 +1,4 @@
-huy@huy:~/nav2_ws/Vaccum-Robot-LDS02RR$ ros2 run tf2_ros static_transform_publisher 0 0 0 0 0 3.14159 odom base_footprint
-[WARN] [1755012877.022697943] []: Old-style arguments are deprecated; see --help for new-style arguments
-[INFO] [1755012877.030753040] [static_transform_publisher_TDU3mq1olKDbSPSu]: Spinning until stopped - publishing transform
-translation: ('0.000000', '0.000000', '0.000000')
-rotation: ('1.000000', '0.000000', '0.000000', '0.000001')
-from 'odom' to 'base_footprint'
-
+huy@huy:~/nav2_ws/Vaccum-Robot-LDS02RR$ ros2 launch nav2_bringup bringup_launch.py slam:=True map:=""
+malformed launch argument 'map:=', expected format '<name>:=<value>'
+huy@huy:~/nav2_ws/Vaccum-Robot-LDS02RR$ ros2 launch nav2_bringup bringup_launch.py slam:=True map:=''
+malformed launch argument 'map:=', expected format '<name>:=<value>'
